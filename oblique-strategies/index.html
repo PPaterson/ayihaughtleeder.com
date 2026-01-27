@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oblique Strategies: Corporate Travel Thought Leader Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --gray-100: #f5f5f7;
+            --gray-200: #e8e8ed;
+            --gray-400: #86868b;
+            --gray-600: #515154;
+            --gray-800: #1d1d1f;
+            --accent: #e30000;
+            --accent-hover: #cc0000;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: var(--white);
+            color: var(--gray-800);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+
+        .eyebrow {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gray-400);
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 40px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: var(--gray-600);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        /* Introduction */
+        .intro {
+            padding: 40px 0 60px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .intro-title {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 24px;
+        }
+
+        .intro p {
+            font-size: 15px;
+            color: var(--gray-600);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .intro p:last-child {
+            margin-bottom: 0;
+        }
+
+        .intro em {
+            font-style: italic;
+            color: var(--gray-800);
+        }
+
+        /* Card Section */
+        .card-section {
+            padding: 60px 0 100px;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+        }
+
+        .instruction {
+            font-size: 13px;
+            color: var(--gray-400);
+            margin-bottom: 32px;
+            min-height: 20px;
+        }
+
+        /* Card Area */
+        .card-area {
+            width: 100%;
+            max-width: 360px;
+            margin: 0 auto 40px;
+        }
+
+        /* Deck (face down cards) */
+        .deck {
+            position: relative;
+            width: 100%;
+            padding-bottom: 133.33%; /* 3:4 aspect ratio */
+            cursor: pointer;
+        }
+
+        .deck-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gray-800);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .deck-card:nth-child(1) { z-index: 3; }
+        .deck-card:nth-child(2) { 
+            z-index: 2; 
+            transform: translateY(8px) scale(0.97);
+            opacity: 0.6;
+        }
+        .deck-card:nth-child(3) { 
+            z-index: 1; 
+            transform: translateY(16px) scale(0.94);
+            opacity: 0.3;
+        }
+
+        .deck:hover .deck-card:nth-child(1) {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+
+        /* Drawn Card (face up) */
+        .drawn-card {
+            position: relative;
+            width: 100%;
+            padding-bottom: 133.33%;
+            display: none;
+        }
+
+        .drawn-card-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-text {
+            font-size: 24px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            line-height: 1.35;
+            color: var(--gray-800);
+            text-align: center;
+        }
+
+        /* States */
+        .card-area.show-drawn .deck {
+            display: none;
+        }
+
+        .card-area.show-drawn .drawn-card {
+            display: block;
+            animation: cardReveal 0.4s ease-out;
+        }
+
+        @keyframes cardReveal {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Button */
+        .draw-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: inherit;
+            color: var(--white);
+            background: var(--accent);
+            border: none;
+            border-radius: 980px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 160px;
+        }
+
+        .draw-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .draw-btn:active {
+            transform: scale(0.98);
+        }
+
+        .draw-btn:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+        }
+
+        /* Counter */
+        .counter {
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--gray-400);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Reset link */
+        .reset-link {
+            display: none;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--gray-400);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        .reset-link:hover {
+            color: var(--gray-600);
+        }
+
+        .reset-link.visible {
+            display: inline-block;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+        }
+
+        .footer-brand {
+            font-size: 13px;
+            color: var(--gray-600);
+            margin-bottom: 4px;
+        }
+
+        .footer-tagline {
+            font-size: 13px;
+            font-style: italic;
+            color: var(--gray-400);
+            margin-bottom: 16px;
+        }
+
+        .footer-copyright {
+            font-size: 11px;
+            color: var(--gray-400);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            header {
+                padding: 60px 0 40px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .subtitle {
+                font-size: 20px;
+            }
+
+            .intro {
+                padding: 32px 0 48px;
+            }
+
+            .intro-title {
+                font-size: 20px;
+            }
+
+            .intro p {
+                font-size: 14px;
+            }
+
+            .card-section {
+                padding: 48px 0 80px;
+            }
+
+            .card-text {
+                font-size: 20px;
+            }
+
+            .card-area {
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <p class="eyebrow">Presented by Ayi Haught-Leeder</p>
+            <h1>Oblique Strategies</h1>
+            <p class="subtitle">Corporate Travel Thought Leader Edition</p>
+        </header>
+
+        <section class="intro">
+            <h2 class="intro-title">How to Use These Cards</h2>
+            
+            <p>These cards emerged from repeated exposure to corporate travel programs after the pitch, after the contract, and after the go-live—when the story meets the system.</p>
+            
+            <p>Some insights were recognised in hindsight, once delivery replaced ambition. Others surfaced mid-implementation, usually when a "standard workflow" encountered a real client, a real market, or a real deadline. A few were articulated intentionally, most often while explaining why something works in theory but not in practice.</p>
+            
+            <p>The cards may be held collectively, as a running counterweight to roadmaps, sales narratives, and "directionally correct" reporting. They may also be used individually: draw one when progress stalls, confidence exceeds evidence, or the solution feels suspiciously familiar.</p>
+            
+            <p><em>When a card is drawn, trust it—even if it contradicts the PowerPoint deck. Especially if it contradicts the PowerPoint deck.</em></p>
+            
+            <p>These cards are not best practice. They are not commitments, features, or guarantees. They exist in the gaps between what was sold, what was built, and what is quietly being worked around.</p>
+            
+            <p>They are intentionally unfinished. As platforms are rebranded, integrations deferred, and future states redefined, some ideas will age out and others will become unavoidable.</p>
+            
+            <p>If the cards feel uncomfortable, they're probably accurate. If ignored, they will resurface later—wearing the label "known limitation."</p>
+        </section>
+
+        <section class="card-section">
+            <p class="instruction" id="instruction">Click the deck to draw a card</p>
+            
+            <div class="card-area" id="cardArea">
+                <div class="deck" id="deck">
+                    <div class="deck-card"></div>
+                    <div class="deck-card"></div>
+                    <div class="deck-card"></div>
+                </div>
+                <div class="drawn-card">
+                    <div class="drawn-card-inner">
+                        <p class="card-text" id="cardText"></p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="draw-btn" id="drawBtn">Draw a Card</button>
+            
+            <p class="counter" id="counter"></p>
+            
+            <button class="reset-link" id="resetLink">Shuffle and start again</button>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p class="footer-brand">Another presentation brought to you by Ayi-Haught Leeder AI Solutions</p>
+            <p class="footer-tagline">"Built by people who've suffered Concur."</p>
+            <p class="footer-copyright">© Phillip Paterson 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        var allCards = [
+            "Abandon the policy (temporarily)",
+            "Accept vendor advice (then ignore it)",
+            "Accrete stakeholders until no one owns the outcome",
+            "A workflow has two approvals",
+            "Add a slide explaining why the slide exists",
+            "Assume the data is wrong",
+            "Assume the data is right (it isn't)",
+            "Ask Sales what was promised",
+            "Ask Ops why it's impossible",
+            "Ask the client what they actually care about",
+            "Assemble all platforms and pretend they're one",
+            "Balance innovation with 'what we can ship this quarter'",
+            "Be user-centric (say it three times)",
+            "Blame 'complexity'",
+            "Build the bridge. Burn the bridge. Rebuild it with AI.",
+            "Cascading approvals are still approvals",
+            "Change the name, not the product",
+            "Change nothing and announce a transformation",
+            "Choose a new acronym",
+            "Clarify the scope (then expand it)",
+            "Consult a benchmark nobody asked for",
+            "Convert friction into 'education'",
+            "Courage! (present it anyway)",
+            "Cut a vital integration",
+            "Decorate the roadmap",
+            "Define an MVP and exceed it slightly",
+            "Destroy the most useful feature (quietly)",
+            "Discard the previous deck",
+            "Disconnect from NDC discourse",
+            "Discover the workaround everyone uses",
+            "Distort timelines ('soon', 'next phase', 'strategic')",
+            "Do nothing until the client escalates",
+            "Don't be afraid of a pilot",
+            "Don't be frightened of incorrect data in client-facing reports",
+            "Don't show the backend",
+            "Don't stress the edge cases (they are the cases)",
+            "Do something measurable",
+            "Do the governance",
+            "Do we need another approval layer?",
+            "Emphasize adoption",
+            "Emphasize savings (estimated)",
+            "Emphasize 'directionally correct'",
+            "Faced with a choice, create a steering committee",
+            "Feedback the issue into the process",
+            "Fill every slide with words",
+            "Find a use case that fits the tool",
+            "Give the roadmap away",
+            "Give way to the loudest stakeholder",
+            "Go slowly all the way through procurement",
+            "Honor thy bug as a feature",
+            "How would a startup describe this?",
+            "Humanize the exception",
+            "Imagine the journey as a funnel",
+            "Imagine the journey as broken",
+            "Incremental innovation, loudly",
+            "Intentions matter more than outcomes",
+            "Into the deck appendix",
+            "Is it scalable?",
+            "Is it live anywhere?",
+            "Is it contractually included?",
+            "Just carry on (rebrand later)",
+            "Left market, right market, global roll-up",
+            "Listen to the quiet client who never complains",
+            "Look at the data lag",
+            "Look at the workflow nobody demoed",
+            "Look closely at the manual process and automate half of it",
+            "Lowest common denominator policy",
+            "Make a blank slide 'strategic'",
+            "Make an exhaustive backlog and ship item #47",
+            "Make a sudden announcement; incorporate feedback later",
+            "Mechanicalize empathy",
+            "Mute the traveller voice",
+            "One platform per slide",
+            "(Organic) transformation",
+            "Overtly resist simplification",
+            "Put in a holding statement",
+            "Remember how it worked before the migration",
+            "Remove ambiguity and add a footnote",
+            "Remove specifics and add vision",
+            "Repetition is a roadmap",
+            "Reverse the rollout order",
+            "Short-circuit escalation by renaming the team",
+            "Simplify (after go-live)",
+            "Take a break before replying all",
+            "Take away features in order of least defensibility",
+            "Tape your mouth in steering committee",
+            "The inconsistency principle (global edition)",
+            "The pilot is now the program",
+            "Think of the client's CFO",
+            "Tidy the narrative, not the system",
+            "Trust the data you have",
+            "Turn the deck upside down",
+            "Twist the metric definition",
+            "Use an old product with a new name",
+            "Use an unacceptable colour palette",
+            "Use fewer vendors (theoretically)",
+            "Use filters on the report",
+            "Use 'unqualified' champions",
+            "Water the buzzwords",
+            "What are you really selling here?",
+            "What is the reality of the implementation?",
+            "What broke last time?",
+            "What would Legal say?",
+            "What wouldn't Product commit to?",
+            "Work at roadmap speed, not delivery speed",
+            "You are a platform company",
+            "You can only fix one market at a time",
+            "You don't have to be ashamed of spreadsheets"
+        ];
+
+        var deck = [];
+        var drawnCount = 0;
+
+        var cardArea = document.getElementById('cardArea');
+        var deckEl = document.getElementById('deck');
+        var cardText = document.getElementById('cardText');
+        var drawBtn = document.getElementById('drawBtn');
+        var counter = document.getElementById('counter');
+        var instruction = document.getElementById('instruction');
+        var resetLink = document.getElementById('resetLink');
+
+        function shuffle(array) {
+            var arr = array.slice();
+            for (var i = arr.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+            return arr;
+        }
+
+        function initDeck() {
+            deck = shuffle(allCards);
+            drawnCount = 0;
+            updateCounter();
+            cardArea.className = 'card-area';
+            instruction.textContent = 'Click the deck to draw a card';
+            drawBtn.textContent = 'Draw a Card';
+            drawBtn.disabled = false;
+            resetLink.className = 'reset-link';
+        }
+
+        function updateCounter() {
+            if (drawnCount === 0) {
+                counter.textContent = deck.length + ' cards in deck';
+            } else {
+                counter.textContent = drawnCount + ' drawn · ' + deck.length + ' remaining';
+            }
+        }
+
+        function drawCard() {
+            if (deck.length === 0) return;
+
+            var card = deck.pop();
+            drawnCount++;
+
+            cardText.textContent = card;
+            cardArea.className = 'card-area show-drawn';
+
+            instruction.textContent = "Trust it—even if its relevance isn't immediately clear";
+            
+            if (deck.length > 0) {
+                drawBtn.textContent = 'Draw Another';
+            } else {
+                drawBtn.textContent = 'Deck Empty';
+                drawBtn.disabled = true;
+            }
+
+            updateCounter();
+            resetLink.className = 'reset-link visible';
+        }
+
+        function resetDeck() {
+            initDeck();
+        }
+
+        // Event listeners
+        deckEl.addEventListener('click', drawCard);
+        drawBtn.addEventListener('click', drawCard);
+        resetLink.addEventListener('click', resetDeck);
+
+        // Initialize on load
+        initDeck();
+    </script>
+</body>
+</html>
