@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FCM HOTEL SAVINGS MAXX4000</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* FCM Brand Colors */
+      --fcm-green: #00E000;
+      --deep-green: #178E17;
+      --green-highlight: #E8F5E5;
+      --clarity-white: #FFFFFF;
+      --charcoal-grey: #505050;
+      --midnight-black: #000000;
+      
+      /* Grey Scale */
+      --grey-1: #E5E5E5;
+      --grey-2: #E5E5E5;
+      --grey-3: #D9D9D9;
+      --grey-4: #C6C6C6;
+      --grey-5: #AAAAAA;
+      --grey-6: #818181;
+      
+      /* Applied Colors */
+      --bg: var(--clarity-white);
+      --fg: var(--midnight-black);
+      --muted: var(--charcoal-grey);
+      --card: var(--grey-1);
+      --border: var(--grey-3);
+      --accent: var(--fcm-green);
+      --accent-hover: var(--deep-green);
+      --bad: #b91c1c;
+    }
+    
+    * { box-sizing: border-box; }
+    
+    html, body { 
+      height: 100%; 
+      margin: 0; 
+      background: var(--bg); 
+      color: var(--fg); 
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+      -webkit-font-smoothing: antialiased; 
+      -moz-osx-font-smoothing: grayscale; 
+    }
+    
+    .wrap { 
+      max-width: 1100px; 
+      margin: 48px auto; 
+      padding: 0 16px; 
+    }
+    
+    header h1 { 
+      font-size: 28px; 
+      letter-spacing: -0.5px; 
+      margin: 0 0 8px; 
+      font-weight: 700;
+      color: var(--midnight-black);
+    }
+    
+    .card { 
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: 14px; 
+      padding: 20px; 
+    }
+    
+    .steps { 
+      line-height: 1.7; 
+      margin: 0 0 12px; 
+      font-weight: 400;
+    }
+    
+    .steps ol { 
+      margin: 0; 
+      padding-left: 20px; 
+    }
+    
+    .steps strong {
+      font-weight: 600;
+      color: var(--charcoal-grey);
+    }
+    
+    .hint { 
+      color: var(--muted); 
+      font-size: 12px; 
+      font-weight: 500;
+    }
+    
+    textarea { 
+      width: 100%; 
+      min-height: 260px; 
+      border: 1px solid var(--border); 
+      border-radius: 10px; 
+      padding: 10px 12px; 
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      background: var(--clarity-white); 
+    }
+    
+    textarea:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+      border-color: var(--accent);
+    }
+    
+    .row { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      flex-wrap: wrap; 
+      margin-top: 10px; 
+    }
+    
+    .btn { 
+      appearance: none; 
+      border: 1px solid var(--border); 
+      background: var(--clarity-white); 
+      padding: 10px 16px; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      font-weight: 600;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+    
+    .btn:hover {
+      background: var(--grey-1);
+    }
+    
+    .btn.primary { 
+      background: var(--accent); 
+      color: var(--midnight-black); 
+      border-color: var(--accent); 
+    }
+    
+    .btn.primary:hover {
+      background: var(--deep-green);
+      border-color: var(--deep-green);
+      color: var(--clarity-white);
+    }
+    
+    .results { 
+      margin-top: 20px; 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+      gap: 12px; 
+    }
+    
+    .stat { 
+      background: var(--clarity-white); 
+      border: 1px solid var(--border); 
+      border-radius: 12px; 
+      padding: 14px; 
+    }
+    
+    .stat .label { 
+      color: var(--muted); 
+      font-size: 12px; 
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .stat .value { 
+      font-size: 20px; 
+      font-weight: 700; 
+      margin-top: 6px;
+      color: var(--midnight-black);
+    }
+    
+    .stat:last-child .value {
+      color: var(--deep-green);
+    }
+    
+    details { 
+      margin-top: 18px; 
+      background: var(--clarity-white); 
+      border: 1px solid var(--border); 
+      border-radius: 12px; 
+      padding: 12px 14px; 
+    }
+    
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--charcoal-grey);
+    }
+    
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-top: 8px; 
+      font-size: 14px; 
+    }
+    
+    th, td { 
+      text-align: left; 
+      padding: 8px 10px; 
+      border-bottom: 1px solid var(--grey-2); 
+      vertical-align: top; 
+    }
+    
+    th { 
+      color: var(--muted); 
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    td {
+      font-weight: 400;
+    }
+    
+    footer { 
+      margin-top: 28px; 
+      color: var(--muted); 
+      font-size: 12px;
+      padding-bottom: 20px;
+    }
+    
+    .error { 
+      color: var(--bad); 
+      font-size: 13px; 
+      margin-top: 8px; 
+      display: none;
+      font-weight: 500;
+    }
+    
+    code { 
+      background: var(--green-highlight); 
+      padding: 2px 6px; 
+      border-radius: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.9em;
+      color: var(--deep-green);
+      font-weight: 500;
+    }
+    
+    @media (max-width: 768px) {
+      .results {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>FCM HOTEL SAVINGS MAXX4000</h1>
+    </header>
+
+    <section class="card">
+      <div class="steps">
+        <ol>
+          <li><strong>Step 1:</strong> Download the <em>Commission and Chargeback Booking Search Help</em> report from <strong>Internal Reports → Financial Management</strong> in PowerBI.</li>
+          <li><strong>Step 2:</strong> Press <strong>Ctrl/Cmd+A</strong> to select the whole sheet (or all rows). <strong>Copy</strong>.</li>
+          <li><strong>Step 3:</strong> Paste below. The tool reads <strong>Column G (Room Nights)</strong> and <strong>Column AV (Rate Type)</strong> from each line. Headers are ignored.</li>
+          <li><strong>Step 4:</strong> The total below is your <strong>FCM Hotel Savings</strong>.</li>
+        </ol>
+      </div>
+      <div class="hint">Rates → <code>FYY = $40/night</code>, <code>FCI = $28/night</code>, <code>FCA = $15/night</code>.</div>
+
+      <textarea id="paste" placeholder="Paste the entire sheet…"></textarea>
+      <div class="row">
+        <button id="parse" class="btn primary" type="button">Calculate Savings</button>
+        <button id="clear" class="btn" type="button">Clear</button>
+      </div>
+      <div id="msg" class="error"></div>
+    </section>
+
+    <section class="card">
+      <div id="summary" class="results" style="display:none;">
+        <div class="stat"><div class="label">Room nights (total)</div><div id="nights" class="value">0</div></div>
+        <div class="stat"><div class="label">FYY nights</div><div id="fyyN" class="value">0</div></div>
+        <div class="stat"><div class="label">FCI nights</div><div id="fciN" class="value">0</div></div>
+        <div class="stat"><div class="label">FCA nights</div><div id="fcaN" class="value">0</div></div>
+        <div class="stat"><div class="label">FYY savings</div><div id="fyy$" class="value">$0.00</div></div>
+        <div class="stat"><div class="label">FCI savings</div><div id="fci$" class="value">$0.00</div></div>
+        <div class="stat"><div class="label">FCA savings</div><div id="fca$" class="value">$0.00</div></div>
+        <div class="stat"><div class="label">Total savings (AUD)</div><div id="total" class="value">$0.00</div></div>
+        <div class="stat"><div class="label">Hotel Nights with no FCM Rates</div><div id="ignored" class="value">0</div></div>
+      </div>
+
+      <details id="details" open style="display:none;">
+        <summary>Row-by-row (all lines)</summary>
+        <div class="hint">Row number, Room Nights (G), Rate Type (AV), parsed code, and applied amount.</div>
+        <table id="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Room nights (G)</th>
+              <th>Rate Type (AV)</th>
+              <th>Code</th>
+              <th>Amount (AUD)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </details>
+    </section>
+
+    <footer>
+      <div>An Ayi Haught-Leeder Production</div>
+      <div>© 2025 Phillip Paterson</div>
+    </footer>
+  </div>
+
+  <script>
+    (function() {
+      const PRICE = { FYY: 40, FCI: 28, FCA: 15 };
+      const AUD = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD' });
+
+      const $ = (id) => document.getElementById(id);
+      const paste = $('paste');
+      const parseBtn = $('parse');
+      const clearBtn = $('clear');
+      const summary = $('summary');
+      const details = $('details');
+      const tbody = document.querySelector('#table tbody');
+      const msg = $('msg');
+
+      const out = {
+        nights: $('nights'),
+        fyyN: $('fyyN'), fciN: $('fciN'), fcaN: $('fcaN'),
+        fyy$: $('fyy$'), fci$: $('fci$'), fca$: $('fca$'),
+        total: $('total'), ignored: $('ignored')
+      };
+
+      function clearUI() {
+        summary.style.display = 'none';
+        details.style.display = 'none';
+        tbody.innerHTML = '';
+        msg.style.display = 'none'; msg.textContent = '';
+        out.nights.textContent = '0';
+        out.fyyN.textContent = '0';
+        out.fciN.textContent = '0';
+        out.fcaN.textContent = '0';
+        out.fyy$.textContent = AUD.format(0);
+        out.fci$.textContent = AUD.format(0);
+        out.fca$.textContent = AUD.format(0);
+        out.total.textContent = AUD.format(0);
+        out.ignored.textContent = '0';
+      }
+
+      function parseNumberMaybe(s) {
+        if (typeof s !== 'string') return NaN;
+        const cleaned = s.replace(/[,\s]/g, '');
+        const n = Number(cleaned);
+        return Number.isFinite(n) ? n : NaN;
+      }
+
+      function parseLines() {
+        const lines = paste.value.split(/\r?\n/).filter(line => line !== '');
+
+        let nightsTotal = 0;
+        let codeN = { FYY: 0, FCI: 0, FCA: 0 };
+        let code$ = { FYY: 0, FCI: 0, FCA: 0 };
+        let nightsWithoutFCMRates = 0;
+        let rowsHtml = '';
+        let headerGuessed = false;
+
+        for (let i = 0; i < lines.length; i++) {
+          const rawLine = (lines[i] ?? '').toString();
+          if (rawLine.trim() === '') continue;
+
+          // Excel "copy" uses tab separators. We keep trailing empties by splitting on tab and padding.
+          let parts = rawLine.split('\t');
+
+          // Ensure array has at least 48 elements so G (6) and AV (47) can be accessed safely.
+          if (parts.length < 48) {
+            // If we haven't flagged once, show guidance
+            if (!headerGuessed) {
+              msg.style.display = 'block';
+              msg.textContent = 'Some rows have fewer than 48 columns. Make sure you copied the entire sheet (Ctrl/Cmd+A) so Column AV is included.';
+              headerGuessed = true;
+            }
+            // Pad with empties so index lookups don't throw
+            while (parts.length < 48) parts.push('');
+          }
+
+          const colG = (parts[6] || '').trim();
+          const colAV = (parts[47] || '').trim();
+
+          // Skip header-ish rows without counting as ignored
+          if (/^\s*nights?\s*$/i.test(colG) || /^\s*rate[_ ]?type\s*$/i.test(colAV)) {
+            continue;
+          }
+
+          const nights = parseNumberMaybe(colG);
+          const code = (colAV || '').slice(-3).toUpperCase();
+
+          if (!Number.isFinite(nights) || nights <= 0) {
+            // Invalid nights value, skip this row entirely
+            rowsHtml += `<tr>
+              <td>${i + 1}</td>
+              <td>${colG || '—'}</td>
+              <td>${colAV || '—'}</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>`;
+            continue;
+          }
+
+          if (!PRICE[code]) {
+            // Valid nights but no FCM rate code - count these nights
+            nightsWithoutFCMRates += nights;
+            rowsHtml += `<tr>
+              <td>${i + 1}</td>
+              <td>${colG}</td>
+              <td>${colAV || '—'}</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>`;
+            continue;
+          }
+
+          const amount = PRICE[code] * nights;
+          codeN[code] += nights;
+          code$[code] += amount;
+          nightsTotal += nights;
+
+          rowsHtml += `<tr>
+            <td>${i + 1}</td>
+            <td>${colG}</td>
+            <td>${colAV}</td>
+            <td>${code}</td>
+            <td>${AUD.format(amount)}</td>
+          </tr>`;
+        }
+
+        out.nights.textContent = String(nightsTotal);
+        out.fyyN.textContent = String(codeN.FYY);
+        out.fciN.textContent = String(codeN.FCI);
+        out.fcaN.textContent = String(codeN.FCA);
+        out.fyy$.textContent = AUD.format(code$['FYY'] || 0);
+        out.fci$.textContent = AUD.format(code$['FCI'] || 0);
+        out.fca$.textContent = AUD.format(code$['FCA'] || 0);
+        out.total.textContent = AUD.format((code$['FYY']||0)+(code$['FCI']||0)+(code$['FCA']||0));
+        out.ignored.textContent = String(nightsWithoutFCMRates);
+
+        summary.style.display = 'grid';
+        details.style.display = 'block';
+        tbody.innerHTML = rowsHtml;
+      }
+
+      parseBtn.addEventListener('click', parseLines);
+      clearBtn.addEventListener('click', () => { paste.value = ''; clearUI(); });
+
+      clearUI();
+    })();
+  </script>
+</body>
+</html>

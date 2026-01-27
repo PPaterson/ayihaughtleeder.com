@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BACK JEEDHAM: THE GAME</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+        }
+        
+        #gameContainer {
+            text-align: center;
+        }
+        
+        #gameCanvas {
+            border: 4px solid #ff00ff;
+            background: #1a1a2e;
+            box-shadow: 0 0 20px #ff00ff;
+            image-rendering: pixelated;
+        }
+        
+        #title {
+            font-size: 2.5em;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+        
+        #hud {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            font-size: 1.2em;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        #controls {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #ffff00;
+        }
+        
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border: 3px solid #ff00ff;
+            display: none;
+            z-index: 100;
+        }
+        
+        #gameOver h2 {
+            color: #ff0000;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        
+        #restartBtn {
+            background: #ff00ff;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        #restartBtn:hover {
+            background: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <h1 id="title">BACK JEEDHAM: THE GAME</h1>
+        <div id="hud">
+            <div id="score">SCORE: 0</div>
+            <div id="smugPower">SMUG POWER: ████████</div>
+            <div id="level">LEVEL: 1</div>
+        </div>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="controls">
+            ARROW KEYS: Move | SPACEBAR: Deploy Smug Power | Reach the top to win!
+        </div>
+        <div id="gameOver">
+            <h2>GAME OVER</h2>
+            <p id="finalScore"></p>
+            <button id="restartBtn">RESTART</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state
+        let gameState = {
+            player: {
+                x: 400,
+                y: 550,
+                width: 30,
+                height: 40,
+                velocityY: 0,
+                velocityX: 0,
+                isJumping: false,
+                direction: 1
+            },
+            smugPower: 100,
+            smugActive: false,
+            smugRadius: 0,
+            score: 0,
+            level: 1,
+            enemies: [],
+            platforms: [],
+            keys: {},
+            gameOver: false,
+            won: false
+        };
+        
+        // Platform configuration (Donkey Kong style)
+        function createPlatforms() {
+            return [
+                { x: 0, y: 580, width: 800, height: 20 }, // Ground
+                { x: 100, y: 480, width: 600, height: 15 },
+                { x: 50, y: 380, width: 650, height: 15 },
+                { x: 150, y: 280, width: 550, height: 15 },
+                { x: 100, y: 180, width: 600, height: 15 },
+                { x: 200, y: 80, width: 400, height: 15 }  // Top platform (goal)
+            ];
+        }
+        
+        // Create enemies
+        function spawnEnemies() {
+            const enemies = [];
+            const platformIndices = [1, 2, 3, 4];
+            
+            platformIndices.forEach(i => {
+                const platform = gameState.platforms[i];
+                const numEnemies = 1 + Math.floor(gameState.level * 0.5);
+                
+                for (let j = 0; j < numEnemies; j++) {
+                    enemies.push({
+                        x: platform.x + Math.random() * (platform.width - 30),
+                        y: platform.y - 30,
+                        width: 25,
+                        height: 30,
+                        velocityX: (Math.random() > 0.5 ? 1 : -1) * (1 + gameState.level * 0.3),
+                        platform: i,
+                        stunned: false
+                    });
+                }
+            });
+            
+            return enemies;
+        }
+        
+        // Initialize game
+        function initGame() {
+            gameState.platforms = createPlatforms();
+            gameState.enemies = spawnEnemies();
+            gameState.player.x = 400;
+            gameState.player.y = 550;
+            gameState.player.velocityY = 0;
+            gameState.player.velocityX = 0;
+            gameState.smugPower = 100;
+            gameState.smugActive = false;
+            gameState.gameOver = false;
+            gameState.won = false;
+        }
+        
+        initGame();
+        
+        // Input handling
+        document.addEventListener('keydown', (e) => {
+            gameState.keys[e.key] = true;
+            
+            if (e.key === ' ' && gameState.smugPower > 20 && !gameState.smugActive) {
+                gameState.smugActive = true;
+                gameState.smugRadius = 0;
+                gameState.smugPower -= 20;
+            }
+            
+            if (e.key === 'ArrowUp' && !gameState.player.isJumping) {
+                gameState.player.velocityY = -12;
+                gameState.player.isJumping = true;
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            gameState.keys[e.key] = false;
+        });
+        
+        // Update game state
+        function update() {
+            if (gameState.gameOver || gameState.won) return;
+            
+            // Player movement
+            if (gameState.keys['ArrowLeft']) {
+                gameState.player.velocityX = -5;
+                gameState.player.direction = -1;
+            } else if (gameState.keys['ArrowRight']) {
+                gameState.player.velocityX = 5;
+                gameState.player.direction = 1;
+            } else {
+                gameState.player.velocityX *= 0.8;
+            }
+            
+            gameState.player.x += gameState.player.velocityX;
+            gameState.player.y += gameState.player.velocityY;
+            gameState.player.velocityY += 0.5; // Gravity
+            
+            // Boundary check
+            if (gameState.player.x < 0) gameState.player.x = 0;
+            if (gameState.player.x > canvas.width - gameState.player.width) {
+                gameState.player.x = canvas.width - gameState.player.width;
+            }
+            
+            // Platform collision
+            gameState.player.isJumping = true;
+            gameState.platforms.forEach(platform => {
+                if (gameState.player.x < platform.x + platform.width &&
+                    gameState.player.x + gameState.player.width > platform.x &&
+                    gameState.player.y + gameState.player.height > platform.y &&
+                    gameState.player.y + gameState.player.height < platform.y + platform.height &&
+                    gameState.player.velocityY > 0) {
+                    
+                    gameState.player.y = platform.y - gameState.player.height;
+                    gameState.player.velocityY = 0;
+                    gameState.player.isJumping = false;
+                }
+            });
+            
+            // Win condition (reach top platform)
+            const topPlatform = gameState.platforms[5];
+            if (gameState.player.y <= topPlatform.y - gameState.player.height + 5) {
+                gameState.won = true;
+                gameState.level++;
+                gameState.score += 1000 * gameState.level;
+                setTimeout(() => {
+                    gameState.won = false;
+                    initGame();
+                }, 2000);
+            }
+            
+            // Update enemies
+            gameState.enemies.forEach(enemy => {
+                if (enemy.stunned) {
+                    enemy.stunnedTime--;
+                    if (enemy.stunnedTime <= 0) {
+                        enemy.stunned = false;
+                    }
+                    return;
+                }
+                
+                enemy.x += enemy.velocityX;
+                
+                const platform = gameState.platforms[enemy.platform];
+                if (enemy.x < platform.x || enemy.x > platform.x + platform.width - enemy.width) {
+                    enemy.velocityX *= -1;
+                }
+                
+                // Collision with player
+                if (!gameState.smugActive &&
+                    gameState.player.x < enemy.x + enemy.width &&
+                    gameState.player.x + gameState.player.width > enemy.x &&
+                    gameState.player.y < enemy.y + enemy.height &&
+                    gameState.player.y + gameState.player.height > enemy.y) {
+                    
+                    gameState.gameOver = true;
+                    document.getElementById('gameOver').style.display = 'block';
+                    document.getElementById('finalScore').textContent = `Final Score: ${gameState.score}`;
+                }
+            });
+            
+            // Smug power effect
+            if (gameState.smugActive) {
+                gameState.smugRadius += 8;
+                
+                gameState.enemies.forEach(enemy => {
+                    const dx = enemy.x - gameState.player.x;
+                    const dy = enemy.y - gameState.player.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < gameState.smugRadius && !enemy.stunned) {
+                        enemy.stunned = true;
+                        enemy.stunnedTime = 180;
+                        gameState.score += 50;
+                    }
+                });
+                
+                if (gameState.smugRadius > 200) {
+                    gameState.smugActive = false;
+                }
+            }
+            
+            // Recharge smug power
+            if (gameState.smugPower < 100) {
+                gameState.smugPower += 0.1;
+            }
+            
+            gameState.score += 1;
+        }
+        
+        // Draw game
+        function draw() {
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw platforms
+            gameState.platforms.forEach(platform => {
+                ctx.fillStyle = '#ff00ff';
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                ctx.strokeStyle = '#ff00ff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(platform.x, platform.y, platform.width, platform.height);
+            });
+            
+            // Draw smug power wave
+            if (gameState.smugActive) {
+                ctx.strokeStyle = `rgba(0, 255, 255, ${1 - gameState.smugRadius / 200})`;
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(gameState.player.x + gameState.player.width / 2, 
+                       gameState.player.y + gameState.player.height / 2, 
+                       gameState.smugRadius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Draw enemies
+            gameState.enemies.forEach(enemy => {
+                if (enemy.stunned) {
+                    ctx.fillStyle = '#888';
+                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '20px Arial';
+                    ctx.fillText('💫', enemy.x + 5, enemy.y - 5);
+                } else {
+                    ctx.fillStyle = '#ff0000';
+                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '16px Arial';
+                    ctx.fillText('😠', enemy.x + 2, enemy.y + 18);
+                }
+            });
+            
+            // Draw player (Back Jeedham)
+            const px = gameState.player.x;
+            const py = gameState.player.y;
+            
+            // Head
+            ctx.fillStyle = '#ffdbac';
+            ctx.beginPath();
+            ctx.ellipse(px + 15, py + 8, 8, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Hair
+            ctx.fillStyle = '#4a2511';
+            ctx.beginPath();
+            ctx.ellipse(px + 15, py + 5, 9, 6, 0, 0, Math.PI, true);
+            ctx.fill();
+            
+            // Beard
+            ctx.fillStyle = '#8b4513';
+            ctx.beginPath();
+            ctx.ellipse(px + 15, py + 13, 7, 5, 0, 0, Math.PI);
+            ctx.fill();
+            
+            // Glasses frames
+            ctx.strokeStyle = '#000';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 1.5;
+            
+            // Left lens
+            ctx.beginPath();
+            ctx.arc(px + 11, py + 8, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Right lens
+            ctx.beginPath();
+            ctx.arc(px + 19, py + 8, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Bridge
+            ctx.beginPath();
+            ctx.moveTo(px + 14.5, py + 8);
+            ctx.lineTo(px + 15.5, py + 8);
+            ctx.stroke();
+            
+            // Smug mouth
+            ctx.beginPath();
+            ctx.arc(px + 15, py + 12, 3, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+            
+            // Body (black shirt with FCM)
+            ctx.fillStyle = '#000';
+            ctx.fillRect(px + 5, py + 18, 20, 22);
+            
+            // FCM text on shirt
+            ctx.fillStyle = '#00ff00';
+            ctx.font = 'bold 8px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('FCM', px + 15, py + 28);
+            ctx.textAlign = 'left';
+            
+            // Arms
+            ctx.fillStyle = '#ffdbac';
+            ctx.fillRect(px + 2, py + 20, 4, 12);
+            ctx.fillRect(px + 24, py + 20, 4, 12);
+            
+            // Legs
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(px + 8, py + 32, 6, 8);
+            ctx.fillRect(px + 16, py + 32, 6, 8);
+            
+            // Win message
+            if (gameState.won) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff00';
+                ctx.font = '48px Courier New';
+                ctx.textAlign = 'center';
+                ctx.fillText('LEVEL COMPLETE!', canvas.width / 2, canvas.height / 2);
+                ctx.font = '24px Courier New';
+                ctx.fillText(`NEXT LEVEL: ${gameState.level}`, canvas.width / 2, canvas.height / 2 + 50);
+                ctx.textAlign = 'left';
+            }
+            
+            // Update HUD
+            document.getElementById('score').textContent = `SCORE: ${Math.floor(gameState.score)}`;
+            document.getElementById('level').textContent = `LEVEL: ${gameState.level}`;
+            
+            const smugBars = Math.floor(gameState.smugPower / 12.5);
+            document.getElementById('smugPower').textContent = 
+                `SMUG POWER: ${'█'.repeat(smugBars)}${'░'.repeat(8 - smugBars)}`;
+        }
+        
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Restart button
+        document.getElementById('restartBtn').addEventListener('click', () => {
+            gameState.score = 0;
+            gameState.level = 1;
+            initGame();
+            document.getElementById('gameOver').style.display = 'none';
+        });
+        
+        gameLoop();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QBR Fun Facts Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --teal: #007B7F;
+            --teal-light: #00A8A8;
+            --teal-dark: #005F5F;
+            --orange: #FF6B35;
+            --orange-light: #FF8F5E;
+            --orange-dark: #E55A2B;
+            --white: #FEFEFE;
+            --cream: #FFF8F0;
+            --charcoal: #2A2A2A;
+            --error: #D64545;
+            --success: #2E7D32;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--cream);
+            color: var(--charcoal);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        header {
+            background: var(--teal);
+            color: var(--white);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: var(--orange);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: 20%;
+            width: 200px;
+            height: 200px;
+            border: 8px solid var(--orange-light);
+            border-radius: 50%;
+            opacity: 0.4;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 400;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        main { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        section { margin-bottom: 2rem; }
+
+        .section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--teal);
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 0;
+            border: 2px solid var(--charcoal);
+            width: fit-content;
+        }
+
+        .toggle-btn {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--white);
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border-right: 2px solid var(--charcoal);
+        }
+
+        .toggle-btn:last-child { border-right: none; }
+        .toggle-btn:hover { background: var(--cream); }
+        .toggle-btn.active { background: var(--orange); color: var(--white); }
+        .toggle-btn .flag { margin-right: 0.5rem; }
+
+        /* Airline deals */
+        .airline-deals { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+        .deal-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.6rem 1rem;
+            background: var(--white);
+            border: 2px solid var(--charcoal);
+            transition: all 0.15s ease;
+            font-size: 0.8rem;
+        }
+
+        .deal-checkbox:hover { background: var(--cream); }
+
+        .deal-checkbox input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--teal);
+        }
+
+        .deal-label { display: flex; align-items: center; gap: 0.4rem; }
+        .deal-icon { font-size: 1rem; }
+        .deal-checkbox:has(input:checked) { background: var(--teal); border-color: var(--teal); color: var(--white); }
+
+        /* Popup */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .popup-overlay.visible { display: flex; }
+
+        .popup-box {
+            background: var(--white);
+            padding: 2.5rem 3rem;
+            text-align: center;
+            max-width: 320px;
+            animation: popIn 0.2s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .popup-emoji { font-size: 3rem; margin-bottom: 1rem; }
+        .popup-text { font-family: 'DM Serif Display', serif; font-size: 1.75rem; font-style: italic; color: var(--teal); margin-bottom: 1.5rem; }
+
+        .popup-close {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            background: var(--orange);
+            color: var(--white);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            cursor: pointer;
+        }
+
+        .popup-close:hover { background: var(--orange-dark); }
+
+        /* Upload section - SINGLE unified component */
+        .upload-section {
+            background: var(--white);
+            border: 2px solid var(--charcoal);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section.files-ready {
+            border-color: var(--success);
+            background: #F1F8E9;
+        }
+
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .upload-title { font-size: 0.85rem; font-weight: 700; }
+
+        .upload-status {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.25rem 0.6rem;
+            background: var(--cream);
+            color: var(--charcoal);
+        }
+
+        .upload-status.ready {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .file-checklist {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            padding: 0.4rem 0.6rem;
+            background: var(--cream);
+            border-radius: 2px;
+        }
+
+        .checklist-item.loaded {
+            background: #C8E6C9;
+            color: var(--success);
+        }
+
+        .checklist-icon { font-size: 0.9rem; }
+
+        /* Drop zone - only visible when files needed */
+        .drop-zone {
+            border: 2px dashed var(--teal);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            background: var(--cream);
+            border-color: var(--orange);
+        }
+
+        .drop-zone.hidden { display: none; }
+
+        .drop-zone-text { font-size: 0.85rem; color: var(--charcoal); }
+        .drop-zone-hint { font-size: 0.7rem; color: var(--teal); margin-top: 0.25rem; }
+
+        #file-input { display: none; }
+
+        /* File list */
+        .file-list { margin-top: 1rem; }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            font-size: 0.75rem;
+        }
+
+        .file-item:last-child { border-bottom: none; }
+
+        .file-info { display: flex; align-items: center; gap: 0.5rem; }
+
+        .file-badge {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            padding: 0.15rem 0.4rem;
+            letter-spacing: 0.05em;
+            color: var(--white);
+        }
+
+        .file-badge.air-seg { background: #1976D2; }
+        .file-badge.air-txn { background: #0288D1; }
+        .file-badge.hotel { background: #7B1FA2; }
+        .file-badge.car { background: #388E3C; }
+        .file-badge.unknown { background: #757575; }
+
+        .file-remove {
+            background: none;
+            border: none;
+            color: var(--orange);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0.2rem;
+            line-height: 1;
+        }
+
+        .file-remove:hover { color: var(--orange-dark); }
+
+        /* Validation */
+        .validation-msg { padding: 1rem; margin-bottom: 1rem; font-size: 0.85rem; display: none; }
+        .validation-msg.error { display: block; background: #FFEBEE; border-left: 4px solid var(--error); color: var(--error); }
+        .validation-msg.warning { display: block; background: #FFF3E0; border-left: 4px solid var(--orange); color: var(--orange-dark); }
+
+        /* Generate button */
+        .generate-btn {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+            background: var(--orange);
+            color: var(--white);
+            border: none;
+            padding: 1rem 2.5rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .generate-btn:hover:not(:disabled) { background: var(--orange-dark); transform: translateY(-2px); }
+        .generate-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .generate-btn .arrow { font-family: 'Space Mono', monospace; font-size: 1.5rem; }
+
+        /* Loading */
+        .loading { display: none; align-items: center; gap: 1rem; padding: 1.5rem; background: var(--white); border-left: 4px solid var(--teal); }
+        .loading.visible { display: flex; }
+
+        .spinner {
+            width: 24px; height: 24px;
+            border: 3px solid var(--cream);
+            border-top-color: var(--teal);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Data summary */
+        .data-summary { background: var(--teal); color: var(--white); padding: 1.5rem; margin-bottom: 2rem; display: none; }
+        .data-summary.visible { display: block; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1.25rem; }
+        .summary-item { text-align: center; }
+        .summary-value { font-family: 'DM Serif Display', serif; font-size: 1.5rem; display: block; }
+        .summary-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; opacity: 0.8; margin-top: 0.25rem; }
+        .summary-source { font-size: 0.5rem; opacity: 0.6; margin-top: 0.15rem; }
+
+        /* Results */
+        .results-area { display: none; }
+        .results-area.visible { display: block; }
+
+        .results-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--charcoal);
+        }
+
+        .results-title { font-family: 'DM Serif Display', serif; font-size: 1.75rem; }
+
+        .regenerate-btn {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: none;
+            border: 2px solid var(--teal);
+            color: var(--teal);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .regenerate-btn:hover { background: var(--teal); color: var(--white); }
+
+        .fact-category { margin-bottom: 2rem; }
+        .category-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+        .category-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .category-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--teal-dark); }
+        .category-note { font-size: 0.65rem; color: #888; margin-left: auto; text-transform: uppercase; letter-spacing: 0.1em; }
+
+        .fact-card {
+            background: var(--white);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            border-left: 4px solid var(--teal);
+            transition: all 0.15s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .fact-card:hover { border-left-color: var(--orange); transform: translateX(4px); }
+        .fact-card.copied { border-left-color: var(--orange); }
+
+        .fact-card.copied::after {
+            content: 'Copied!';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--orange);
+            animation: fadeOut 1.5s ease forwards;
+        }
+
+        @keyframes fadeOut { 0%, 60% { opacity: 1; } 100% { opacity: 0; } }
+
+        .fact-text { flex: 1; font-size: 0.95rem; line-height: 1.6; }
+        .copy-icon { font-size: 1rem; opacity: 0.3; transition: opacity 0.15s ease; flex-shrink: 0; }
+        .fact-card:hover .copy-icon { opacity: 0.7; }
+
+        .copy-all-btn {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            background: var(--charcoal);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .copy-all-btn:hover { background: var(--teal-dark); }
+
+        footer {
+            max-width: 900px;
+            margin: 4rem auto 0;
+            padding: 2rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--teal-dark);
+        }
+
+        footer .brand { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 0.9rem; margin-bottom: 0.25rem; }
+        footer .tagline { margin-bottom: 0.5rem; }
+
+        @media (max-width: 600px) {
+            main { padding: 1.5rem; }
+            .toggle-group { width: 100%; }
+            .toggle-btn { flex: 1; padding: 0.6rem 0.5rem; font-size: 0.8rem; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .file-checklist { grid-template-columns: 1fr; }
+            .airline-deals { flex-direction: column; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Fun Facts Generator</h1>
+            <p class="subtitle">For Quarterly Business Reviews · ANZ Account Managers</p>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <span class="section-label">Select Regional Tone</span>
+            <div class="toggle-group">
+                <button class="toggle-btn active" data-region="aussie"><span class="flag">🇦🇺</span>Aussie</button>
+                <button class="toggle-btn" data-region="kiwi"><span class="flag">🇳🇿</span>Kiwi</button>
+                <button class="toggle-btn" data-region="anz"><span class="flag">🌏</span>ANZ Mixed</button>
+            </div>
+        </section>
+
+        <section>
+            <span class="section-label">Existing Airline Agreements</span>
+            <div class="airline-deals">
+                <label class="deal-checkbox">
+                    <input type="checkbox" id="qantas-deal">
+                    <span class="deal-label"><span class="deal-icon">🦘</span>Qantas</span>
+                </label>
+                <label class="deal-checkbox">
+                    <input type="checkbox" id="virgin-deal">
+                    <span class="deal-label"><span class="deal-icon">✈️</span>Virgin Australia</span>
+                </label>
+                <label class="deal-checkbox">
+                    <input type="checkbox" id="airnz-deal">
+                    <span class="deal-label"><span class="deal-icon">🥝</span>Air New Zealand</span>
+                </label>
+            </div>
+        </section>
+
+        <div class="popup-overlay" id="popup-overlay">
+            <div class="popup-box">
+                <div class="popup-emoji">🎓</div>
+                <div class="popup-text">lol uni or gov</div>
+                <button class="popup-close" id="popup-close">Fair enough</button>
+            </div>
+        </div>
+
+        <section>
+            <span class="section-label">Upload PowerBI Exports</span>
+            <div class="upload-section" id="upload-section">
+                <div class="upload-header">
+                    <span class="upload-title">Required Reports</span>
+                    <span class="upload-status" id="upload-status">Waiting for files</span>
+                </div>
+                <div class="file-checklist" id="file-checklist">
+                    <div class="checklist-item" id="check-air-txn">
+                        <span class="checklist-icon">○</span>
+                        <span>Air Transaction Detail</span>
+                    </div>
+                    <div class="checklist-item" id="check-air-seg">
+                        <span class="checklist-icon">○</span>
+                        <span>Air Segment Detail</span>
+                    </div>
+                    <div class="checklist-item" id="check-hotel">
+                        <span class="checklist-icon">○</span>
+                        <span>Hotel Transaction Detail</span>
+                    </div>
+                    <div class="checklist-item" id="check-car">
+                        <span class="checklist-icon">○</span>
+                        <span>Car Transaction Detail</span>
+                    </div>
+                </div>
+                <div class="file-list" id="file-list"></div>
+                <div class="drop-zone" id="drop-zone">
+                    <div class="drop-zone-text">📊 Drop Excel files here or click to browse</div>
+                    <div class="drop-zone-hint">Accepts .xlsx, .xls, .csv</div>
+                </div>
+                <input type="file" id="file-input" multiple accept=".xlsx,.xls,.csv">
+            </div>
+        </section>
+
+        <div class="validation-msg" id="validation-msg"></div>
+
+        <section>
+            <button class="generate-btn" id="generate-btn" disabled>
+                Generate Fun Facts<span class="arrow">→</span>
+            </button>
+        </section>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <span>Crunching numbers and finding stories...</span>
+        </div>
+
+        <div class="data-summary" id="data-summary">
+            <div class="summary-grid" id="summary-grid"></div>
+        </div>
+
+        <div class="results-area" id="results-area">
+            <div class="results-header">
+                <h2 class="results-title">Your Fun Facts</h2>
+                <button class="regenerate-btn" id="regenerate-btn">↻ Regenerate</button>
+            </div>
+            <div id="facts-container"></div>
+            <button class="copy-all-btn" id="copy-all-btn">Copy All Facts</button>
+        </div>
+    </main>
+
+    <footer>
+        <p class="brand">Another presentation brought to you by Ayi-Haught Leeder AI Solutions</p>
+        <p class="tagline">"Helpful AI, not hype. 😉"</p>
+        <p>© Phillip Paterson 2026</p>
+    </footer>
+
+    <script>
+        // ============================================================
+        // STATE
+        // ============================================================
+        let uploadedFiles = [];
+        let parsedData = { 
+            air_segments: null,      // For: flight counts, routes, destinations, class mix, travel time
+            air_transactions: null,  // For: AIR SPEND, ticket counts, airlines, booking method
+            hotel_transactions: null, // For: HOTEL SPEND, room nights, hotel chains, cities
+            car_transactions: null   // For: CAR SPEND, rental days
+        };
+        let selectedRegion = 'aussie';
+        let aggregatedData = null;
+        let hasQantasDeal = false;
+        let hasVirginDeal = false;
+        let hasAirNZDeal = false;
+
+        // Non-hotel entities to exclude
+        const NON_HOTEL_ENTITIES = ['TRAVELCLICK', 'SYNXIS', 'SABRE', 'AMADEUS', 'TRAVELPORT', 'PEGASUS', 'SITEMINDER', 'CHANNEL MANAGER', 'GDS', 'DHISCO', 'BOOKING.COM', 'EXPEDIA', 'HOTELS.COM', 'AGODA', 'OTA'];
+
+        // ============================================================
+        // DOM ELEMENTS
+        // ============================================================
+        const uploadSection = document.getElementById('upload-section');
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+        const uploadStatus = document.getElementById('upload-status');
+        const generateBtn = document.getElementById('generate-btn');
+        const loading = document.getElementById('loading');
+        const dataSummary = document.getElementById('data-summary');
+        const summaryGrid = document.getElementById('summary-grid');
+        const resultsArea = document.getElementById('results-area');
+        const factsContainer = document.getElementById('facts-container');
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const copyAllBtn = document.getElementById('copy-all-btn');
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        const validationMsg = document.getElementById('validation-msg');
+        const qantasCheckbox = document.getElementById('qantas-deal');
+        const virginCheckbox = document.getElementById('virgin-deal');
+        const airnzCheckbox = document.getElementById('airnz-deal');
+        const popupOverlay = document.getElementById('popup-overlay');
+        const popupClose = document.getElementById('popup-close');
+
+        // ============================================================
+        // REGION TOGGLE
+        // ============================================================
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                toggleBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedRegion = btn.dataset.region;
+                if (aggregatedData) generateFacts();
+            });
+        });
+
+        // ============================================================
+        // AIRLINE DEALS
+        // ============================================================
+        function checkBothDomesticDeals() {
+            if (qantasCheckbox.checked && virginCheckbox.checked) {
+                popupOverlay.classList.add('visible');
+            }
+        }
+
+        qantasCheckbox.addEventListener('change', () => { 
+            hasQantasDeal = qantasCheckbox.checked; 
+            checkBothDomesticDeals(); 
+            if (aggregatedData) generateFacts(); 
+        });
+        
+        virginCheckbox.addEventListener('change', () => { 
+            hasVirginDeal = virginCheckbox.checked; 
+            checkBothDomesticDeals(); 
+            if (aggregatedData) generateFacts(); 
+        });
+        
+        airnzCheckbox.addEventListener('change', () => { 
+            hasAirNZDeal = airnzCheckbox.checked; 
+            if (aggregatedData) generateFacts(); 
+        });
+
+        popupClose.addEventListener('click', () => popupOverlay.classList.remove('visible'));
+        popupOverlay.addEventListener('click', (e) => { if (e.target === popupOverlay) popupOverlay.classList.remove('visible'); });
+
+        // ============================================================
+        // FILE UPLOAD - SINGLE UNIFIED HANDLER
+        // ============================================================
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (!uploadedFiles.find(f => f.name === file.name)) {
+                    uploadedFiles.push(file);
+                    parseFile(file);
+                }
+            });
+        }
+
+        function detectFileType(filename, columns) {
+            const lower = filename.toLowerCase();
+            const colString = columns.join('|').toLowerCase();
+            
+            // Primary: filename detection
+            if (lower.includes('air_segment') || lower.includes('airsegment') || lower.includes('air segment')) return 'air_segments';
+            if (lower.includes('air_transaction') || lower.includes('airtransaction') || lower.includes('air transaction')) return 'air_transactions';
+            if (lower.includes('hotel')) return 'hotel_transactions';
+            if (lower.includes('car')) return 'car_transactions';
+            
+            // Fallback: column detection
+            if (colString.includes('segment fare') && colString.includes('kilometers')) return 'air_segments';
+            if (colString.includes('total fare') && colString.includes('airline') && !colString.includes('segment fare')) return 'air_transactions';
+            if (colString.includes('hotel') && colString.includes('nights')) return 'hotel_transactions';
+            if (colString.includes('rental company') || (colString.includes('pick up') && colString.includes('drop off'))) return 'car_transactions';
+            
+            return 'unknown';
+        }
+
+        function getFileTypeLabel(type) {
+            return { 
+                air_segments: 'AIR SEG', 
+                air_transactions: 'AIR TXN', 
+                hotel_transactions: 'HOTEL', 
+                car_transactions: 'CAR', 
+                unknown: '?' 
+            }[type] || '?';
+        }
+
+        function getFileTypeClass(type) {
+            return { 
+                air_segments: 'air-seg', 
+                air_transactions: 'air-txn', 
+                hotel_transactions: 'hotel', 
+                car_transactions: 'car', 
+                unknown: 'unknown' 
+            }[type] || 'unknown';
+        }
+
+        function updateUI() {
+            // Update checklist
+            const checks = {
+                'check-air-txn': parsedData.air_transactions !== null,
+                'check-air-seg': parsedData.air_segments !== null,
+                'check-hotel': parsedData.hotel_transactions !== null,
+                'check-car': parsedData.car_transactions !== null
+            };
+
+            Object.entries(checks).forEach(([id, loaded]) => {
+                const el = document.getElementById(id);
+                el.classList.toggle('loaded', loaded);
+                el.querySelector('.checklist-icon').textContent = loaded ? '✓' : '○';
+            });
+
+            // Update file list
+            if (uploadedFiles.length > 0) {
+                fileList.innerHTML = uploadedFiles.map((file, i) => {
+                    const type = file._detectedType || 'unknown';
+                    return `<div class="file-item">
+                        <span class="file-info">
+                            <span class="file-badge ${getFileTypeClass(type)}">${getFileTypeLabel(type)}</span>
+                            <span>${file.name}</span>
+                        </span>
+                        <button class="file-remove" onclick="removeFile(${i})">×</button>
+                    </div>`;
+                }).join('');
+            } else {
+                fileList.innerHTML = '';
+            }
+
+            // Update status and drop zone visibility
+            const allLoaded = Object.values(checks).every(v => v);
+            const someLoaded = Object.values(checks).some(v => v);
+
+            if (allLoaded) {
+                uploadStatus.textContent = 'All files loaded';
+                uploadStatus.classList.add('ready');
+                uploadSection.classList.add('files-ready');
+                dropZone.classList.add('hidden');
+            } else if (someLoaded) {
+                const missing = Object.entries(checks).filter(([_, v]) => !v).length;
+                uploadStatus.textContent = `${missing} file${missing > 1 ? 's' : ''} missing`;
+                uploadStatus.classList.remove('ready');
+                uploadSection.classList.remove('files-ready');
+                dropZone.classList.remove('hidden');
+            } else {
+                uploadStatus.textContent = 'Waiting for files';
+                uploadStatus.classList.remove('ready');
+                uploadSection.classList.remove('files-ready');
+                dropZone.classList.remove('hidden');
+            }
+
+            // Validate and enable/disable generate button
+            validateFiles();
+        }
+
+        function validateFiles() {
+            const hasAnyData = parsedData.air_transactions || parsedData.air_segments || 
+                              parsedData.hotel_transactions || parsedData.car_transactions;
+            
+            const missing = [];
+            if (!parsedData.air_transactions) missing.push('Air Transaction Detail');
+            if (!parsedData.air_segments) missing.push('Air Segment Detail');
+            if (!parsedData.hotel_transactions) missing.push('Hotel Transaction Detail');
+            if (!parsedData.car_transactions) missing.push('Car Transaction Detail');
+
+            if (!hasAnyData) {
+                validationMsg.className = 'validation-msg';
+                generateBtn.disabled = true;
+            } else if (missing.length > 0) {
+                validationMsg.className = 'validation-msg warning';
+                validationMsg.textContent = `Missing: ${missing.join(', ')}. Results will be incomplete.`;
+                generateBtn.disabled = false;
+            } else {
+                validationMsg.className = 'validation-msg';
+                generateBtn.disabled = false;
+            }
+        }
+
+        window.removeFile = function(index) {
+            const file = uploadedFiles[index];
+            if (file._detectedType && parsedData[file._detectedType]) {
+                parsedData[file._detectedType] = null;
+            }
+            uploadedFiles.splice(index, 1);
+            updateUI();
+        };
+
+        function parseFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet);
+                    
+                    if (json.length === 0) return;
+                    
+                    const columns = Object.keys(json[0]);
+                    const type = detectFileType(file.name, columns);
+                    file._detectedType = type;
+                    
+                    if (type !== 'unknown') {
+                        parsedData[type] = json;
+                    }
+                    
+                    updateUI();
+                } catch (err) { 
+                    console.error('Parse error:', err); 
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // ============================================================
+        // HELPERS
+        // ============================================================
+        function findColumn(row, ...names) {
+            for (const name of names) {
+                const key = Object.keys(row).find(k => 
+                    k.toLowerCase().replace(/[^a-z0-9]/g, '') === name.toLowerCase().replace(/[^a-z0-9]/g, '')
+                );
+                if (key && row[key] !== undefined) return row[key];
+            }
+            return null;
+        }
+
+        function safeNumber(val) { 
+            const num = parseFloat(val); 
+            return isNaN(num) ? 0 : num; 
+        }
+
+        function formatNumber(num) { 
+            return num.toLocaleString(); 
+        }
+
+        function formatCurrency(num) { 
+            return '$' + formatNumber(Math.round(num)); 
+        }
+
+        function pick(arr) { 
+            return arr[Math.floor(Math.random() * arr.length)]; 
+        }
+
+        function isNonHotelEntity(name) { 
+            const upper = (name || '').toUpperCase(); 
+            return NON_HOTEL_ENTITIES.some(e => upper.includes(e)); 
+        }
+
+        // ============================================================
+        // GENERATE BUTTON
+        // ============================================================
+        generateBtn.addEventListener('click', () => {
+            aggregateData();
+            
+            // Sanity checks
+            const issues = [];
+            if (parsedData.air_transactions && aggregatedData.totalAirSpend === 0) {
+                issues.push('Air Transaction data loaded but spend is $0 — check file contents.');
+            }
+            if (parsedData.hotel_transactions && aggregatedData.totalHotelSpend === 0) {
+                issues.push('Hotel data loaded but spend is $0 — check file contents.');
+            }
+            
+            if (issues.length > 0) {
+                validationMsg.className = 'validation-msg error';
+                validationMsg.innerHTML = issues.join('<br>');
+                return;
+            }
+            
+            validationMsg.className = 'validation-msg';
+            loading.classList.add('visible');
+            resultsArea.classList.remove('visible');
+            dataSummary.classList.remove('visible');
+            
+            setTimeout(() => { 
+                loading.classList.remove('visible'); 
+                showSummary(); 
+                generateFacts(); 
+            }, 600);
+        });
+
+        regenerateBtn.addEventListener('click', generateFacts);
+
+        // ============================================================
+        // DATA AGGREGATION
+        // STRICT SEPARATION: Spend from Transaction reports ONLY
+        // ============================================================
+        function aggregateData() {
+            aggregatedData = {
+                // FROM AIR SEGMENT DETAIL ONLY (no spend!)
+                totalFlights: 0,           // Count of flight legs
+                totalMiles: 0,
+                totalKilometers: 0,
+                travelTimeHours: 0,
+                topRoutes: {},
+                topDestinations: {},
+                classBreakdown: { economy: 0, business: 0, first: 0, premium_economy: 0 },
+                domIntBreakdown: { domestic: 0, international: 0 },
+                
+                // FROM AIR TRANSACTION DETAIL (spend here!)
+                totalAirSpend: 0,
+                totalTickets: 0,
+                totalAirTransactions: 0,
+                topAirlines: {},
+                bookMethodBreakdown: { online: 0, offline: 0 },
+                
+                // FROM HOTEL TRANSACTION DETAIL
+                totalHotelSpend: 0,
+                totalHotelNights: 0,
+                totalHotelBookings: 0,
+                topHotelChains: {},
+                topHotelCities: {},
+                
+                // FROM CAR TRANSACTION DETAIL
+                totalCarSpend: 0,
+                totalCarDays: 0,
+                totalCarBookings: 0,
+                
+                // CROSS-FILE (traveller deduplication)
+                uniqueTravellers: new Set()
+            };
+
+            // ========== AIR SEGMENT DETAIL ==========
+            // Used for: flight counts, distance, routes, class mix, travel time
+            // NOT used for: spend (would double-count with transactions)
+            if (parsedData.air_segments) {
+                parsedData.air_segments.forEach(row => {
+                    // Each segment = one flight leg
+                    aggregatedData.totalFlights += safeNumber(findColumn(row, 'Segments')) || 1;
+                    aggregatedData.totalMiles += safeNumber(findColumn(row, 'Miles'));
+                    aggregatedData.totalKilometers += safeNumber(findColumn(row, 'Kilometers', 'Kilometres'));
+                    aggregatedData.travelTimeHours += safeNumber(findColumn(row, 'Travel Time', 'TravelTime'));
+                    
+                    const traveller = findColumn(row, 'Traveller', 'Traveler');
+                    if (traveller) aggregatedData.uniqueTravellers.add(traveller);
+                    
+                    const route = findColumn(row, 'City Pair', 'CityPair');
+                    if (route) aggregatedData.topRoutes[route] = (aggregatedData.topRoutes[route] || 0) + 1;
+                    
+                    const dest = findColumn(row, 'Arrive City', 'ArriveCity');
+                    if (dest) aggregatedData.topDestinations[dest] = (aggregatedData.topDestinations[dest] || 0) + 1;
+                    
+                    const cls = (findColumn(row, 'Class') || '').toLowerCase();
+                    if (cls.includes('first')) aggregatedData.classBreakdown.first++;
+                    else if (cls.includes('business')) aggregatedData.classBreakdown.business++;
+                    else if (cls.includes('premium')) aggregatedData.classBreakdown.premium_economy++;
+                    else if (cls.includes('economy')) aggregatedData.classBreakdown.economy++;
+                    
+                    const domInt = (findColumn(row, 'Dom | Int', 'DomInt') || '').toUpperCase();
+                    if (domInt.includes('DOMESTIC')) aggregatedData.domIntBreakdown.domestic++;
+                    else if (domInt.includes('TRANS') || domInt.includes('INTER')) aggregatedData.domIntBreakdown.international++;
+                });
+            }
+
+            // ========== AIR TRANSACTION DETAIL ==========
+            // Used for: AIR SPEND, ticket counts, airline preference, booking method
+            if (parsedData.air_transactions) {
+                parsedData.air_transactions.forEach(row => {
+                    aggregatedData.totalTickets += safeNumber(findColumn(row, 'Tickets'));
+                    const fare = safeNumber(findColumn(row, 'Total Fare', 'TotalFare'));
+                    aggregatedData.totalAirSpend += fare;
+                    aggregatedData.totalAirTransactions++;
+                    
+                    const traveller = findColumn(row, 'Traveller', 'Traveler');
+                    if (traveller) aggregatedData.uniqueTravellers.add(traveller);
+                    
+                    const airline = findColumn(row, 'Airline', 'Carrier');
+                    if (airline) {
+                        aggregatedData.topAirlines[airline] = (aggregatedData.topAirlines[airline] || 0) + 1;
+                        // Track spend per airline for international carrier insights
+                        if (!aggregatedData.topAirlineSpend) aggregatedData.topAirlineSpend = {};
+                        aggregatedData.topAirlineSpend[airline] = (aggregatedData.topAirlineSpend[airline] || 0) + fare;
+                    }
+                    
+                    const bm = (findColumn(row, 'Book Method', 'BookMethod') || '').toLowerCase();
+                    if (bm.includes('online')) aggregatedData.bookMethodBreakdown.online++;
+                    else if (bm.includes('offline')) aggregatedData.bookMethodBreakdown.offline++;
+                });
+            }
+
+            // ========== HOTEL TRANSACTION DETAIL ==========
+            // Used for: HOTEL SPEND, room nights, chains, cities, top property
+            if (parsedData.hotel_transactions) {
+                const hotelPropertySpend = {};
+                const hotelPropertyNights = {};
+                
+                parsedData.hotel_transactions.forEach(row => {
+                    const nights = safeNumber(findColumn(row, 'Nights', 'Room Nights'));
+                    const spend = safeNumber(findColumn(row, 'Total Spend', 'TotalSpend'));
+                    
+                    aggregatedData.totalHotelNights += nights;
+                    aggregatedData.totalHotelBookings += safeNumber(findColumn(row, 'Bookings'));
+                    aggregatedData.totalHotelSpend += spend;
+                    
+                    const traveller = findColumn(row, 'Traveller', 'Traveler');
+                    if (traveller) aggregatedData.uniqueTravellers.add(traveller);
+                    
+                    const chain = findColumn(row, 'Hotel Chain', 'HotelChain');
+                    if (chain && chain !== 'NON-CHAIN HOTEL' && !isNonHotelEntity(chain)) {
+                        aggregatedData.topHotelChains[chain] = (aggregatedData.topHotelChains[chain] || 0) + 1;
+                    }
+                    
+                    const city = findColumn(row, 'Hotel City', 'HotelCity');
+                    if (city) aggregatedData.topHotelCities[city] = (aggregatedData.topHotelCities[city] || 0) + 1;
+                    
+                    // Track individual hotel properties
+                    const hotelName = findColumn(row, 'Hotel', 'Hotel Name', 'HotelName');
+                    if (hotelName) {
+                        hotelPropertySpend[hotelName] = (hotelPropertySpend[hotelName] || 0) + spend;
+                        hotelPropertyNights[hotelName] = (hotelPropertyNights[hotelName] || 0) + nights;
+                    }
+                });
+                
+                // Find top hotel property by spend
+                const topProperty = Object.entries(hotelPropertySpend).sort((a, b) => b[1] - a[1])[0];
+                if (topProperty) {
+                    aggregatedData.topHotelProperty = topProperty[0];
+                    aggregatedData.topHotelPropertySpend = topProperty[1];
+                    aggregatedData.topHotelPropertyNights = hotelPropertyNights[topProperty[0]] || 0;
+                }
+            }
+
+            // ========== CAR TRANSACTION DETAIL ==========
+            // Used for: CAR SPEND, rental days
+            if (parsedData.car_transactions) {
+                parsedData.car_transactions.forEach(row => {
+                    aggregatedData.totalCarDays += safeNumber(findColumn(row, 'Days', 'Rental Days'));
+                    aggregatedData.totalCarBookings += safeNumber(findColumn(row, 'Bookings'));
+                    aggregatedData.totalCarSpend += safeNumber(findColumn(row, 'Total Spend', 'TotalSpend'));
+                    
+                    const traveller = findColumn(row, 'Traveller', 'Traveler');
+                    if (traveller) aggregatedData.uniqueTravellers.add(traveller);
+                });
+            }
+
+            aggregatedData.uniqueTravellerCount = aggregatedData.uniqueTravellers.size;
+        }
+
+        // ============================================================
+        // SUMMARY DISPLAY
+        // ============================================================
+        function showSummary() {
+            const d = aggregatedData;
+            const items = [];
+            
+            // Distance - from Air Segment Detail
+            if (d.totalKilometers > 0) {
+                items.push({ value: formatNumber(Math.round(d.totalKilometers)), label: 'Kilometres', source: 'Air Segments' });
+            }
+            
+            // Flights - from Air Segment Detail
+            if (d.totalFlights > 0) {
+                items.push({ value: formatNumber(Math.round(d.totalFlights)), label: 'Flights', source: 'Air Segments' });
+            }
+            
+            // Room nights - from Hotel Transaction Detail
+            if (d.totalHotelNights > 0) {
+                items.push({ value: formatNumber(Math.round(d.totalHotelNights)), label: 'Room Nights', source: 'Hotel Txns' });
+            }
+            
+            // Car days - from Car Transaction Detail
+            if (d.totalCarDays > 0) {
+                items.push({ value: formatNumber(Math.round(d.totalCarDays)), label: 'Car Days', source: 'Car Txns' });
+            }
+            
+            // Travellers - deduplicated across all files
+            if (d.uniqueTravellerCount > 0) {
+                items.push({ value: formatNumber(d.uniqueTravellerCount), label: 'Travellers', source: 'All files' });
+            }
+            
+            // Total spend - from Transaction files ONLY (not segments!)
+            const totalSpend = d.totalAirSpend + d.totalHotelSpend + d.totalCarSpend;
+            if (totalSpend > 0) {
+                items.push({ value: formatCurrency(totalSpend), label: 'Total Spend', source: 'Transaction files' });
+            }
+
+            summaryGrid.innerHTML = items.map(i => `
+                <div class="summary-item">
+                    <span class="summary-value">${i.value}</span>
+                    <span class="summary-label">${i.label}</span>
+                </div>
+            `).join('');
+
+            dataSummary.classList.add('visible');
+        }
+
+        // ============================================================
+        // REGIONAL REFERENCES
+        // ============================================================
+        function getRegionalReferences(region) {
+            const aussie = {
+                stadiums: [
+                    { name: 'the MCG', capacity: 100024 }, 
+                    { name: 'ANZ Stadium', capacity: 83500 },
+                    { name: 'Adelaide Oval', capacity: 53500 }, 
+                    { name: 'the Gabba', capacity: 42000 },
+                    { name: 'Optus Stadium', capacity: 60000 }, 
+                    { name: 'the SCG', capacity: 48000 }
+                ],
+                roadTrips: [
+                    { name: 'Sydney to Perth', km: 3934 }, 
+                    { name: 'Melbourne to Cairns', km: 2844 },
+                    { name: 'Brisbane to Adelaide', km: 1927 }, 
+                    { name: 'Sydney to Melbourne', km: 878 },
+                    { name: 'Adelaide to Darwin', km: 3027 }
+                ],
+                // Non-sport cultural references for 2026
+                tvRefs: [
+                    'Bluey episodes',
+                    'MasterChef eliminations', 
+                    'seasons of Australian Survivor',
+                    'episodes of The Block',
+                    'MAFS commitment ceremonies'
+                ],
+                musicRefs: [
+                    'Splendour in the Grass weekends',
+                    'Tones and I streams',
+                    'triple j Hottest 100 countdowns'
+                ],
+                foodCultureRefs: [
+                    'smashed avo brunches',
+                    'Uber Eats orders',
+                    'Hello Fresh boxes',
+                    'Messina gelato runs'
+                ],
+                retailRefs: [
+                    'Bunnings snag runs',
+                    'Kmart homewares hauls',
+                    'IKEA trips where you only meant to buy one thing',
+                    'Aldi Special Buys scrambles'
+                ],
+                lifestyleRefs: [
+                    'school pickup queues',
+                    'mortgage repayments',
+                    'electricity bills',
+                    'NBN dropouts',
+                    'Opal/Myki top-ups'
+                ],
+                foodRefs: ['HSPs', 'chicken parmis', 'smashed avos', 'Tim Tams', 'lamingtons', 'Messina gelatos', 'Guzman burritos'],
+                drinkRefs: ['flat whites', 'oat lattes', 'Aperol spritzes'],
+                coffeeRef: 'flat whites',
+                coastline: 25760,
+                workRefs: ['Monday stand-ups', '"just circling back" emails', 'Teams calls that could\'ve been emails'],
+                sportRefs: ['AFL grand finals', 'State of Origin games', 'Boxing Day Tests'],
+                // Bluey specific
+                blueyRef: 'Bluey episodes (roughly 7 minutes each)'
+            };
+
+            const kiwi = {
+                stadiums: [
+                    { name: 'Eden Park', capacity: 50000 }, 
+                    { name: 'Sky Stadium', capacity: 34500 },
+                    { name: 'Forsyth Barr Stadium', capacity: 30748 }
+                ],
+                roadTrips: [
+                    { name: 'Auckland to Invercargill', km: 1428 }, 
+                    { name: 'Auckland to Wellington', km: 647 },
+                    { name: 'Cape Reinga to Bluff', km: 1547 }
+                ],
+                tvRefs: [
+                    'Bluey episodes',
+                    'episodes of The Block NZ',
+                    'Seven Sharp segments',
+                    'Shortland Street episodes'
+                ],
+                musicRefs: [
+                    'Six60 stadium tours',
+                    'Lorde albums on repeat'
+                ],
+                foodCultureRefs: [
+                    'flat white runs',
+                    'Uber Eats orders',
+                    'My Food Bag deliveries',
+                    'weekend market trips'
+                ],
+                retailRefs: [
+                    'Bunnings Warehouse trips',
+                    'Kmart runs',
+                    'trips to The Warehouse where you spent way more than planned'
+                ],
+                lifestyleRefs: [
+                    'Auckland traffic jams',
+                    'Wellington wind warnings',
+                    'bach maintenance weekends',
+                    'KiwiSaver contributions'
+                ],
+                foodRefs: ['fish and chips on the beach', 'Whittaker\'s blocks', 'L&P', 'feijoas', 'pies from the dairy', 'BurgerFuel combos'],
+                drinkRefs: ['long blacks', 'flat whites', 'Garage Project beers'],
+                coffeeRef: 'long blacks',
+                coastline: 15134,
+                workRefs: ['Monday WIPs', 'all-hands hui', 'Friday Zoom fatigue'],
+                sportRefs: ['All Blacks tests', 'Warriors home games', 'Black Caps matches'],
+                blueyRef: 'Bluey episodes'
+            };
+
+            if (region === 'kiwi') return kiwi;
+            if (region === 'anz') return {
+                stadiums: [...aussie.stadiums.slice(0,3), ...kiwi.stadiums.slice(0,2)],
+                roadTrips: [...aussie.roadTrips.slice(0,2), ...kiwi.roadTrips.slice(0,2)],
+                tvRefs: [...aussie.tvRefs.slice(0,3), ...kiwi.tvRefs.slice(0,1)],
+                musicRefs: [...aussie.musicRefs.slice(0,1), ...kiwi.musicRefs.slice(0,1)],
+                foodCultureRefs: [...aussie.foodCultureRefs.slice(0,2), ...kiwi.foodCultureRefs.slice(0,1)],
+                retailRefs: [...aussie.retailRefs.slice(0,2), ...kiwi.retailRefs.slice(0,1)],
+                lifestyleRefs: [...aussie.lifestyleRefs.slice(0,2), ...kiwi.lifestyleRefs.slice(0,2)],
+                foodRefs: [...aussie.foodRefs.slice(0,3), ...kiwi.foodRefs.slice(0,2)],
+                drinkRefs: [...aussie.drinkRefs.slice(0,2), ...kiwi.drinkRefs.slice(0,1)],
+                coffeeRef: 'flat whites and long blacks',
+                coastline: aussie.coastline + kiwi.coastline,
+                workRefs: [...aussie.workRefs.slice(0,2), ...kiwi.workRefs.slice(0,1)],
+                sportRefs: [...aussie.sportRefs.slice(0,1), ...kiwi.sportRefs.slice(0,1)],
+                blueyRef: 'Bluey episodes'
+            };
+            return aussie;
+        }
+
+        // ============================================================
+        // FACT GENERATION
+        // Clear separation: CALCULATED vs PLAYFUL COMPARISONS
+        // ============================================================
+        function generateFacts() {
+            const d = aggregatedData;
+            const refs = getRegionalReferences(selectedRegion);
+            
+            const allFacts = { 
+                scale: [],      // Playful comparisons - clearly metaphorical
+                calculated: [], // Direct from data - verifiable
+                executive: [],  // CFO-safe business metrics
+                witty: [],      // Water-cooler observations
+                local: [],      // Regional flavour
+                insight: []     // Strategic observations
+            };
+
+            // ========== CALCULATED FACTS (directly from data) ==========
+            // These are verifiable numbers from specific source files
+            
+            if (d.totalFlights > 0) {
+                allFacts.calculated.push(`${formatNumber(Math.round(d.totalFlights))} flights taken this quarter.`);
+            }
+            
+            if (d.totalKilometers > 0) {
+                allFacts.calculated.push(`${formatNumber(Math.round(d.totalKilometers))} kilometres flown in total.`);
+            }
+            
+            if (d.totalHotelNights > 0) {
+                allFacts.calculated.push(`${formatNumber(Math.round(d.totalHotelNights))} hotel room nights booked.`);
+            }
+            
+            if (d.totalCarDays > 0) {
+                allFacts.calculated.push(`${formatNumber(Math.round(d.totalCarDays))} car rental days.`);
+            }
+            
+            if (d.uniqueTravellerCount > 0) {
+                allFacts.calculated.push(`${formatNumber(d.uniqueTravellerCount)} unique travellers on the move.`);
+            }
+            
+            const totalSpend = d.totalAirSpend + d.totalHotelSpend + d.totalCarSpend;
+            if (totalSpend > 0) {
+                allFacts.calculated.push(`${formatCurrency(totalSpend)} total travel spend across air, hotel, and car.`);
+            }
+            
+            if (d.travelTimeHours > 0) {
+                allFacts.calculated.push(`${formatNumber(Math.round(d.travelTimeHours))} hours of flight time logged.`);
+            }
+
+            // ========== SCALE COMPARISONS (playful, clearly metaphorical) ==========
+            
+            if (d.totalMiles > 10000) {
+                const moon = d.totalMiles / 238900;
+                if (moon >= 1) allFacts.scale.push(`If you stacked all those miles together? ${moon.toFixed(1)} trips to the moon.`);
+                else if (moon >= 0.1) allFacts.scale.push(`That distance is ${(moon * 100).toFixed(0)}% of the way to the moon — getting closer.`);
+            }
+            
+            if (d.totalKilometers > 20000) {
+                const orbits = d.totalKilometers / 40075;
+                if (orbits >= 1) allFacts.scale.push(`Enough kilometres to circle the Earth ${orbits.toFixed(1)} times.`);
+            }
+            
+            if (d.totalKilometers > 1000) {
+                const trip = pick(refs.roadTrips);
+                const trips = Math.round(d.totalKilometers / trip.km);
+                if (trips >= 2) allFacts.scale.push(`Picture ${formatNumber(trips)} road trips from ${trip.name}. That's your flight distance.`);
+            }
+            
+            if (d.totalHotelNights > 500) {
+                const stadium = pick(refs.stadiums);
+                const fills = d.totalHotelNights / stadium.capacity;
+                if (fills >= 0.3) allFacts.scale.push(`${formatNumber(Math.round(d.totalHotelNights))} room nights — imagine filling ${(fills * 100).toFixed(0)}% of ${stadium.name}.`);
+            }
+            
+            if (totalSpend > 100000) {
+                const avos = Math.round(totalSpend / 22);
+                allFacts.scale.push(`${formatCurrency(totalSpend)} in travel could buy ${formatNumber(avos)} smashed avos. Just saying.`);
+            }
+            
+            if (d.travelTimeHours > 100) {
+                const weeks = d.travelTimeHours / 24 / 7;
+                if (weeks >= 1) allFacts.scale.push(`${weeks.toFixed(1)} weeks of combined flight time. That's a lot of in-flight entertainment.`);
+            }
+            
+            if (d.totalHotelNights > 300) {
+                const years = d.totalHotelNights / 365;
+                if (years >= 0.5) allFacts.scale.push(`${formatNumber(Math.round(d.totalHotelNights))} nights away — ${years.toFixed(1)} years of hotel breakfasts, combined.`);
+            }
+
+            // ========== EXECUTIVE FACTS (CFO-safe, verifiable) ==========
+            
+            if (totalSpend > 0 && d.totalAirSpend > 0) {
+                const airPct = (d.totalAirSpend / totalSpend * 100).toFixed(0);
+                const hotelPct = (d.totalHotelSpend / totalSpend * 100).toFixed(0);
+                const carPct = (d.totalCarSpend / totalSpend * 100).toFixed(0);
+                allFacts.executive.push(`Spend breakdown: ${airPct}% air, ${hotelPct}% hotel, ${carPct}% ground transport.`);
+            }
+            
+            if (d.uniqueTravellerCount > 0 && totalSpend > 0) {
+                allFacts.executive.push(`${formatCurrency(totalSpend / d.uniqueTravellerCount)} average spend per traveller this quarter.`);
+            }
+            
+            if (d.totalTickets > 0 && d.totalAirSpend > 0) {
+                allFacts.executive.push(`Average air ticket: ${formatCurrency(d.totalAirSpend / d.totalTickets)}.`);
+            }
+            
+            const totalClass = d.classBreakdown.economy + d.classBreakdown.business + d.classBreakdown.first + d.classBreakdown.premium_economy;
+            if (totalClass > 50) {
+                const econPct = (d.classBreakdown.economy / totalClass * 100).toFixed(0);
+                const bizPct = ((d.classBreakdown.business + d.classBreakdown.first) / totalClass * 100).toFixed(0);
+                allFacts.executive.push(`Cabin mix: ${econPct}% economy, ${bizPct}% premium. ${bizPct < 15 ? 'Strong policy compliance.' : ''}`);
+            }
+            
+            const totalBook = d.bookMethodBreakdown.online + d.bookMethodBreakdown.offline;
+            if (totalBook > 30) {
+                const onlinePct = (d.bookMethodBreakdown.online / totalBook * 100).toFixed(0);
+                allFacts.executive.push(`Online booking rate: ${onlinePct}%.`);
+            }
+            
+            if (d.totalHotelNights > 0 && d.totalHotelSpend > 0) {
+                allFacts.executive.push(`Average nightly hotel rate: ${formatCurrency(d.totalHotelSpend / d.totalHotelNights)}.`);
+            }
+            
+            // Airline facts with proper market share logic
+            // For domestic deals (QF/VA), need ~80% share to be worth pursuing
+            // For international, call out any carrier with >$50K spend with fun references
+            const topAirlines = Object.entries(d.topAirlines).sort((a, b) => b[1] - a[1]);
+            const domesticCarriers = ['QANTAS', 'VIRGIN AUSTRALIA', 'JETSTAR', 'REX', 'REGIONAL EXPRESS'];
+            
+            // International carriers with fun destination/cultural references
+            const internationalCarrierFacts = {
+                'SINGAPORE AIRLINES': ['Singapore', 'Someone\'s been enjoying the Singapore Sling service'],
+                'CATHAY PACIFIC': ['Hong Kong', 'Dim sum meetings are clearly on the agenda'],
+                'EMIRATES': ['Dubai', 'Someone\'s getting upgraded in the A380 bar'],
+                'ETIHAD': ['Abu Dhabi', 'The F1 crowd or the stopover strategists'],
+                'QATAR': ['Doha', 'That Doha lounge is earning its keep'],
+                'UNITED': ['the US', 'Looks like someone\'s racking up those MileagePlus miles'],
+                'AMERICAN AIRLINES': ['the US', 'The American Express Lounge regulars'],
+                'DELTA': ['the US', 'Atlanta connections, anyone?'],
+                'AIR CANADA': ['Canada', 'Maple syrup and meetings — solid combo'],
+                'AIR CHINA': ['China', 'Beijing or bust'],
+                'CHINA SOUTHERN': ['China', 'Guangzhou gateway is getting a workout'],
+                'CHINA EASTERN': ['China', 'Shanghai\'s calling'],
+                'THAI AIRWAYS': ['Thailand', 'Pad thai per diems are real'],
+                'MALAYSIA AIRLINES': ['Malaysia', 'KL is clearly on the regular rotation'],
+                'GARUDA': ['Indonesia', 'Bali for business (sure...)'],
+                'PHILIPPINE AIRLINES': ['the Philippines', 'Manila meetings in full swing'],
+                'KOREAN AIR': ['Korea', 'K-BBQ client dinners are essential'],
+                'ASIANA': ['Korea', 'Seoul-searching for deals'],
+                'JAPAN AIRLINES': ['Japan', 'Konnichiwa to your travel budget'],
+                'ANA': ['Japan', 'Tokyo\'s clearly a key market'],
+                'LUFTHANSA': ['Germany', 'Das ist a lot of European travel'],
+                'BRITISH AIRWAYS': ['the UK', 'London calling — frequently'],
+                'AIR FRANCE': ['France', 'Croissants on expenses, oui oui'],
+                'KLM': ['the Netherlands', 'Amsterdam layovers adding up'],
+                'FIJI AIRWAYS': ['Fiji', 'Bula! Someone\'s got the island life figured out'],
+                'AIR VANUATU': ['Vanuatu', 'Off the beaten track — respect'],
+                'LATAM': ['South America', 'Santiago or São Paulo? Either way, big commitment'],
+                'VIRGIN ATLANTIC': ['the UK', 'The London route is well-worn'],
+                'SWISS': ['Switzerland', 'Chocolate and banking — classic combo'],
+                'AUSTRIAN': ['Austria', 'Vienna waits for your travellers'],
+                'SCOOT': ['Singapore', 'Budget-savvy Singapore trips'],
+                'JETSTAR ASIA': ['Asia', 'Asia on a budget — smart'],
+                'AIRASIA': ['Southeast Asia', 'Southeast Asia hustle is real'],
+                'CEBU PACIFIC': ['the Philippines', 'Philippines on the regular']
+            };
+            
+            // Calculate domestic market share for QF/VA
+            let domesticTotal = 0;
+            let qantasGroupCount = 0;
+            let virginGroupCount = 0;
+            let airNZCount = 0;
+            
+            topAirlines.forEach(([airline, count]) => {
+                const upper = airline.toUpperCase();
+                const isDomestic = domesticCarriers.some(dc => upper.includes(dc)) || upper.includes('AIR NEW ZEALAND');
+                if (isDomestic) {
+                    domesticTotal += count;
+                    if (upper.includes('QANTAS') || upper.includes('JETSTAR')) qantasGroupCount += count;
+                    if (upper.includes('VIRGIN')) virginGroupCount += count;
+                    if (upper.includes('AIR NEW ZEALAND') || upper.includes('AIR NZ')) airNZCount += count;
+                }
+            });
+            
+            // Domestic carrier insights (need 80%+ for deal to make sense)
+            if (domesticTotal > 30) {
+                const qfShare = (qantasGroupCount / domesticTotal * 100).toFixed(0);
+                const vaShare = (virginGroupCount / domesticTotal * 100).toFixed(0);
+                const nzShare = (airNZCount / domesticTotal * 100).toFixed(0);
+                
+                if (qfShare >= 80 && !hasQantasDeal) {
+                    allFacts.executive.push(`Qantas Group (inc. Jetstar) at ${qfShare}% domestic share. That's deal territory — worth a conversation.`);
+                } else if (qfShare >= 80 && hasQantasDeal) {
+                    allFacts.executive.push(`Qantas Group at ${qfShare}% domestic share. Excellent utilisation of your corporate deal.`);
+                } else if (qfShare >= 60) {
+                    allFacts.executive.push(`Qantas Group at ${qfShare}% domestic share. ${hasQantasDeal ? 'Good deal usage.' : 'Growing toward deal threshold (typically 80%+).'}`);
+                }
+                
+                if (vaShare >= 80 && !hasVirginDeal) {
+                    allFacts.executive.push(`Virgin Australia at ${vaShare}% domestic share. Strong case for a corporate agreement.`);
+                } else if (vaShare >= 80 && hasVirginDeal) {
+                    allFacts.executive.push(`Virgin Australia at ${vaShare}% domestic share. Your deal is working well.`);
+                } else if (vaShare >= 30 && vaShare < 80) {
+                    allFacts.executive.push(`Virgin Australia at ${vaShare}% domestic share. ${hasVirginDeal ? 'Moderate deal utilisation.' : 'Below typical deal threshold (80%+).'}`);
+                }
+                
+                if ((selectedRegion === 'kiwi' || selectedRegion === 'anz') && nzShare >= 20) {
+                    if (hasAirNZDeal) {
+                        allFacts.executive.push(`Air New Zealand at ${nzShare}% of domestic/trans-Tasman. Good use of your Air NZ agreement.`);
+                    } else if (nzShare >= 50) {
+                        allFacts.executive.push(`Air New Zealand at ${nzShare}% share. Worth exploring a corporate arrangement.`);
+                    }
+                }
+            }
+            
+            // International airline callouts (>$50K spend threshold) - with fun references
+            if (d.topAirlineSpend) {
+                Object.entries(d.topAirlineSpend).forEach(([airline, spend]) => {
+                    if (spend >= 50000) {
+                        const upper = airline.toUpperCase();
+                        // Skip domestic carriers
+                        if (domesticCarriers.some(dc => upper.includes(dc))) return;
+                        if (upper.includes('AIR NEW ZEALAND')) return;
+                        
+                        let found = false;
+                        for (const [carrier, [country, funRef]] of Object.entries(internationalCarrierFacts)) {
+                            if (upper.includes(carrier)) {
+                                allFacts.executive.push(`${formatCurrency(spend)} on ${airline}. ${funRef}.`);
+                                found = true;
+                                break;
+                            }
+                        }
+                        // Fallback for unmapped international carriers
+                        if (!found) {
+                            allFacts.executive.push(`${formatCurrency(spend)} on ${airline}. That's a relationship worth nurturing.`);
+                        }
+                    }
+                });
+            }
+            
+            const topRoutes = Object.entries(d.topRoutes).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            if (topRoutes.length >= 3 && d.totalFlights > 50) {
+                const topCount = topRoutes.reduce((s, r) => s + r[1], 0);
+                allFacts.executive.push(`Top 5 routes = ${(topCount / d.totalFlights * 100).toFixed(0)}% of all flights. Concentration creates leverage.`);
+            }
+            
+            // Top individual hotel property - always try to show this
+            if (d.topHotelProperty && d.topHotelPropertySpend > 3000) {
+                const hotelName = d.topHotelProperty;
+                const spend = d.topHotelPropertySpend;
+                const nights = d.topHotelPropertyNights || 0;
+                
+                // Title case the hotel name for nicer display
+                const formatHotelName = (name) => {
+                    return name.split(' ').map(word => 
+                        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                    ).join(' ');
+                };
+                const niceHotelName = formatHotelName(hotelName);
+                
+                if (nights > 30) {
+                    allFacts.executive.push(`Top hotel: ${niceHotelName} — ${formatCurrency(spend)} across ${nights} nights. Definitely worth a direct rate conversation.`);
+                } else if (nights > 10) {
+                    allFacts.executive.push(`Most-used property: ${niceHotelName} with ${nights} room nights (${formatCurrency(spend)}). Your team has a favourite.`);
+                } else if (spend > 8000) {
+                    allFacts.executive.push(`Highest hotel spend: ${niceHotelName} at ${formatCurrency(spend)}. Premium stays adding up.`);
+                }
+            }
+
+            // ========== WITTY OBSERVATIONS (always anchored to actual data) ==========
+            
+            if (d.totalFlights > 150) {
+                allFacts.witty.push(`${formatNumber(Math.round(d.totalFlights))} flights booked. That's ${formatNumber(Math.round(d.totalFlights))} times someone tried to board before their group was called.`);
+            }
+            
+            if (d.totalHotelNights > 150) {
+                allFacts.witty.push(`${formatNumber(Math.round(d.totalHotelNights))} hotel nights booked. Somewhere in there, a minibar Toblerone was heroically resisted. Finance thanks them.`);
+            }
+            
+            if (d.totalHotelNights > 100) {
+                allFacts.witty.push(`${formatNumber(Math.round(d.totalHotelNights))} room nights means ${formatNumber(Math.round(d.totalHotelNights))} "Is breakfast included?" conversations at check-in.`);
+            }
+            
+            if (d.totalFlights > 100) {
+                allFacts.witty.push(`${formatNumber(Math.round(d.totalFlights))} boarding passes issued. ${formatNumber(Math.round(d.totalFlights))} silent prayers at baggage carousels.`);
+            }
+            
+            if (d.travelTimeHours > 100) {
+                allFacts.witty.push(`${formatNumber(Math.round(d.travelTimeHours))} hours at cruising altitude. At least one "Sent from 35,000 feet" email signature was deployed.`);
+            }
+            
+            if (d.totalHotelNights > 80) {
+                allFacts.witty.push(`Across ${formatNumber(Math.round(d.totalHotelNights))} hotel stays, at least one laptop charger was donated to lost property.`);
+            }
+            
+            if (d.totalFlights > 200) {
+                allFacts.witty.push(`${formatNumber(Math.round(d.totalFlights))} flights = ${formatNumber(Math.round(d.totalFlights))} overhead bin negotiations. Some won, some lost.`);
+            }
+            
+            if (d.uniqueTravellerCount > 30 && d.totalFlights > 150) {
+                allFacts.witty.push(`${formatNumber(d.uniqueTravellerCount)} travellers took ${formatNumber(Math.round(d.totalFlights))} flights. That's ${formatNumber(d.uniqueTravellerCount)} different opinions on the best airport lounge.`);
+            }
+            
+            if (d.travelTimeHours > 150) {
+                allFacts.witty.push(`${formatNumber(Math.round(d.travelTimeHours))} flight hours logged. Roughly ${formatNumber(Math.round(d.travelTimeHours * 2))} "Can I get past you?" seat shuffles.`);
+            }
+            
+            if (d.totalCarDays > 40) {
+                allFacts.witty.push(`${formatNumber(Math.round(d.totalCarDays))} rental car days. At least one person drove off wondering which side the fuel cap was on.`);
+            }
+            
+            if (d.totalAirSpend > 100000) {
+                allFacts.witty.push(`${formatCurrency(d.totalAirSpend)} on airfares generated roughly ${formatNumber(Math.round(d.totalFlights * 1.5))} expense receipts. Good luck, finance team.`);
+            }
+            
+            if (d.totalFlights > 80 && d.totalHotelNights > 80) {
+                allFacts.witty.push(`${formatNumber(Math.round(d.totalFlights))} flights and ${formatNumber(Math.round(d.totalHotelNights))} hotel nights triggered countless "I'm currently travelling" auto-replies.`);
+            }
+
+            // ========== LOCAL COLOUR (smarter thresholds, more variety) ==========
+            
+            // Bluey reference - flight time converted to episodes (~7 mins each)
+            if (d.travelTimeHours > 50) {
+                const blueyEps = Math.round(d.travelTimeHours * 60 / 7);
+                allFacts.local.push(`${formatNumber(Math.round(d.travelTimeHours))} flight hours = ${formatNumber(blueyEps)} ${refs.blueyRef}. "This episode is called... Business Travel."`);
+            }
+            
+            // Stadium comparison - only if actually impressive (>10% of capacity)
+            if (d.totalHotelNights > 3000) {
+                const stadium = pick(refs.stadiums);
+                const percent = (d.totalHotelNights / stadium.capacity * 100).toFixed(0);
+                if (percent >= 10) {
+                    allFacts.local.push(`${formatNumber(Math.round(d.totalHotelNights))} hotel nights — enough to fill ${percent}% of ${stadium.name}.`);
+                }
+            }
+            
+            // Road trip comparisons - clearly reference the flight distance
+            if (d.totalKilometers > 2000) {
+                const trip = pick(refs.roadTrips);
+                const times = Math.round(d.totalKilometers / trip.km);
+                if (times >= 5) {
+                    allFacts.local.push(`${formatNumber(Math.round(d.totalKilometers))} km flown = ${formatNumber(times)} road trips from ${trip.name}. Flying definitely beats the roadhouse bathroom stops.`);
+                }
+            }
+            
+            // TV/Streaming references
+            if (d.travelTimeHours > 100) {
+                const tvRef = pick(refs.tvRefs);
+                if (tvRef.includes('Bluey')) {
+                    // Already covered above
+                } else if (tvRef.includes('MasterChef') || tvRef.includes('Survivor') || tvRef.includes('MAFS')) {
+                    const episodes = Math.round(d.travelTimeHours / 1.2); // ~70 min episodes
+                    allFacts.local.push(`${formatNumber(Math.round(d.travelTimeHours))} hours of flight time — that's ${formatNumber(episodes)} ${tvRef} you could binge.`);
+                } else if (tvRef.includes('Block')) {
+                    const episodes = Math.round(d.travelTimeHours / 1.5);
+                    allFacts.local.push(`Enough flight time to watch ${formatNumber(episodes)} ${tvRef}. Room reveals included.`);
+                }
+            }
+            
+            // Retail therapy comparisons
+            if (d.totalAirSpend > 50000) {
+                const retailRef = pick(refs.retailRefs);
+                if (retailRef.includes('IKEA') || retailRef.includes('Warehouse')) {
+                    allFacts.local.push(`Air spend of ${formatCurrency(d.totalAirSpend)} — imagine how many ${retailRef} that could fund.`);
+                } else if (retailRef.includes('Bunnings')) {
+                    const snags = Math.round(d.totalAirSpend / 3.50);
+                    allFacts.local.push(`${formatCurrency(d.totalAirSpend)} in airfares. That's ${formatNumber(snags)} Bunnings snags. Democracy sausages not included.`);
+                } else if (retailRef.includes('Kmart')) {
+                    allFacts.local.push(`${formatCurrency(d.totalAirSpend)} on flights. That's a lot of ${retailRef}.`);
+                }
+            }
+            
+            // Food spend comparisons with accurate 2026 prices
+            if (d.totalAirSpend > 30000) {
+                const food = pick(refs.foodRefs);
+                const prices = { 
+                    'HSPs': 16, 'chicken parmis': 28, 'smashed avos': 24, 'Tim Tams': 5, 'lamingtons': 6, 
+                    'Messina gelatos': 8, 'Guzman burritos': 18,
+                    'fish and chips on the beach': 20, 'Whittaker\'s blocks': 7, 'L&P': 4, 'feijoas': 3, 
+                    'pies from the dairy': 7, 'BurgerFuel combos': 22
+                };
+                const price = prices[food] || 15;
+                const quantity = Math.round(d.totalAirSpend / price);
+                if (quantity > 1000) {
+                    allFacts.local.push(`Air spend could buy ${formatNumber(quantity)} ${food}. Your team chose flights instead. Debatable decision.`);
+                }
+            }
+            
+            // Lifestyle cost comparisons - relatable to middle-class ANZ
+            if (totalSpend > 200000) {
+                const avgSalary = 95000; // Average Australian salary 2026
+                const salaries = (totalSpend / avgSalary).toFixed(1);
+                allFacts.local.push(`${formatCurrency(totalSpend)} in travel spend = ${salaries} average annual salaries. Your travellers are busy.`);
+            }
+            
+            if (d.totalHotelSpend > 50000) {
+                const rentWeeks = Math.round(d.totalHotelSpend / 650); // Average weekly rent
+                allFacts.local.push(`${formatCurrency(d.totalHotelSpend)} on hotels = ${formatNumber(rentWeeks)} weeks of average rent. At least hotels include housekeeping.`);
+            }
+            
+            // Coffee comparison
+            if (d.totalAirSpend > 20000) {
+                const coffees = Math.round(d.totalAirSpend / 5.50);
+                allFacts.local.push(`${formatCurrency(d.totalAirSpend)} on air travel. That's ${formatNumber(coffees)} ${refs.coffeeRef}. Priorities.`);
+            }
+            
+            // Coastline - only if actually impressive
+            if (d.totalKilometers > refs.coastline * 0.5) {
+                const times = (d.totalKilometers / refs.coastline).toFixed(1);
+                allFacts.local.push(`Flight distance equals ${times}x the entire coastline. Sadly, still no beach tan.`);
+            }
+            
+            // Music/Festival reference
+            if (d.uniqueTravellerCount > 50) {
+                const musicRef = pick(refs.musicRefs);
+                if (musicRef.includes('Splendour') || musicRef.includes('Six60')) {
+                    allFacts.local.push(`${formatNumber(d.uniqueTravellerCount)} travellers — enough people to form a decent crowd at ${musicRef}.`);
+                }
+            }
+            
+            // Sport references (kept but balanced with others)
+            if (d.travelTimeHours > 300 && refs.sportRefs) {
+                const sportRef = pick(refs.sportRefs);
+                if (sportRef.includes('AFL') || sportRef.includes('Origin')) {
+                    const games = Math.round(d.travelTimeHours / 3);
+                    allFacts.local.push(`${formatNumber(Math.round(d.travelTimeHours))} hours in the air — time enough for ${formatNumber(games)} ${sportRef}.`);
+                } else if (sportRef.includes('Test') || sportRef.includes('Blacks')) {
+                    const matches = Math.round(d.travelTimeHours / 6);
+                    allFacts.local.push(`Flight time equivalent to watching ${formatNumber(matches)} full ${sportRef}.`);
+                }
+            }
+
+            // ========== STRATEGIC INSIGHTS ==========
+            
+            const totalDomInt = d.domIntBreakdown.domestic + d.domIntBreakdown.international;
+            if (totalDomInt > 50) {
+                const intlPct = (d.domIntBreakdown.international / totalDomInt * 100).toFixed(0);
+                allFacts.insight.push(`Travel profile: ${intlPct}% international, ${100 - intlPct}% domestic.`);
+            }
+            
+            const topDests = Object.entries(d.topDestinations).sort((a, b) => b[1] - a[1]);
+            if (topDests.length > 0) {
+                allFacts.insight.push(`#1 destination: ${topDests[0][0]} with ${formatNumber(topDests[0][1])} arrivals.`);
+            }
+            
+            const topCities = Object.entries(d.topHotelCities).sort((a, b) => b[1] - a[1]);
+            if (topCities.length >= 3 && d.totalHotelBookings > 30) {
+                const top3 = topCities.slice(0, 3);
+                const pct = (top3.reduce((s, c) => s + c[1], 0) / d.totalHotelBookings * 100).toFixed(0);
+                allFacts.insight.push(`Hotel hotspots: ${top3.map(c => c[0]).join(', ')} — ${pct}% of bookings.`);
+            }
+            
+            const topChains = Object.entries(d.topHotelChains).sort((a, b) => b[1] - a[1]);
+            if (topChains.length > 0 && d.totalHotelBookings > 30) {
+                allFacts.insight.push(`Top hotel group: ${topChains[0][0]} at ${(topChains[0][1] / d.totalHotelBookings * 100).toFixed(0)}% share.`);
+            }
+            
+            if (d.uniqueTravellerCount > 5 && d.totalFlights > 50) {
+                const avg = d.totalFlights / d.uniqueTravellerCount;
+                if (avg > 8) allFacts.insight.push(`${avg.toFixed(1)} flights per traveller — a core group of frequent flyers driving volume.`);
+            }
+
+            // ========== RENDER ==========
+            const categories = [
+                { key: 'calculated', title: 'The Numbers', icon: '📊', note: 'Direct from data' },
+                { key: 'scale', title: 'For Perspective', icon: '🌍', note: 'Playful comparisons' },
+                { key: 'executive', title: 'Executive Summary', icon: '💼', note: 'CFO-safe' },
+                { key: 'witty', title: 'Overheard in the Lounge', icon: '✨', note: 'Water-cooler worthy' },
+                { key: 'local', title: 'Local Colour', icon: '🏉', note: 'ANZ flavour' },
+                { key: 'insight', title: 'Strategic Insights', icon: '🎯', note: '' }
+            ];
+            
+            const filtered = categories
+                .map(c => ({ ...c, facts: allFacts[c.key].sort(() => Math.random() - 0.5).slice(0, 4) }))
+                .filter(c => c.facts.length > 0);
+            
+            factsContainer.innerHTML = filtered.map(cat => `
+                <div class="fact-category">
+                    <div class="category-header">
+                        <span class="category-icon">${cat.icon}</span>
+                        <span class="category-title">${cat.title}</span>
+                        ${cat.note ? `<span class="category-note">${cat.note}</span>` : ''}
+                    </div>
+                    ${cat.facts.map(f => `
+                        <div class="fact-card" onclick="copyFact(this, '${f.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">
+                            <span class="fact-text">${f}</span>
+                            <span class="copy-icon">📋</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+            
+            resultsArea.classList.add('visible');
+        }
+
+        // ============================================================
+        // COPY FUNCTIONALITY
+        // ============================================================
+        window.copyFact = function(el, text) {
+            navigator.clipboard.writeText(text.replace(/&quot;/g, '"').replace(/\\'/g, "'")).then(() => {
+                el.classList.add('copied');
+                setTimeout(() => el.classList.remove('copied'), 1500);
+            });
+        };
+
+        copyAllBtn.addEventListener('click', () => {
+            const all = [];
+            document.querySelectorAll('.fact-category').forEach(cat => {
+                all.push(`\n${cat.querySelector('.category-title').textContent.toUpperCase()}`);
+                all.push('─'.repeat(30));
+                cat.querySelectorAll('.fact-text').forEach(f => all.push(`• ${f.textContent}`));
+            });
+            navigator.clipboard.writeText(all.join('\n')).then(() => {
+                const orig = copyAllBtn.textContent;
+                copyAllBtn.textContent = 'Copied!';
+                setTimeout(() => copyAllBtn.textContent = orig, 1500);
+            });
+        });
+    </script>
+</body>
+</html>

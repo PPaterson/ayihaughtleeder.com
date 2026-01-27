@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aristocrat Online Savings Fee App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f7;
+            padding: 20px;
+            color: #1d1d1f;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #00a651 0%, #008542 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .upload-section {
+            border: 2px dashed #00a651;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-section:hover {
+            border-color: #008542;
+            background: #f9fef9;
+        }
+        
+        .upload-section.dragover {
+            background: #e8f5e9;
+            border-color: #008542;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .upload-button {
+            background: #00a651;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .upload-button:hover {
+            background: #008542;
+        }
+        
+        .file-info {
+            margin-top: 15px;
+            color: #6e6e73;
+            font-size: 14px;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 100%);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .card.highlight {
+            background: linear-gradient(135deg, #00a651 0%, #008542 100%);
+            color: white;
+        }
+        
+        .card-label {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+        
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .breakdown-section {
+            margin-top: 30px;
+        }
+        
+        .breakdown-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1d1d1f;
+        }
+        
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .breakdown-table th {
+            background: #f5f5f7;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #d2d2d7;
+        }
+        
+        .breakdown-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e8e8ed;
+        }
+        
+        .breakdown-table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .currency-badge {
+            display: inline-block;
+            background: #00a651;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .error {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #00a651;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ARISTOCRAT ONLINE SAVINGS FEE APP</h1>
+            <p>Calculate fee savings for online vs offline bookings</p>
+        </div>
+        
+        <div class="content">
+            <div class="upload-section" id="uploadSection">
+                <h2 style="margin-bottom: 15px; color: #1d1d1f;">Upload Ticket Report</h2>
+                <p style="margin-bottom: 20px; color: #6e6e73;">Upload your Excel report to analyze online booking savings</p>
+                <input type="file" id="fileInput" accept=".xlsx,.xls">
+                <button class="upload-button" onclick="document.getElementById('fileInput').click()">
+                    Choose File
+                </button>
+                <div class="file-info" id="fileInfo"></div>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing your data...</p>
+            </div>
+            
+            <div class="results" id="results">
+                <div class="summary-cards">
+                    <div class="card">
+                        <div class="card-label">ONLINE TICKETS</div>
+                        <div class="card-value" id="ticketCount">0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-label">ONLINE FEES PAID</div>
+                        <div class="card-value" id="onlineFees">$0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-label">OFFLINE FEES (WOULD BE)</div>
+                        <div class="card-value" id="offlineFees">$0</div>
+                    </div>
+                    <div class="card highlight">
+                        <div class="card-label">TOTAL SAVINGS</div>
+                        <div class="card-value" id="totalSavings">$0</div>
+                    </div>
+                </div>
+                
+                <div class="breakdown-section">
+                    <h2>Savings Breakdown by Country</h2>
+                    <table class="breakdown-table" id="breakdownTable">
+                        <thead>
+                            <tr>
+                                <th>Country</th>
+                                <th>Tickets</th>
+                                <th>Currency</th>
+                                <th>Online Fees</th>
+                                <th>Offline Fees</th>
+                                <th>Savings</th>
+                            </tr>
+                        </thead>
+                        <tbody id="breakdownBody">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="breakdown-section">
+                    <h2>Savings Breakdown by Flight Type</h2>
+                    <table class="breakdown-table" id="typeBreakdownTable">
+                        <thead>
+                            <tr>
+                                <th>Flight Type</th>
+                                <th>Tickets</th>
+                                <th>Online Fees (Multi-Currency)</th>
+                                <th>Offline Fees (Multi-Currency)</th>
+                                <th>Savings (Multi-Currency)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="typeBreakdownBody">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="breakdown-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0;">Line-by-Line Savings Report</h2>
+                        <button class="upload-button" onclick="exportToExcel()" style="padding: 8px 16px; font-size: 14px;">
+                            Export to Excel
+                        </button>
+                    </div>
+                    <div style="margin-bottom: 15px; color: #6e6e73; font-size: 14px;">
+                        Detailed transaction-level breakdown for client records
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="breakdown-table" id="detailedTable">
+                            <thead>
+                                <tr>
+                                    <th>Invoice Date</th>
+                                    <th>Traveller</th>
+                                    <th>Ticket Number</th>
+                                    <th>PNR</th>
+                                    <th>Book Country</th>
+                                    <th>Flight Type</th>
+                                    <th>Itinerary</th>
+                                    <th>Currency</th>
+                                    <th>Online Fee</th>
+                                    <th>Offline Fee</th>
+                                    <th>Saving</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailedBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fee structure based on Aristocrat fee schedule
+        const feeStructure = {
+            'UNITED STATES': {
+                currency: 'USD',
+                online: { DOMESTIC: 7.00, TRANSBORDER: 7.00, INTERNATIONAL: 7.00 },
+                offline: { DOMESTIC: 25.00, TRANSBORDER: 25.00, INTERNATIONAL: 25.00 }
+            },
+            'AUSTRALIA': {
+                currency: 'AUD',
+                online: { DOMESTIC: 7.00, TRANSBORDER: 7.00, INTERNATIONAL: 7.00 },
+                offline: { DOMESTIC: 20.00, TRANSBORDER: 20.00, INTERNATIONAL: 75.00 }
+            },
+            'UNITED KINGDOM': {
+                currency: 'GBP',
+                online: { DOMESTIC: 6.00, TRANSBORDER: 6.00, INTERNATIONAL: 6.00 },
+                offline: { DOMESTIC: 6.00, TRANSBORDER: 18.00, INTERNATIONAL: 18.00 }
+            },
+            'INDIA': {
+                currency: 'INR',
+                online: { DOMESTIC: 220.00, TRANSBORDER: 220.00, INTERNATIONAL: 220.00 },
+                offline: { DOMESTIC: 320.00, TRANSBORDER: 1200.00, INTERNATIONAL: 1200.00 }
+            },
+            'NEW ZEALAND': {
+                currency: 'NZD',
+                online: { DOMESTIC: 11.00, TRANSBORDER: 11.00, INTERNATIONAL: 11.00 },
+                offline: { DOMESTIC: 20.00, TRANSBORDER: 45.00, INTERNATIONAL: 48.00 }
+            },
+            'HONG KONG': {
+                currency: 'HKD',
+                online: { DOMESTIC: 110.00, TRANSBORDER: 110.00, INTERNATIONAL: 110.00 },
+                offline: { DOMESTIC: 120.00, TRANSBORDER: 180.00, INTERNATIONAL: 230.00 }
+            },
+            'GERMANY': {
+                currency: 'EUR',
+                online: { DOMESTIC: 7.00, TRANSBORDER: 7.00, INTERNATIONAL: 7.00 },
+                offline: { DOMESTIC: 12.00, TRANSBORDER: 23.00, INTERNATIONAL: 28.00 }
+            },
+            'ARGENTINA': {
+                currency: 'USD',
+                online: { DOMESTIC: 6.50, TRANSBORDER: 6.50, INTERNATIONAL: 6.50 },
+                offline: { DOMESTIC: 10.00, TRANSBORDER: 20.00, INTERNATIONAL: 20.00 }
+            },
+            'MEXICO': {
+                currency: 'USD',
+                online: { DOMESTIC: 7.00, TRANSBORDER: 7.00, INTERNATIONAL: 7.00 },
+                offline: { DOMESTIC: 10.00, TRANSBORDER: 10.00, INTERNATIONAL: 14.00 }
+            },
+            'CANADA': {
+                currency: 'CAD',
+                online: { DOMESTIC: 9.00, TRANSBORDER: 9.00, INTERNATIONAL: 9.00 },
+                offline: { DOMESTIC: 32.00, TRANSBORDER: 32.00, INTERNATIONAL: 32.00 }
+            },
+            'SPAIN': {
+                currency: 'EUR',
+                online: { DOMESTIC: 6.00, TRANSBORDER: 6.00, INTERNATIONAL: 6.00 },
+                offline: { DOMESTIC: 12.00, TRANSBORDER: 24.00, INTERNATIONAL: 29.00 }
+            }
+        };
+
+        // Drag and drop functionality
+        const uploadSection = document.getElementById('uploadSection');
+        
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+        
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('dragover');
+        });
+        
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.name.match(/\.(xlsx|xls)$/)) {
+                alert('Please upload an Excel file (.xlsx or .xls)');
+                return;
+            }
+
+            document.getElementById('fileInfo').textContent = `Selected: ${file.name}`;
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').classList.remove('show');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                    
+                    processData(jsonData);
+                } catch (error) {
+                    alert('Error processing file: ' + error.message);
+                    document.getElementById('loading').classList.remove('show');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function processData(data) {
+            // Filter for ONLINE TICKET transactions only
+            const onlineTickets = data.filter(row => 
+                row['Book Method'] === 'ONLINE' && 
+                row['Transaction'] === 'TICKET' &&
+                row['Book Country'] &&
+                row['Dom | Int']
+            );
+
+            // Calculate savings by country and type
+            const countryBreakdown = {};
+            const typeBreakdown = {
+                'DOMESTIC': { tickets: 0, onlineFees: 0, offlineFees: 0, byCurrency: {} },
+                'TRANSBORDER': { tickets: 0, onlineFees: 0, offlineFees: 0, byCurrency: {} },
+                'INTERNATIONAL': { tickets: 0, onlineFees: 0, offlineFees: 0, byCurrency: {} }
+            };
+            
+            const detailedTransactions = [];
+            let totalOnlineFees = 0;
+            let totalOfflineFees = 0;
+
+            onlineTickets.forEach(ticket => {
+                const country = ticket['Book Country'];
+                const flightType = ticket['Dom | Int'];
+                
+                if (!feeStructure[country]) {
+                    console.warn(`No fee structure for country: ${country}`);
+                    return;
+                }
+
+                const fees = feeStructure[country];
+                const currency = fees.currency;
+                const onlineFee = fees.online[flightType] || 0;
+                const offlineFee = fees.offline[flightType] || 0;
+                const saving = offlineFee - onlineFee;
+
+                // Store detailed transaction with properly formatted date
+                let formattedDate = 'N/A';
+                if (ticket['Invoice Date'] != null && ticket['Invoice Date'] !== '') {
+                    try {
+                        let dateObj;
+                        const dateValue = ticket['Invoice Date'];
+                        
+                        // Case 1: Already a Date object from cellDates: true
+                        if (dateValue instanceof Date) {
+                            dateObj = dateValue;
+                        }
+                        // Case 2: Excel serial number (numeric value typically between 1 and 60000)
+                        else if (typeof dateValue === 'number' && dateValue > 1 && dateValue < 100000) {
+                            // Excel dates: days since December 30, 1899
+                            const millisecondsPerDay = 24 * 60 * 60 * 1000;
+                            const excelEpoch = Date.UTC(1899, 11, 30); // Dec 30, 1899 in UTC
+                            dateObj = new Date(excelEpoch + (dateValue * millisecondsPerDay));
+                        }
+                        // Case 3: String date
+                        else if (typeof dateValue === 'string') {
+                            dateObj = new Date(dateValue);
+                        }
+                        
+                        // Validate and format the date
+                        if (dateObj && !isNaN(dateObj.getTime()) && dateObj.getFullYear() > 1970 && dateObj.getFullYear() < 2100) {
+                            const day = String(dateObj.getDate()).padStart(2, '0');
+                            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                            const year = dateObj.getFullYear();
+                            formattedDate = `${day}/${month}/${year}`;
+                        } else {
+                            console.warn('Invalid date:', dateValue, dateObj);
+                        }
+                    } catch (e) {
+                        console.warn('Date parsing error:', e, ticket['Invoice Date']);
+                        formattedDate = 'N/A';
+                    }
+                }
+                
+                detailedTransactions.push({
+                    invoiceDate: formattedDate,
+                    traveller: ticket['Traveller'],
+                    ticketNumber: ticket['Ticket Number'],
+                    pnr: ticket['PNR'],
+                    bookCountry: country,
+                    flightType: flightType,
+                    itinerary: ticket['Itinerary'],
+                    currency: currency,
+                    onlineFee: onlineFee,
+                    offlineFee: offlineFee,
+                    saving: saving
+                });
+
+                // Country breakdown
+                if (!countryBreakdown[country]) {
+                    countryBreakdown[country] = {
+                        tickets: 0,
+                        currency: currency,
+                        onlineFees: 0,
+                        offlineFees: 0,
+                        savings: 0
+                    };
+                }
+                
+                countryBreakdown[country].tickets++;
+                countryBreakdown[country].onlineFees += onlineFee;
+                countryBreakdown[country].offlineFees += offlineFee;
+                countryBreakdown[country].savings += saving;
+
+                // Type breakdown
+                if (typeBreakdown[flightType]) {
+                    typeBreakdown[flightType].tickets++;
+                    
+                    if (!typeBreakdown[flightType].byCurrency[currency]) {
+                        typeBreakdown[flightType].byCurrency[currency] = {
+                            onlineFees: 0,
+                            offlineFees: 0,
+                            savings: 0
+                        };
+                    }
+                    
+                    typeBreakdown[flightType].byCurrency[currency].onlineFees += onlineFee;
+                    typeBreakdown[flightType].byCurrency[currency].offlineFees += offlineFee;
+                    typeBreakdown[flightType].byCurrency[currency].savings += saving;
+                }
+
+                totalOnlineFees += onlineFee;
+                totalOfflineFees += offlineFee;
+            });
+
+            displayResults(onlineTickets.length, totalOnlineFees, totalOfflineFees, countryBreakdown, typeBreakdown, detailedTransactions);
+        }
+
+        // Global variable to store detailed transactions for export
+        let globalDetailedTransactions = [];
+
+        function displayResults(ticketCount, onlineFees, offlineFees, countryBreakdown, typeBreakdown, detailedTransactions) {
+            const totalSavings = offlineFees - onlineFees;
+            
+            // Store for export
+            globalDetailedTransactions = detailedTransactions;
+
+            // Update summary cards
+            document.getElementById('ticketCount').textContent = ticketCount.toLocaleString();
+            document.getElementById('onlineFees').textContent = 'Multi-Currency';
+            document.getElementById('offlineFees').textContent = 'Multi-Currency';
+            document.getElementById('totalSavings').textContent = 'Multi-Currency';
+
+            // Country breakdown table
+            const breakdownBody = document.getElementById('breakdownBody');
+            breakdownBody.innerHTML = '';
+            
+            Object.entries(countryBreakdown)
+                .sort((a, b) => b[1].savings - a[1].savings)
+                .forEach(([country, data]) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${country}</strong></td>
+                        <td>${data.tickets}</td>
+                        <td><span class="currency-badge">${data.currency}</span></td>
+                        <td>${data.currency} ${data.onlineFees.toFixed(2)}</td>
+                        <td>${data.currency} ${data.offlineFees.toFixed(2)}</td>
+                        <td><strong>${data.currency} ${data.savings.toFixed(2)}</strong></td>
+                    `;
+                    breakdownBody.appendChild(row);
+                });
+
+            // Type breakdown table
+            const typeBreakdownBody = document.getElementById('typeBreakdownBody');
+            typeBreakdownBody.innerHTML = '';
+            
+            Object.entries(typeBreakdown).forEach(([type, data]) => {
+                if (data.tickets > 0) {
+                    const currencyBreakdowns = Object.entries(data.byCurrency)
+                        .map(([currency, amounts]) => 
+                            `${currency} ${amounts.savings.toFixed(2)}`
+                        ).join(' + ');
+                    
+                    const onlineFeesBreakdown = Object.entries(data.byCurrency)
+                        .map(([currency, amounts]) => 
+                            `${currency} ${amounts.onlineFees.toFixed(2)}`
+                        ).join(' + ');
+                    
+                    const offlineFeesBreakdown = Object.entries(data.byCurrency)
+                        .map(([currency, amounts]) => 
+                            `${currency} ${amounts.offlineFees.toFixed(2)}`
+                        ).join(' + ');
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${type}</strong></td>
+                        <td>${data.tickets}</td>
+                        <td>${onlineFeesBreakdown}</td>
+                        <td>${offlineFeesBreakdown}</td>
+                        <td><strong>${currencyBreakdowns}</strong></td>
+                    `;
+                    typeBreakdownBody.appendChild(row);
+                }
+            });
+
+            // Detailed line-by-line table
+            const detailedBody = document.getElementById('detailedBody');
+            detailedBody.innerHTML = '';
+            
+            detailedTransactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${transaction.invoiceDate}</td>
+                    <td>${transaction.traveller || 'N/A'}</td>
+                    <td>${transaction.ticketNumber || 'N/A'}</td>
+                    <td>${transaction.pnr || 'N/A'}</td>
+                    <td>${transaction.bookCountry}</td>
+                    <td>${transaction.flightType}</td>
+                    <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" 
+                        title="${transaction.itinerary || 'N/A'}">${transaction.itinerary || 'N/A'}</td>
+                    <td><span class="currency-badge">${transaction.currency}</span></td>
+                    <td>${transaction.currency} ${transaction.onlineFee.toFixed(2)}</td>
+                    <td>${transaction.currency} ${transaction.offlineFee.toFixed(2)}</td>
+                    <td><strong style="color: #00a651;">${transaction.currency} ${transaction.saving.toFixed(2)}</strong></td>
+                `;
+                detailedBody.appendChild(row);
+            });
+
+            document.getElementById('loading').classList.remove('show');
+            document.getElementById('results').classList.add('show');
+        }
+
+        function exportToExcel() {
+            if (globalDetailedTransactions.length === 0) {
+                alert('No data to export');
+                return;
+            }
+
+            // Prepare data for Excel
+            const excelData = globalDetailedTransactions.map(transaction => ({
+                'Invoice Date': transaction.invoiceDate,
+                'Traveller': transaction.traveller || 'N/A',
+                'Ticket Number': transaction.ticketNumber || 'N/A',
+                'PNR': transaction.pnr || 'N/A',
+                'Book Country': transaction.bookCountry,
+                'Flight Type': transaction.flightType,
+                'Itinerary': transaction.itinerary || 'N/A',
+                'Currency': transaction.currency,
+                'Online Fee': transaction.onlineFee.toFixed(2),
+                'Offline Fee': transaction.offlineFee.toFixed(2),
+                'Saving': transaction.saving.toFixed(2)
+            }));
+
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            
+            // Set column widths
+            ws['!cols'] = [
+                { wch: 12 },  // Invoice Date
+                { wch: 25 },  // Traveller
+                { wch: 15 },  // Ticket Number
+                { wch: 10 },  // PNR
+                { wch: 18 },  // Book Country
+                { wch: 15 },  // Flight Type
+                { wch: 40 },  // Itinerary
+                { wch: 10 },  // Currency
+                { wch: 12 },  // Online Fee
+                { wch: 12 },  // Offline Fee
+                { wch: 12 }   // Saving
+            ];
+
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Line-by-Line Savings');
+
+            // Generate filename with current date
+            const today = new Date();
+            const filename = `Aristocrat_Savings_Report_${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}.xlsx`;
+
+            // Download file
+            XLSX.writeFile(wb, filename);
+        }
+    </script>
+</body>
+</html>

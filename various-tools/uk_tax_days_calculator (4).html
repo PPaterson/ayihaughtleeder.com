@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Tax Days Calculator | FCM Travel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fcm-green: #00DE50;
+            --fcm-dark: #1a1a2e;
+            --fcm-darker: #0f0f1a;
+            --fcm-gray: #2d2d44;
+            --fcm-light-gray: #e8e8e8;
+            --fcm-white: #ffffff;
+            --fcm-text: #333333;
+            --fcm-text-muted: #666666;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--fcm-darker) 0%, var(--fcm-dark) 100%);
+            min-height: 100vh;
+            color: var(--fcm-white);
+        }
+        
+        .header {
+            background: var(--fcm-darker);
+            padding: 1.5rem 2rem;
+            border-bottom: 3px solid var(--fcm-green);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--fcm-green);
+            letter-spacing: -0.5px;
+        }
+        
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--fcm-light-gray);
+            border-left: 2px solid var(--fcm-gray);
+            padding-left: 1rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .intro {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--fcm-green);
+        }
+        
+        .intro h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--fcm-green);
+        }
+        
+        .intro p {
+            font-size: 0.9rem;
+            color: var(--fcm-light-gray);
+            line-height: 1.6;
+        }
+        
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-box {
+            background: rgba(255,255,255,0.03);
+            border: 2px dashed var(--fcm-gray);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-box:hover, .upload-box.dragover {
+            border-color: var(--fcm-green);
+            background: rgba(0, 222, 80, 0.05);
+        }
+        
+        .upload-box.loaded {
+            border-color: var(--fcm-green);
+            border-style: solid;
+            background: rgba(0, 222, 80, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-box h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-box p {
+            font-size: 0.85rem;
+            color: var(--fcm-text-muted);
+        }
+        
+        .upload-box input[type="file"] {
+            display: none;
+        }
+        
+        .file-name {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--fcm-green);
+            font-weight: 500;
+        }
+        
+        .btn {
+            background: var(--fcm-green);
+            color: var(--fcm-darker);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 222, 80, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.visible {
+            display: block;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab {
+            background: rgba(255,255,255,0.05);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            color: var(--fcm-light-gray);
+            transition: all 0.3s ease;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        
+        .tab:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .tab.active {
+            background: var(--fcm-green);
+            color: var(--fcm-darker);
+        }
+        
+        .tab-content {
+            display: none;
+            background: var(--fcm-white);
+            border-radius: 0 12px 12px 12px;
+            padding: 1.5rem;
+            color: var(--fcm-text);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, var(--fcm-dark) 0%, var(--fcm-darker) 100%);
+            border-radius: 10px;
+            padding: 1.25rem;
+            color: var(--fcm-white);
+        }
+        
+        .summary-card .label {
+            font-size: 0.8rem;
+            color: var(--fcm-light-gray);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .summary-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--fcm-green);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        
+        th {
+            background: var(--fcm-dark);
+            color: var(--fcm-white);
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--fcm-light-gray);
+        }
+        
+        tr:hover td {
+            background: rgba(0, 222, 80, 0.05);
+        }
+        
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid var(--fcm-light-gray);
+        }
+        
+        .days-badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .days-low {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .days-medium {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .days-high {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .export-btns {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-export {
+            background: var(--fcm-dark);
+            color: var(--fcm-white);
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .search-box {
+            margin-bottom: 1rem;
+        }
+        
+        .search-box input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.7rem 1rem;
+            border: 2px solid var(--fcm-light-gray);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--fcm-green);
+        }
+        
+        .processing {
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 222, 80, 0.2);
+            border-top-color: var(--fcm-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .status-message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .status-success {
+            background: rgba(0, 222, 80, 0.1);
+            border: 1px solid var(--fcm-green);
+            color: var(--fcm-green);
+        }
+        
+        .status-error {
+            background: rgba(198, 40, 40, 0.1);
+            border: 1px solid #c62828;
+            color: #c62828;
+        }
+        
+        .date-filter-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--fcm-gray);
+        }
+        
+        .date-inputs {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .date-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .date-input-group label {
+            font-size: 0.85rem;
+            color: var(--fcm-light-gray);
+            font-weight: 500;
+        }
+        
+        .date-input-group input[type="date"] {
+            padding: 0.7rem 1rem;
+            border: 2px solid var(--fcm-gray);
+            border-radius: 8px;
+            background: var(--fcm-darker);
+            color: var(--fcm-white);
+            font-size: 0.95rem;
+            font-family: 'IBM Plex Sans', sans-serif;
+            min-width: 180px;
+        }
+        
+        .date-input-group input[type="date"]:focus {
+            outline: none;
+            border-color: var(--fcm-green);
+        }
+        
+        .date-input-group input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+        
+        .stay-detail {
+            font-size: 0.75rem;
+            color: var(--fcm-text-muted);
+        }
+        
+        @media (max-width: 768px) {
+            .upload-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header-title {
+                border-left: none;
+                padding-left: 0;
+                border-top: 1px solid var(--fcm-gray);
+                padding-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">FCM</div>
+        <div class="header-title">UK Tax Days Calculator</div>
+    </header>
+    
+    <div class="container">
+        <div class="intro">
+            <h2>Overseas Traveller UK Tax Days Report</h2>
+            <p>
+                Upload your Air Ticket Data and Air Segment reports to calculate the number of days 
+                overseas travellers have spent in the United Kingdom. This tool properly handles:
+            </p>
+            <ul style="margin: 0.5rem 0 0 1.5rem; color: var(--fcm-light-gray); font-size: 0.9rem; line-height: 1.8;">
+                <li><strong>Reporting Period:</strong> Only counts days that fall within your specified date range.</li>
+                <li><strong>Exchanges:</strong> Validates tickets by netting the Tickets column (TICKET=+1, REFUND=-1, EXCHANGE=0). Only tickets with Net &gt; 0 are included.</li>
+                <li><strong>Duplicate Records:</strong> Removes duplicate segment records created during exchanges by keeping only the latest Record ID per unique flight.</li>
+                <li><strong>Refunds:</strong> Nets segment-level refunds (Segments = -1) to ensure cancelled flights are excluded.</li>
+                <li><strong>Transits:</strong> Same-day UK stops where arrival and departure countries differ are excluded (likely airside transits).</li>
+                <li><strong>Multi-ticket journeys:</strong> Matches arrivals with departures across different tickets for the same traveller.</li>
+                <li><strong>UK Residents excluded:</strong> Travellers with Book Country = United Kingdom are not included in results.</li>
+            </ul>
+        </div>
+        
+        <div class="date-filter-section">
+            <h3 style="color: var(--fcm-green); margin-bottom: 1rem; font-size: 1rem;">Reporting Period</h3>
+            <div class="date-inputs">
+                <div class="date-input-group">
+                    <label for="periodStart">Start Date</label>
+                    <input type="date" id="periodStart" value="2024-10-01">
+                </div>
+                <div class="date-input-group">
+                    <label for="periodEnd">End Date</label>
+                    <input type="date" id="periodEnd" value="2025-09-30">
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--fcm-light-gray); margin-top: 0.75rem;">
+                Only days falling within this period will be counted. Stays that span the boundary will be pro-rated.
+            </p>
+        </div>
+        
+        <div class="upload-section">
+            <div class="upload-box" id="ticketUpload" onclick="document.getElementById('ticketFile').click()">
+                <div class="upload-icon">🎫</div>
+                <h3>Air Ticket Data</h3>
+                <p>Upload the air ticket export (.xlsx)</p>
+                <input type="file" id="ticketFile" accept=".xlsx,.xls" onchange="handleFileUpload(this, 'ticket')">
+                <div class="file-name" id="ticketFileName"></div>
+            </div>
+            
+            <div class="upload-box" id="segmentUpload" onclick="document.getElementById('segmentFile').click()">
+                <div class="upload-icon">✈️</div>
+                <h3>Air Segment Data</h3>
+                <p>Upload the air segment export (.xlsx)</p>
+                <input type="file" id="segmentFile" accept=".xlsx,.xls" onchange="handleFileUpload(this, 'segment')">
+                <div class="file-name" id="segmentFileName"></div>
+            </div>
+        </div>
+        
+        <div class="btn-container">
+            <button class="btn" id="processBtn" disabled onclick="processData()">
+                Calculate UK Tax Days
+            </button>
+        </div>
+        
+        <div id="processingIndicator" style="display: none;">
+            <div class="processing">
+                <div class="spinner"></div>
+                <p>Processing travel data...</p>
+            </div>
+        </div>
+        
+        <div id="statusMessage"></div>
+        
+        <div class="results" id="results">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('summary')">Summary Report</button>
+                <button class="tab" onclick="showTab('detail')">Detailed Stays</button>
+            </div>
+            
+            <div class="tab-content active" id="summaryTab">
+                <div class="summary-cards" id="summaryCards"></div>
+                
+                <div class="export-btns">
+                    <button class="btn btn-export" onclick="exportSummary()">📥 Export Summary (CSV)</button>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" id="summarySearch" placeholder="Search travellers..." onkeyup="filterSummaryTable()">
+                </div>
+                
+                <div class="table-container">
+                    <table id="summaryTable">
+                        <thead>
+                            <tr>
+                                <th>Traveller</th>
+                                <th>Book Country</th>
+                                <th>Total Days in UK</th>
+                                <th>Number of Stays</th>
+                                <th>First Arrival</th>
+                                <th>Last Departure</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="detailTab">
+                <div class="export-btns">
+                    <button class="btn btn-export" onclick="exportDetail()">📥 Export Details (CSV)</button>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" id="detailSearch" placeholder="Search travellers or locations..." onkeyup="filterDetailTable()">
+                </div>
+                
+                <div class="table-container">
+                    <table id="detailTable">
+                        <thead>
+                            <tr>
+                                <th>Traveller</th>
+                                <th>Book Country</th>
+                                <th>Arrival Date</th>
+                                <th>Arrival From</th>
+                                <th>Departure Date</th>
+                                <th>Departure To</th>
+                                <th>Days in UK</th>
+                                <th>Ticket Numbers</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let ticketData = null;
+        let segmentData = null;
+        let summaryResults = [];
+        let detailResults = [];
+        let validTickets = new Set(); // Ticket numbers with net positive status
+        
+        // Drag and drop handlers
+        ['ticketUpload', 'segmentUpload'].forEach(id => {
+            const box = document.getElementById(id);
+            
+            box.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                box.classList.add('dragover');
+            });
+            
+            box.addEventListener('dragleave', () => {
+                box.classList.remove('dragover');
+            });
+            
+            box.addEventListener('drop', (e) => {
+                e.preventDefault();
+                box.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    const type = id === 'ticketUpload' ? 'ticket' : 'segment';
+                    const input = document.getElementById(type + 'File');
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    input.files = dataTransfer.files;
+                    handleFileUpload(input, type);
+                }
+            });
+        });
+        
+        function handleFileUpload(input, type) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { raw: false, dateNF: 'yyyy-mm-dd' });
+                
+                // Debug: log first row to check date format
+                if (jsonData.length > 0) {
+                    console.log('Sample row:', jsonData[0]);
+                    console.log('Depart Date sample:', jsonData[0]['Depart Date'], typeof jsonData[0]['Depart Date']);
+                }
+                
+                if (type === 'ticket') {
+                    ticketData = jsonData;
+                    document.getElementById('ticketFileName').textContent = '✓ ' + file.name + ' (' + jsonData.length + ' rows)';
+                    document.getElementById('ticketUpload').classList.add('loaded');
+                } else {
+                    segmentData = jsonData;
+                    document.getElementById('segmentFileName').textContent = '✓ ' + file.name + ' (' + jsonData.length + ' rows)';
+                    document.getElementById('segmentUpload').classList.add('loaded');
+                }
+                
+                document.getElementById('processBtn').disabled = !(ticketData && segmentData);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            
+            // If already a Date object
+            if (dateStr instanceof Date) {
+                return isNaN(dateStr.getTime()) ? null : dateStr;
+            }
+            
+            // If it's a number (Excel serial date)
+            if (typeof dateStr === 'number') {
+                return excelSerialToDate(dateStr);
+            }
+            
+            // If it's a string
+            if (typeof dateStr === 'string') {
+                // Check if it's a numeric string (Excel serial number as string)
+                const numVal = parseFloat(dateStr);
+                if (!isNaN(numVal) && numVal > 40000 && numVal < 60000) {
+                    // Looks like an Excel serial date (roughly 2009-2064)
+                    return excelSerialToDate(numVal);
+                }
+                
+                // Try ISO format first (YYYY-MM-DD)
+                const isoMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+                if (isoMatch) {
+                    const d = new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2]) - 1, parseInt(isoMatch[3]));
+                    return isNaN(d.getTime()) ? null : d;
+                }
+                
+                // Try DD/MM/YYYY or MM/DD/YYYY
+                const slashMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+                if (slashMatch) {
+                    // Assume DD/MM/YYYY (common in UK/AU)
+                    const d = new Date(parseInt(slashMatch[3]), parseInt(slashMatch[2]) - 1, parseInt(slashMatch[1]));
+                    return isNaN(d.getTime()) ? null : d;
+                }
+                
+                // Try standard Date parsing as fallback
+                const d = new Date(dateStr);
+                return isNaN(d.getTime()) ? null : d;
+            }
+            
+            return null;
+        }
+        
+        function excelSerialToDate(serial) {
+            // Excel serial date: days since 1900-01-01 (with a bug for 1900 leap year)
+            // Excel incorrectly considers 1900 as a leap year, so we adjust
+            // Day 1 = Jan 1, 1900
+            // Day 60 = Feb 29, 1900 (doesn't exist, but Excel counts it)
+            // Day 61 = Mar 1, 1900
+            if (serial < 1) return null;
+            
+            // Adjust for Excel's leap year bug (only affects dates before Mar 1, 1900)
+            let adjustedSerial = serial;
+            if (serial >= 60) {
+                adjustedSerial = serial - 1; // Account for the fake Feb 29, 1900
+            }
+            
+            // Create date from Excel epoch (Dec 31, 1899 = day 0)
+            const excelEpoch = new Date(Date.UTC(1899, 11, 31)); // Dec 31, 1899
+            const jsDate = new Date(excelEpoch.getTime() + adjustedSerial * 24 * 60 * 60 * 1000);
+            
+            // Sanity check
+            if (isNaN(jsDate.getTime())) return null;
+            const year = jsDate.getFullYear();
+            if (year < 2020 || year > 2030) return null;
+            
+            return jsDate;
+        }
+        
+        function formatDate(date) {
+            if (!date) return '-';
+            const d = new Date(date);
+            if (isNaN(d.getTime())) return '-';
+            // Sanity check: dates should be between 2020 and 2030
+            const year = d.getFullYear();
+            if (year < 2020 || year > 2030) return '-';
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+        
+        function daysBetween(date1, date2) {
+            if (!date1 || !date2) return 0;
+            const d1 = new Date(date1);
+            const d2 = new Date(date2);
+            if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return 0;
+            // Sanity check: if dates are unreasonable, return 0
+            if (d1.getFullYear() < 2020 || d1.getFullYear() > 2030) return 0;
+            if (d2.getFullYear() < 2020 || d2.getFullYear() > 2030) return 0;
+            const diffTime = Math.abs(d2 - d1);
+            const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            // Sanity check: max reasonable stay is 2 years (730 days)
+            return days > 730 ? 0 : days;
+        }
+        
+        function processData() {
+            // Get reporting period
+            const periodStartInput = document.getElementById('periodStart').value;
+            const periodEndInput = document.getElementById('periodEnd').value;
+            
+            if (!periodStartInput || !periodEndInput) {
+                document.getElementById('statusMessage').innerHTML = 
+                    '<div class="status-message status-error">Please enter both Start Date and End Date for the reporting period.</div>';
+                return;
+            }
+            
+            const periodStart = new Date(periodStartInput);
+            const periodEnd = new Date(periodEndInput);
+            
+            if (periodStart >= periodEnd) {
+                document.getElementById('statusMessage').innerHTML = 
+                    '<div class="status-message status-error">Start Date must be before End Date.</div>';
+                return;
+            }
+            
+            document.getElementById('processingIndicator').style.display = 'block';
+            document.getElementById('results').classList.remove('visible');
+            document.getElementById('statusMessage').innerHTML = '';
+            
+            setTimeout(() => {
+                try {
+                    const stats = calculateUKStays(periodStart, periodEnd);
+                    document.getElementById('processingIndicator').style.display = 'none';
+                    document.getElementById('results').classList.add('visible');
+                    document.getElementById('statusMessage').innerHTML = 
+                        `<div class="status-message status-success">
+                            <strong>✓ Processing complete</strong><br>
+                            <span style="font-size: 0.85rem; opacity: 0.9;">
+                                Reporting Period: ${formatDate(periodStart)} to ${formatDate(periodEnd)}<br>
+                                Tickets: ${stats.totalTickets.toLocaleString()} total, ${stats.validTickets.toLocaleString()} valid (${stats.excludedTickets.toLocaleString()} excluded due to refunds/exchanges)<br>
+                                Segments: ${stats.duplicatesRemoved.toLocaleString()} duplicate records removed, ${stats.includedSegments.toLocaleString()} UK segments for non-UK residents<br>
+                                Transits: ${stats.transitsExcluded} same-day transits excluded | Unmatched arrivals: ${stats.unmatchedArrivals} excluded<br>
+                                Result: ${summaryResults.length} overseas travellers with UK stays in period
+                            </span>
+                        </div>`;
+                } catch (error) {
+                    document.getElementById('processingIndicator').style.display = 'none';
+                    document.getElementById('statusMessage').innerHTML = 
+                        '<div class="status-message status-error">Error: ' + error.message + '</div>';
+                    console.error(error);
+                }
+            }, 100);
+        }
+        
+        function calculateUKStays(periodStart, periodEnd) {
+            // STEP 1: Process Air Ticket Data to determine valid tickets
+            // Sum 'Tickets' column per Ticket Number:
+            // - TICKET = +1
+            // - REFUND/REFUND-PARTIAL/REFUND TAX ONLY = -1
+            // - EXCHANGE = 0
+            // Only tickets with Net > 0 are valid (not fully refunded/exchanged)
+            
+            const ticketNetCounts = {};
+            ticketData.forEach(ticket => {
+                const ticketNum = String(ticket['Ticket Number'] || '').trim();
+                if (!ticketNum) return;
+                
+                const ticketCount = parseFloat(ticket['Tickets']) || 0;
+                ticketNetCounts[ticketNum] = (ticketNetCounts[ticketNum] || 0) + ticketCount;
+            });
+            
+            // Build set of valid ticket numbers
+            validTickets = new Set();
+            Object.keys(ticketNetCounts).forEach(ticketNum => {
+                if (ticketNetCounts[ticketNum] > 0) {
+                    validTickets.add(ticketNum);
+                }
+            });
+            
+            console.log(`Total ticket numbers: ${Object.keys(ticketNetCounts).length}`);
+            console.log(`Valid tickets (net > 0): ${validTickets.size}`);
+            
+            // STEP 2: Filter segments to valid tickets and deduplicate
+            // The segment data can contain duplicate records when exchanges modify itineraries
+            // We keep only the latest Record ID for each unique segment
+            
+            let validSegments = [];
+            let excludedSegments = 0;
+            
+            segmentData.forEach(seg => {
+                const ticketNum = String(seg['Ticket Number'] || '').trim();
+                
+                // Skip segments from invalid/refunded/exchanged tickets
+                if (!validTickets.has(ticketNum)) {
+                    excludedSegments++;
+                    return;
+                }
+                
+                validSegments.push({
+                    ...seg,
+                    ticketNumStr: ticketNum,
+                    recordId: parseFloat(seg['Record ID']) || 0
+                });
+            });
+            
+            // Sort by Record ID descending and deduplicate
+            validSegments.sort((a, b) => b.recordId - a.recordId);
+            
+            const seenSegments = new Set();
+            const dedupedSegments = [];
+            
+            validSegments.forEach(seg => {
+                // Create unique key for this segment
+                const key = [
+                    seg.ticketNumStr,
+                    seg['Traveller'],
+                    seg['Depart Date'],
+                    seg['Arrive Date'],
+                    seg['Depart Country'],
+                    seg['Arrive Country'],
+                    seg['Depart City'],
+                    seg['Arrive City'],
+                    seg['Flight | Train Number']
+                ].join('|');
+                
+                if (!seenSegments.has(key)) {
+                    seenSegments.add(key);
+                    dedupedSegments.push(seg);
+                }
+            });
+            
+            console.log(`Segments from valid tickets: ${validSegments.length}`);
+            console.log(`After deduplication: ${dedupedSegments.length}`);
+            console.log(`Duplicates removed: ${validSegments.length - dedupedSegments.length}`);
+            
+            // STEP 3: Process deduplicated segments for UK travel
+            // Filter out UK residents and group by traveller
+            const travellers = {};
+            let includedSegments = 0;
+            
+            dedupedSegments.forEach(seg => {
+                const bookCountry = (seg['Book Country'] || '').toUpperCase().trim();
+                const traveller = seg['Traveller'];
+                const segments = parseFloat(seg['Segments']) || 0;
+                
+                // Skip UK residents
+                if (bookCountry === 'UNITED KINGDOM') return;
+                
+                // Skip if no UK involvement
+                const departCountry = (seg['Depart Country'] || '').toUpperCase().trim();
+                const arriveCountry = (seg['Arrive Country'] || '').toUpperCase().trim();
+                if (departCountry !== 'UNITED KINGDOM' && arriveCountry !== 'UNITED KINGDOM') return;
+                
+                includedSegments++;
+                
+                if (!travellers[traveller]) {
+                    travellers[traveller] = {
+                        bookCountry: bookCountry,
+                        arrivals: [],
+                        departures: []
+                    };
+                }
+                
+                // Process arrivals to UK
+                if (arriveCountry === 'UNITED KINGDOM') {
+                    travellers[traveller].arrivals.push({
+                        date: parseDate(seg['Arrive Date']),
+                        departDate: parseDate(seg['Depart Date']),
+                        from: seg['Depart Country'],
+                        fromCity: seg['Depart City'],
+                        ticketNumber: seg.ticketNumStr,
+                        segments: segments
+                    });
+                }
+                
+                // Process departures from UK
+                if (departCountry === 'UNITED KINGDOM') {
+                    travellers[traveller].departures.push({
+                        date: parseDate(seg['Depart Date']),
+                        arriveDate: parseDate(seg['Arrive Date']),
+                        to: seg['Arrive Country'],
+                        toCity: seg['Arrive City'],
+                        ticketNumber: seg.ticketNumStr,
+                        segments: segments
+                    });
+                }
+            });
+            
+            console.log(`UK segments for non-UK residents: ${includedSegments}`);
+            
+            // STEP 4: Calculate stays for each traveller
+            // Net out any remaining refund segments within valid tickets
+            detailResults = [];
+            summaryResults = [];
+            let transitsExcluded = 0;
+            let unmatchedArrivals = 0;
+            
+            Object.keys(travellers).forEach(travellerName => {
+                const t = travellers[travellerName];
+                
+                // Net arrivals - group by date+origin and sum segments
+                const netArrivals = {};
+                t.arrivals.forEach(arr => {
+                    if (!arr.date) return;
+                    const key = arr.date.toISOString().split('T')[0] + '_' + arr.from;
+                    if (!netArrivals[key]) {
+                        netArrivals[key] = { ...arr, totalSegments: 0, tickets: new Set() };
+                    }
+                    netArrivals[key].totalSegments += arr.segments;
+                    netArrivals[key].tickets.add(arr.ticketNumber);
+                });
+                
+                // Net departures - group by date+destination and sum segments
+                const netDepartures = {};
+                t.departures.forEach(dep => {
+                    if (!dep.date) return;
+                    const key = dep.date.toISOString().split('T')[0] + '_' + dep.to;
+                    if (!netDepartures[key]) {
+                        netDepartures[key] = { ...dep, totalSegments: 0, tickets: new Set() };
+                    }
+                    netDepartures[key].totalSegments += dep.segments;
+                    netDepartures[key].tickets.add(dep.ticketNumber);
+                });
+                
+                // Filter to only net positive segments (handles segment-level refunds)
+                const validArrivals = Object.values(netArrivals)
+                    .filter(a => a.totalSegments > 0)
+                    .sort((a, b) => a.date - b.date);
+                
+                const validDepartures = Object.values(netDepartures)
+                    .filter(d => d.totalSegments > 0)
+                    .sort((a, b) => a.date - b.date);
+                
+                if (validArrivals.length === 0) return;
+                
+                // Match arrivals with departures
+                const stays = [];
+                const usedDepartures = new Set();
+                let unmatchedCount = 0;
+                
+                validArrivals.forEach(arrival => {
+                    // Find the next departure after this arrival
+                    let matchedDeparture = null;
+                    
+                    for (const dep of validDepartures) {
+                        if (usedDepartures.has(dep)) continue;
+                        if (dep.date >= arrival.date) {
+                            matchedDeparture = dep;
+                            usedDepartures.add(dep);
+                            break;
+                        }
+                    }
+                    
+                    // Skip if no departure found (incomplete data)
+                    if (!matchedDeparture) {
+                        console.log(`Unmatched arrival excluded: ${travellerName} arrived ${formatDate(arrival.date)} from ${arrival.from}, no departure found`);
+                        unmatchedCount++;
+                        return;
+                    }
+                    
+                    // Calculate days within the reporting period
+                    let effectiveArrival = arrival.date;
+                    let effectiveDeparture = matchedDeparture.date;
+                    
+                    // Cap arrival to period start if arrival is before period
+                    if (effectiveArrival < periodStart) {
+                        effectiveArrival = periodStart;
+                    }
+                    
+                    // Cap departure to period end if departure is after period
+                    if (effectiveDeparture > periodEnd) {
+                        effectiveDeparture = periodEnd;
+                    }
+                    
+                    // Skip if entire stay is outside the reporting period
+                    if (effectiveArrival > periodEnd || effectiveDeparture < periodStart) {
+                        return;
+                    }
+                    
+                    // Calculate days (both arrival and departure days count)
+                    const days = daysBetween(effectiveArrival, effectiveDeparture) + 1;
+                    
+                    if (days <= 0) return;
+                    
+                    // Combine ticket numbers from arrival and departure
+                    const allTickets = new Set([...arrival.tickets, ...matchedDeparture.tickets]);
+                    
+                    stays.push({
+                        traveller: travellerName,
+                        bookCountry: t.bookCountry,
+                        arrivalDate: arrival.date,
+                        arrivalFrom: arrival.from,
+                        arrivalCity: arrival.fromCity,
+                        departureDate: matchedDeparture.date,
+                        departureTo: matchedDeparture.to,
+                        departureCity: matchedDeparture.toCity,
+                        days: days,
+                        daysInPeriod: days,
+                        effectiveArrival: effectiveArrival,
+                        effectiveDeparture: effectiveDeparture,
+                        ticketNumbers: Array.from(allTickets).join(', ')
+                    });
+                });
+                
+                unmatchedArrivals += unmatchedCount;
+                
+                if (stays.length > 0) {
+                    // Filter out transits: same-day stays where arrival country ≠ departure country
+                    // These are likely airside transits through UK airports
+                    const filteredStays = stays.filter(stay => {
+                        // Check if actual arrival and departure are on the same day
+                        const arrivalDay = stay.arrivalDate ? stay.arrivalDate.toISOString().split('T')[0] : null;
+                        const departureDay = stay.departureDate ? stay.departureDate.toISOString().split('T')[0] : null;
+                        
+                        if (arrivalDay && departureDay && arrivalDay === departureDay) {
+                            const arrivalFrom = (stay.arrivalFrom || '').toUpperCase().trim();
+                            const departureTo = (stay.departureTo || '').toUpperCase().trim();
+                            
+                            // If arriving from different country than departing to, it's a transit
+                            if (arrivalFrom !== departureTo && 
+                                arrivalFrom !== '' && 
+                                departureTo !== '') {
+                                console.log(`Transit excluded: ${travellerName} - ${arrivalFrom} → UK → ${departureTo} on ${formatDate(stay.arrivalDate)}`);
+                                transitsExcluded++;
+                                return false; // Exclude this transit
+                            }
+                        }
+                        return true; // Include this stay
+                    });
+                    
+                    // Only add to results if there are non-transit stays
+                    if (filteredStays.length > 0) {
+                        // Add to detail results
+                        detailResults.push(...filteredStays);
+                        
+                        // Calculate summary
+                        const totalDays = filteredStays.reduce((sum, s) => sum + s.days, 0);
+                        const firstArrival = filteredStays.reduce((min, s) => 
+                            !min || s.arrivalDate < min ? s.arrivalDate : min, null);
+                        const lastDeparture = filteredStays.reduce((max, s) => 
+                            !max || (s.departureDate && s.departureDate > max) ? s.departureDate : max, null);
+                        
+                        summaryResults.push({
+                            traveller: travellerName,
+                            bookCountry: t.bookCountry,
+                            totalDays: totalDays,
+                            numberOfStays: filteredStays.length,
+                            firstArrival: firstArrival,
+                            lastDeparture: lastDeparture
+                        });
+                    }
+                }
+            });
+            
+            // Sort results
+            summaryResults.sort((a, b) => b.totalDays - a.totalDays);
+            detailResults.sort((a, b) => {
+                if (a.traveller !== b.traveller) return a.traveller.localeCompare(b.traveller);
+                return a.arrivalDate - b.arrivalDate;
+            });
+            
+            // Render results
+            renderSummary();
+            renderDetail();
+            
+            // Return stats for display
+            return {
+                totalTickets: Object.keys(ticketNetCounts).length,
+                validTickets: validTickets.size,
+                excludedTickets: Object.keys(ticketNetCounts).length - validTickets.size,
+                includedSegments: includedSegments,
+                excludedSegments: excludedSegments,
+                duplicatesRemoved: validSegments.length - dedupedSegments.length,
+                transitsExcluded: transitsExcluded,
+                unmatchedArrivals: unmatchedArrivals
+            };
+        }
+        
+        function getDaysBadgeClass(days) {
+            if (days <= 30) return 'days-low';
+            if (days <= 90) return 'days-medium';
+            return 'days-high';
+        }
+        
+        function renderSummary() {
+            // Summary cards
+            const totalTravellers = summaryResults.length;
+            const totalDays = summaryResults.reduce((sum, r) => sum + r.totalDays, 0);
+            const totalStays = summaryResults.reduce((sum, r) => sum + r.numberOfStays, 0);
+            const avgDays = totalTravellers > 0 ? Math.round(totalDays / totalTravellers) : 0;
+            const over183Days = summaryResults.filter(r => r.totalDays > 183).length;
+            
+            document.getElementById('summaryCards').innerHTML = `
+                <div class="summary-card">
+                    <div class="label">Total Travellers</div>
+                    <div class="value">${totalTravellers}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Total Days in UK</div>
+                    <div class="value">${totalDays.toLocaleString()}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Total Stays</div>
+                    <div class="value">${totalStays}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Avg Days per Traveller</div>
+                    <div class="value">${avgDays}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Over 183 Days (Tax Risk)</div>
+                    <div class="value">${over183Days}</div>
+                </div>
+            `;
+            
+            // Summary table
+            const tbody = document.querySelector('#summaryTable tbody');
+            tbody.innerHTML = summaryResults.map(r => `
+                <tr>
+                    <td><strong>${r.traveller}</strong></td>
+                    <td>${r.bookCountry}</td>
+                    <td><span class="days-badge ${getDaysBadgeClass(r.totalDays)}">${r.totalDays} days</span></td>
+                    <td>${r.numberOfStays}</td>
+                    <td>${formatDate(r.firstArrival)}</td>
+                    <td>${formatDate(r.lastDeparture)}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderDetail() {
+            const tbody = document.querySelector('#detailTable tbody');
+            tbody.innerHTML = detailResults.map(r => `
+                <tr>
+                    <td><strong>${r.traveller}</strong></td>
+                    <td>${r.bookCountry}</td>
+                    <td>${formatDate(r.arrivalDate)}<br><span class="stay-detail">${r.arrivalCity || ''}</span></td>
+                    <td>${r.arrivalFrom}</td>
+                    <td>${formatDate(r.departureDate)}<br><span class="stay-detail">${r.departureCity || ''}</span></td>
+                    <td>${r.departureTo}</td>
+                    <td><span class="days-badge ${getDaysBadgeClass(r.days)}">${r.days} days</span></td>
+                    <td><span class="stay-detail">${r.ticketNumbers}</span></td>
+                </tr>
+            `).join('');
+        }
+        
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+        
+        function filterSummaryTable() {
+            const filter = document.getElementById('summarySearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#summaryTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+        
+        function filterDetailTable() {
+            const filter = document.getElementById('detailSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#detailTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+        
+        function exportSummary() {
+            const headers = ['Traveller', 'Book Country', 'Total Days in UK', 'Number of Stays', 'First Arrival', 'Last Departure'];
+            const rows = summaryResults.map(r => [
+                r.traveller,
+                r.bookCountry,
+                r.totalDays,
+                r.numberOfStays,
+                formatDate(r.firstArrival),
+                formatDate(r.lastDeparture)
+            ]);
+            
+            downloadCSV(headers, rows, 'uk_tax_days_summary.csv');
+        }
+        
+        function exportDetail() {
+            const headers = ['Traveller', 'Book Country', 'Arrival Date', 'Arrival From', 'Arrival City', 'Departure Date', 'Departure To', 'Departure City', 'Days in UK', 'Ticket Numbers'];
+            const rows = detailResults.map(r => [
+                r.traveller,
+                r.bookCountry,
+                formatDate(r.arrivalDate),
+                r.arrivalFrom,
+                r.arrivalCity || '',
+                formatDate(r.departureDate),
+                r.departureTo,
+                r.departureCity || '',
+                r.days,
+                r.ticketNumbers
+            ]);
+            
+            downloadCSV(headers, rows, 'uk_tax_days_detail.csv');
+        }
+        
+        function downloadCSV(headers, rows, filename) {
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => 
+                    typeof cell === 'string' && (cell.includes(',') || cell.includes('"')) 
+                        ? '"' + cell.replace(/"/g, '""') + '"' 
+                        : cell
+                ).join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+    </script>
+</body>
+</html>

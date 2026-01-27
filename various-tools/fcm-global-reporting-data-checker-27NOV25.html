@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCM Global Reporting Data Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --fcm-green: #00DE00;
+            --deep-green: #17BE17;
+            --green-highlight: #E9F9E3;
+            --charcoal: #505050;
+            --midnight: #000000;
+            --white: #FFFFFF;
+            --grey-1: #F5F5F5;
+            --grey-2: #E5E5E5;
+            --grey-3: #D9D9D9;
+            --grey-4: #C6C6C6;
+            --grey-5: #AAAAAA;
+            --grey-6: #818181;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: var(--charcoal);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--midnight);
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-accent {
+            color: var(--fcm-green);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--charcoal);
+            font-weight: 400;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--midnight);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--fcm-green);
+            border-radius: 2px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--grey-3);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background: var(--grey-1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: var(--fcm-green);
+            background: var(--green-highlight);
+        }
+
+        .upload-area.active {
+            border-color: var(--fcm-green);
+            background: var(--green-highlight);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--grey-4);
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            color: var(--charcoal);
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            font-size: 0.9rem;
+            color: var(--grey-5);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--fcm-green);
+            color: var(--midnight);
+        }
+
+        .btn-primary:hover {
+            background: var(--deep-green);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 222, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--charcoal);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--midnight);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .validation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .validation-item {
+            background: var(--grey-1);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--fcm-green);
+        }
+
+        .validation-header {
+            font-weight: 600;
+            color: var(--midnight);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--charcoal);
+            margin-bottom: 6px;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--grey-3);
+            border-radius: 8px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--fcm-green);
+            box-shadow: 0 0 0 3px rgba(0, 222, 0, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--fcm-green);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--grey-3);
+            border-radius: 8px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--fcm-green);
+            box-shadow: 0 0 0 3px rgba(0, 222, 0, 0.1);
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: var(--grey-5);
+            margin-top: 4px;
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--fcm-green) 0%, var(--deep-green) 100%);
+            color: var(--midnight);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+        }
+
+        .results-table th {
+            background: var(--midnight);
+            color: var(--white);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .results-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        .results-table th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        .results-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--grey-2);
+        }
+
+        .results-table tr:hover {
+            background: var(--grey-1);
+        }
+
+        .error-count {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .error-high {
+            background: #FFE5E5;
+            color: #D32F2F;
+        }
+
+        .error-medium {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
+        .error-low {
+            background: var(--green-highlight);
+            color: var(--deep-green);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--grey-2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--fcm-green), var(--deep-green));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .file-info {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--green-highlight);
+            border-radius: 8px;
+            border-left: 4px solid var(--fcm-green);
+        }
+
+        .file-info-text {
+            font-size: 0.95rem;
+            color: var(--charcoal);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .validation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .field-type-options {
+            display: none;
+        }
+
+        .field-type-options.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="logo-accent">FCM</span> GLOBAL REPORTING DATA CHECKER</h1>
+            <p class="subtitle">Quality assurance for travel reporting data</p>
+        </header>
+
+        <div class="main-content">
+            <!-- File Upload Section -->
+            <div class="card">
+                <h2 class="card-title">Upload Data File</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📊</div>
+                    <div class="upload-text">Click here to upload Travel Transaction Detail report</div>
+                    <div class="upload-subtext">from FCM Client Reports >> Financial Invoice</div>
+                    <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls">
+                </div>
+                <div class="file-info" id="fileInfo">
+                    <div class="file-info-text" id="fileInfoText"></div>
+                </div>
+            </div>
+
+            <!-- Validation Configuration Section -->
+            <div class="card" id="configSection" style="display: none;">
+                <h2 class="card-title">Validation Configuration</h2>
+                <div class="validation-grid" id="validationGrid">
+                    <!-- Validation items will be generated here -->
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="runCheckBtn">
+                        ▶ Run Data Check
+                    </button>
+                    <button class="btn btn-secondary" id="resetBtn">
+                        ↻ Reset Configuration
+                    </button>
+                </div>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="card results-section" id="resultsSection">
+                <h2 class="card-title">Validation Results</h2>
+                <div class="results-summary" id="resultsSummary">
+                    <!-- Summary stats will be generated here -->
+                </div>
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Reporting Field</th>
+                            <th>Total Records</th>
+                            <th>Errors Found</th>
+                            <th>Error Rate</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <!-- Results will be generated here -->
+                    </tbody>
+                </table>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="downloadErrorsBtn">
+                        ⬇ Download Error Report
+                    </button>
+                    <button class="btn btn-secondary" id="newCheckBtn">
+                        ↻ Start New Check
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 40px 20px; color: var(--grey-5); font-size: 0.9rem;">
+        <div style="margin-bottom: 5px; font-style: italic;">An Ayi Haught-Leeder Production</div>
+        <div>© 2025 Phillip Paterson</div>
+    </footer>
+
+    <script>
+        let uploadedData = null;
+        let validationConfig = {};
+        let validationResults = {};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeUpload();
+            initializeEventListeners();
+        });
+
+        function initializeUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('active');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('active');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('active');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+        }
+
+        function initializeEventListeners() {
+            document.getElementById('runCheckBtn').addEventListener('click', runDataCheck);
+            document.getElementById('resetBtn').addEventListener('click', resetConfiguration);
+            document.getElementById('downloadErrorsBtn').addEventListener('click', downloadErrorReport);
+            document.getElementById('newCheckBtn').addEventListener('click', startNewCheck);
+        }
+
+        function handleFileUpload(file) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { defval: null, raw: true });
+
+                    // Filter out the "Applied Filters" row - check all columns for this text
+                    let filteredData = jsonData.filter(row => {
+                        // Check if any column contains "Applied Filters" or "Applied filters"
+                        const rowValues = Object.values(row).map(v => String(v || '').toLowerCase());
+                        const hasAppliedFilters = rowValues.some(val => 
+                            val.includes('applied filters') || val.includes('applied filter')
+                        );
+                        return !hasAppliedFilters;
+                    });
+
+                    // Also remove the last row as an extra safeguard (Applied Filters is typically last)
+                    if (filteredData.length > 0) {
+                        const lastRow = filteredData[filteredData.length - 1];
+                        const lastRowText = Object.values(lastRow).join('').toLowerCase();
+                        if (lastRowText.includes('applied') || lastRowText.includes('filter')) {
+                            filteredData = filteredData.slice(0, -1);
+                        }
+                    }
+
+                    uploadedData = filteredData;
+
+                    // Show file info
+                    const fileInfo = document.getElementById('fileInfo');
+                    const fileInfoText = document.getElementById('fileInfoText');
+                    fileInfoText.innerHTML = `
+                        ✓ <strong>${file.name}</strong> uploaded successfully<br>
+                        ${filteredData.length.toLocaleString()} rows · ${Object.keys(filteredData[0] || {}).length} columns
+                    `;
+                    fileInfo.style.display = 'block';
+
+                    // Generate validation configuration
+                    generateValidationConfig();
+
+                    // Show configuration section
+                    document.getElementById('configSection').style.display = 'block';
+                } catch (error) {
+                    alert('Error reading file: ' + error.message);
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function generateValidationConfig() {
+            const validationGrid = document.getElementById('validationGrid');
+            validationGrid.innerHTML = '';
+
+            for (let i = 1; i <= 8; i++) {
+                const fieldName = `Reporting ${i}`;
+                
+                const validationItem = document.createElement('div');
+                validationItem.className = 'validation-item';
+                validationItem.innerHTML = `
+                    <div class="validation-header">${fieldName}</div>
+                    
+                    <div class="form-group">
+                        <label>Validation Type</label>
+                        <select class="validation-type" data-field="${fieldName}">
+                            <option value="none">No validation</option>
+                            <option value="pattern">Pattern (Alpha/Numeric)</option>
+                            <option value="set">Valid set of entries</option>
+                        </select>
+                    </div>
+
+                    <!-- Pattern validation options -->
+                    <div class="field-type-options pattern-options" id="pattern-options-${i}">
+                        <div class="form-group">
+                            <label>Data Type</label>
+                            <select class="pattern-type" data-field="${fieldName}">
+                                <option value="alpha">Alpha (A-Z, allows &/-/etc)</option>
+                                <option value="alphanumeric">Alphanumeric (A-Z, 0-9, allows &/-/etc)</option>
+                                <option value="numeric">Numeric (0-9 only)</option>
+                                <option value="custom">Custom pattern</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Character Length (optional)</label>
+                            <input type="text" class="char-length" data-field="${fieldName}" 
+                                   placeholder="e.g., 5 or 5-10">
+                            <div class="help-text">Leave empty for any length, or specify exact (5) or range (5-10)</div>
+                        </div>
+                        <div class="form-group custom-pattern-group" style="display: none;">
+                            <label>Custom Pattern (RegEx)</label>
+                            <input type="text" class="custom-pattern" data-field="${fieldName}" 
+                                   placeholder="e.g., ^[A-Z]{2}-[0-9]{4}$">
+                            <div class="help-text">Use JavaScript RegEx syntax</div>
+                        </div>
+                    </div>
+
+                    <!-- Set validation options -->
+                    <div class="field-type-options set-options" id="set-options-${i}">
+                        <div class="form-group">
+                            <label>Valid Entries (one per line)</label>
+                            <textarea class="valid-entries" data-field="${fieldName}" 
+                                      placeholder="SALES&#10;MARKETING&#10;FINANCE"></textarea>
+                            <div class="help-text">Enter each valid entry on a new line (case-insensitive)</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="check-blank" data-field="${fieldName}">
+                                Flag BLANK entries
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="check-na" data-field="${fieldName}">
+                                Flag NA entries
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="check-empty" data-field="${fieldName}">
+                                Flag empty cells
+                            </label>
+                        </div>
+                    </div>
+                `;
+                
+                validationGrid.appendChild(validationItem);
+            }
+
+            // Add event listeners for validation type changes
+            document.querySelectorAll('.validation-type').forEach(select => {
+                select.addEventListener('change', function() {
+                    const fieldNum = this.dataset.field.split(' ')[1];
+                    const patternOptions = document.getElementById(`pattern-options-${fieldNum}`);
+                    const setOptions = document.getElementById(`set-options-${fieldNum}`);
+                    
+                    patternOptions.classList.remove('active');
+                    setOptions.classList.remove('active');
+                    
+                    if (this.value === 'pattern') {
+                        patternOptions.classList.add('active');
+                    } else if (this.value === 'set') {
+                        setOptions.classList.add('active');
+                    }
+                });
+            });
+
+            // Add event listeners for pattern type changes
+            document.querySelectorAll('.pattern-type').forEach(select => {
+                select.addEventListener('change', function() {
+                    const customPatternGroup = this.closest('.pattern-options').querySelector('.custom-pattern-group');
+                    if (this.value === 'custom') {
+                        customPatternGroup.style.display = 'block';
+                    } else {
+                        customPatternGroup.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function runDataCheck() {
+            if (!uploadedData || uploadedData.length === 0) {
+                alert('Please upload a data file first.');
+                return;
+            }
+
+            // Show progress bar
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            // Collect validation configuration
+            validationConfig = {};
+            
+            for (let i = 1; i <= 8; i++) {
+                const fieldName = `Reporting ${i}`;
+                const validationType = document.querySelector(`.validation-type[data-field="${fieldName}"]`).value;
+                
+                const config = {
+                    type: validationType,
+                    checkBlank: document.querySelector(`.check-blank[data-field="${fieldName}"]`).checked,
+                    checkNA: document.querySelector(`.check-na[data-field="${fieldName}"]`).checked,
+                    checkEmpty: document.querySelector(`.check-empty[data-field="${fieldName}"]`).checked
+                };
+
+                if (validationType === 'pattern') {
+                    config.patternType = document.querySelector(`.pattern-type[data-field="${fieldName}"]`).value;
+                    config.charLength = document.querySelector(`.char-length[data-field="${fieldName}"]`).value;
+                    
+                    if (config.patternType === 'custom') {
+                        config.customPattern = document.querySelector(`.custom-pattern[data-field="${fieldName}"]`).value;
+                    }
+                } else if (validationType === 'set') {
+                    const validEntries = document.querySelector(`.valid-entries[data-field="${fieldName}"]`).value;
+                    config.validSet = validEntries.split('\n')
+                        .map(e => e.trim())
+                        .filter(e => e.length > 0);
+                }
+
+                validationConfig[fieldName] = config;
+            }
+
+            // Run validation
+            setTimeout(() => {
+                performValidation();
+                progressFill.style.width = '100%';
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    displayResults();
+                }, 500);
+            }, 100);
+        }
+
+        function performValidation() {
+            validationResults = {};
+
+            for (let i = 1; i <= 8; i++) {
+                const fieldName = `Reporting ${i}`;
+                const config = validationConfig[fieldName];
+                
+                const errors = [];
+                let totalRecords = 0;
+
+                uploadedData.forEach((row, rowIndex) => {
+                    totalRecords++;
+                    const value = row[fieldName];
+                    const rowNum = rowIndex + 2; // Excel row number (accounting for header)
+                    const errorMessages = [];
+
+                    // Check for empty cells
+                    if (config.checkEmpty && (value === null || value === undefined || value === '')) {
+                        errorMessages.push('Empty cell');
+                    }
+
+                    // Check for BLANK
+                    if (config.checkBlank && value === 'BLANK') {
+                        errorMessages.push('Contains BLANK');
+                    }
+
+                    // Check for NA
+                    if (config.checkNA && (value === 'NA' || value === 'N/A')) {
+                        errorMessages.push('Contains NA');
+                    }
+
+                    // Pattern validation
+                    if (config.type === 'pattern' && value && value !== 'BLANK' && value !== 'NA') {
+                        const strValue = String(value).trim();
+                        let pattern;
+
+                        if (config.patternType === 'custom') {
+                            if (config.customPattern) {
+                                try {
+                                    pattern = new RegExp(config.customPattern);
+                                    if (!pattern.test(strValue)) {
+                                        errorMessages.push(`Doesn't match custom pattern`);
+                                    }
+                                } catch (e) {
+                                    errorMessages.push(`Invalid regex pattern in config`);
+                                }
+                            }
+                        } else {
+                            // Built-in patterns
+                            if (config.patternType === 'alpha') {
+                                // Allow letters, spaces, and common special characters
+                                pattern = /^[A-Za-z\s\-_&\/\(\)\.,;:']+$/;
+                                if (!pattern.test(strValue)) {
+                                    errorMessages.push('Contains invalid characters for alpha pattern');
+                                }
+                            } else if (config.patternType === 'alphanumeric') {
+                                // Allow letters, numbers, spaces, and common special characters
+                                pattern = /^[A-Za-z0-9\s\-_&\/\(\)\.,;:']+$/;
+                                if (!pattern.test(strValue)) {
+                                    errorMessages.push('Contains invalid characters for alphanumeric pattern');
+                                }
+                            } else if (config.patternType === 'numeric') {
+                                pattern = /^[0-9\-\.]+$/;
+                                if (!pattern.test(strValue)) {
+                                    errorMessages.push('Contains non-numeric characters');
+                                }
+                            }
+
+                            // Check length
+                            if (config.charLength) {
+                                const lengthCheck = validateLength(strValue, config.charLength);
+                                if (!lengthCheck.valid) {
+                                    errorMessages.push(lengthCheck.message);
+                                }
+                            }
+                        }
+                    }
+
+                    // Set validation (case-insensitive)
+                    if (config.type === 'set' && value && value !== 'BLANK' && value !== 'NA') {
+                        const strValue = String(value).trim();
+                        if (config.validSet && config.validSet.length > 0) {
+                            // Convert both the value and valid set to lowercase for comparison
+                            const lowerValue = strValue.toLowerCase();
+                            const lowerValidSet = config.validSet.map(v => v.toLowerCase());
+                            
+                            if (!lowerValidSet.includes(lowerValue)) {
+                                errorMessages.push(`Not in valid set (${config.validSet.slice(0, 3).join(', ')}${config.validSet.length > 3 ? '...' : ''})`);
+                            }
+                        }
+                    }
+
+                    if (errorMessages.length > 0) {
+                        errors.push({
+                            row: rowNum,
+                            value: value,
+                            errors: errorMessages
+                        });
+                    }
+                });
+
+                validationResults[fieldName] = {
+                    totalRecords: totalRecords,
+                    errorCount: errors.length,
+                    errorRate: totalRecords > 0 ? (errors.length / totalRecords * 100).toFixed(2) : 0,
+                    errors: errors
+                };
+            }
+        }
+
+        function validateLength(value, lengthSpec) {
+            const len = value.length;
+            
+            if (lengthSpec.includes('-')) {
+                const [min, max] = lengthSpec.split('-').map(n => parseInt(n.trim()));
+                if (len < min || len > max) {
+                    return { valid: false, message: `Length should be ${min}-${max} characters` };
+                }
+            } else {
+                const exact = parseInt(lengthSpec.trim());
+                if (len !== exact) {
+                    return { valid: false, message: `Length should be exactly ${exact} characters` };
+                }
+            }
+            
+            return { valid: true };
+        }
+
+        function displayResults() {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsSummary = document.getElementById('resultsSummary');
+            const resultsTableBody = document.getElementById('resultsTableBody');
+
+            resultsSection.style.display = 'block';
+            
+            // Calculate summary stats
+            let totalErrors = 0;
+            let totalRecords = 0;
+            let fieldsWithErrors = 0;
+
+            Object.values(validationResults).forEach(result => {
+                totalErrors += result.errorCount;
+                totalRecords = result.totalRecords;
+                if (result.errorCount > 0) fieldsWithErrors++;
+            });
+
+            const overallErrorRate = totalRecords > 0 ? (totalErrors / (totalRecords * 8) * 100).toFixed(2) : 0;
+
+            // Display summary
+            resultsSummary.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${totalRecords.toLocaleString()}</div>
+                    <div class="stat-label">Total Records</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalErrors.toLocaleString()}</div>
+                    <div class="stat-label">Total Errors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${fieldsWithErrors}</div>
+                    <div class="stat-label">Fields with Errors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${overallErrorRate}%</div>
+                    <div class="stat-label">Overall Error Rate</div>
+                </div>
+            `;
+
+            // Display results table
+            resultsTableBody.innerHTML = '';
+            
+            for (let i = 1; i <= 8; i++) {
+                const fieldName = `Reporting ${i}`;
+                const result = validationResults[fieldName];
+                
+                let errorClass = 'error-low';
+                if (result.errorRate > 10) errorClass = 'error-high';
+                else if (result.errorRate > 5) errorClass = 'error-medium';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${fieldName}</strong></td>
+                    <td>${result.totalRecords.toLocaleString()}</td>
+                    <td><span class="error-count ${errorClass}">${result.errorCount.toLocaleString()}</span></td>
+                    <td>${result.errorRate}%</td>
+                    <td>${result.errorCount === 0 ? '✓ Pass' : '⚠ Issues Found'}</td>
+                `;
+                resultsTableBody.appendChild(row);
+            }
+
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function downloadErrorReport() {
+            // Create error report with all original columns
+            const errorReport = [];
+            
+            // Get all column names from the original data
+            const allColumns = uploadedData.length > 0 ? Object.keys(uploadedData[0]) : [];
+            
+            // Create header row: Row Number, Reporting Field, Error Description, then all original columns
+            const headerRow = ['Row Number', 'Reporting Field', 'Error Description'].concat(allColumns);
+            errorReport.push(headerRow);
+
+            // Helper function to format dates
+            function formatDate(value, columnName) {
+                // Check if this is a date column
+                const dateColumns = ['Invoice Date', 'Book Date', 'Start Date', 'End Date'];
+                if (!dateColumns.includes(columnName)) {
+                    return value;
+                }
+                
+                if (!value || value === null || value === undefined || value === '') return '';
+                
+                // If it's already a properly formatted date string (DD/MM/YYYY), return it
+                if (typeof value === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+                    return value;
+                }
+                
+                // Try to parse the date
+                try {
+                    let date;
+                    
+                    // Handle Excel serial number (numeric value)
+                    if (typeof value === 'number') {
+                        // Excel's date system starts from December 30, 1899
+                        // Serial number 1 = January 1, 1900
+                        // Excel has a bug where it treats 1900 as a leap year (it's not)
+                        // For dates after Feb 28, 1900 (serial 60+), we need to subtract 1
+                        let adjustedValue = value;
+                        if (value > 60) {
+                            adjustedValue = value - 1;
+                        }
+                        
+                        // Calculate milliseconds since epoch
+                        // December 30, 1899 in milliseconds since Unix epoch
+                        const excelEpoch = new Date(1899, 11, 30).getTime();
+                        const dateInMs = excelEpoch + (adjustedValue * 86400000);
+                        date = new Date(dateInMs);
+                    }
+                    // Handle string dates
+                    else if (typeof value === 'string') {
+                        // Try to parse as ISO date string first
+                        const dateStr = value.trim().split(' ')[0];
+                        date = new Date(dateStr);
+                    }
+                    // Handle Date objects
+                    else if (value instanceof Date) {
+                        date = value;
+                    }
+                    else {
+                        date = new Date(value);
+                    }
+                    
+                    // Check if date is valid and format it
+                    if (date && !isNaN(date.getTime())) {
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const year = date.getFullYear();
+                        return `${day}/${month}/${year}`;
+                    }
+                } catch (e) {
+                    console.error('Date formatting error for value:', value, 'Column:', columnName, 'Error:', e);
+                }
+                
+                // If all else fails, return original value
+                return value;
+            }
+
+            // Collect all errors with full row data
+            const errorRows = [];
+            
+            for (let i = 1; i <= 8; i++) {
+                const fieldName = `Reporting ${i}`;
+                const result = validationResults[fieldName];
+                
+                result.errors.forEach(error => {
+                    // Get the original row data (error.row - 2 because error.row is Excel row number starting at 2)
+                    const originalRowIndex = error.row - 2;
+                    const originalRowData = uploadedData[originalRowIndex];
+                    
+                    // Create error row with metadata first
+                    const errorRowData = [
+                        error.row,
+                        fieldName,
+                        error.errors.join('; ')
+                    ];
+                    
+                    // Add all original column values with date formatting
+                    allColumns.forEach(col => {
+                        const cellValue = originalRowData[col] || '';
+                        errorRowData.push(formatDate(cellValue, col));
+                    });
+                    
+                    errorRows.push(errorRowData);
+                });
+            }
+            
+            // Sort errors by row number
+            errorRows.sort((a, b) => a[0] - b[0]);
+            
+            // Add all error rows to report
+            errorRows.forEach(row => errorReport.push(row));
+
+            // Create workbook
+            const ws = XLSX.utils.aoa_to_sheet(errorReport);
+            
+            // Auto-size columns for better readability
+            const colWidths = [];
+            errorReport[0].forEach((_, colIndex) => {
+                let maxLength = 0;
+                errorReport.forEach(row => {
+                    const cellValue = String(row[colIndex] || '');
+                    maxLength = Math.max(maxLength, cellValue.length);
+                });
+                colWidths.push({ wch: Math.min(maxLength + 2, 50) }); // Cap at 50 characters width
+            });
+            ws['!cols'] = colWidths;
+            
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Errors');
+
+            // Download
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            XLSX.writeFile(wb, `FCM_Data_Errors_${timestamp}.xlsx`);
+        }
+
+        function resetConfiguration() {
+            if (confirm('Are you sure you want to reset the validation configuration?')) {
+                generateValidationConfig();
+            }
+        }
+
+        function startNewCheck() {
+            if (confirm('Start a new check? This will clear current results.')) {
+                document.getElementById('resultsSection').style.display = 'none';
+                document.getElementById('configSection').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>

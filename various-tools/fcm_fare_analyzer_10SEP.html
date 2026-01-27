@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domestic Fare Type Maxx 5000</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'IBM Plex Sans', sans-serif; background-color: #F5F5F5; color: #505050; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 48px 24px; }
+        .header { text-align: center; margin-bottom: 64px; }
+        .header h1 { font-size: 2.5rem; font-weight: 300; color: #505050; margin-bottom: 16px; }
+        .header p { font-size: 1.25rem; font-weight: 300; color: #AAAAAA; }
+        .upload-area { max-width: 32rem; margin: 0 auto 48px auto; border: 2px dashed #E5E5E5; border-radius: 24px; padding: 64px 32px; text-align: center; background: white; cursor: pointer; }
+        .upload-button { display: inline-flex; align-items: center; gap: 8px; padding: 12px 32px; background-color: #00DE00; color: white; border: none; border-radius: 50px; font-weight: 500; cursor: pointer; }
+        .hidden { display: none; }
+        .card { background: white; border-radius: 24px; padding: 32px; margin-bottom: 32px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+        .grid { display: grid; gap: 24px; }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+        .stat-card { border-radius: 16px; padding: 24px; }
+        .green-bg { background-color: #00DE00; color: white; }
+        .charcoal-bg { background-color: #505050; color: white; }
+        .black-bg { background-color: #000000; color: white; }
+        .error { background-color: #FFE5E5; color: #D32F2F; padding: 16px; border-radius: 16px; margin-top: 24px; text-align: center; font-weight: 500; }
+        .footer { text-align: center; margin-top: 64px; padding-top: 32px; border-top: 1px solid #E5E5E5; }
+        .footer p { font-weight: 300; color: #AAAAAA; }
+        .footer .copyright { font-size: 0.875rem; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Domestic Fare Type Maxx 5000</h1>
+            <p>Analyze Domestic Australian flight bookings by fare class</p>
+        </div>
+        <div id="uploadSection">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div style="width: 64px; height: 64px; margin: 0 auto 24px auto; color: #AAAAAA;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 100%; height: 100%;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                </div>
+                <h3 style="font-size: 2rem; font-weight: 300; color: #505050; margin-bottom: 16px;" id="uploadTitle">Upload Flight Data</h3>
+                <p style="font-weight: 300; color: #AAAAAA; margin-bottom: 24px;">Download the Air Segment Report from FCM Client Reports and upload here.</p>
+                <p style="font-weight: 300; color: #AAAAAA; margin-bottom: 32px;">Drop your Excel file here or click to browse</p>
+                <div class="upload-button">
+                    <span id="buttonText">Choose File</span>
+                </div>
+                <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden">
+            </div>
+            <div id="errorMessage" class="error hidden">Error: No Domestic Australian flights found</div>
+        </div>
+        <div id="analysisSection" class="hidden">
+            <div class="card">
+                <h2 style="font-size: 2rem; font-weight: 300;">Analysis Complete</h2>
+                <p style="color: #AAAAAA;" id="totalFlights">flights analyzed</p>
+                <button onclick="resetApp()" style="padding: 12px 24px; background-color: #E5E5E5; color: #505050; border: none; border-radius: 50px; font-weight: 500; cursor: pointer; float: right;">Upload New File</button>
+            </div>
+            <div>
+                <h2 style="font-size: 2rem; font-weight: 300; margin-bottom: 32px;">Fare Class Breakdown</h2>
+                <div class="grid grid-3" style="margin-bottom: 48px;">
+                    <div class="stat-card green-bg">
+                        <h3 style="font-size: 1.125rem; font-weight: 500; margin-bottom: 24px;">Restricted Economy</h3>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                            <span style="opacity: 0.75;">Flights</span>
+                            <div style="text-align: right;">
+                                <div style="font-size: 2rem; font-weight: 600;" id="restrictedCount">0</div>
+                                <div style="font-size: 0.875rem; opacity: 0.6;" id="restrictedPercent">0%</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                            <span style="opacity: 0.75;">Avg Cost</span>
+                            <span style="font-size: 1.25rem; font-weight: 500;" id="restrictedCost">$0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="opacity: 0.75;">Cost per Mile</span>
+                            <span style="font-size: 1.25rem; font-weight: 500;" id="restrictedPerMile">$0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card charcoal-bg">
+                        <h3 style="font-size: 1.125rem; font-weight: 500; margin-bottom: 24px;">Flexible Economy</h3>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                            <span style="opacity: 0.75;">Flights</span>
+                            <div style="text-align: right;">
+                                <div style="font-size: 2rem; font-weight: 600;" id="flexibleCount">0</div>
+                                <div style="font-size: 0.875rem; opacity: 0.6;" id="flexiblePercent">0%</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                            <span style="opacity: 0.75;">Avg Cost</span>
+                            <span style="font-size: 1.25rem; font-weight: 500;" id="flexibleCost">$0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="opacity: 0.75;">Cost per Mile</span>
+                            <span style="font-size: 1.25rem; font-weight: 500;" id="flexiblePerMile">$0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card black-bg">
+                        <h3 style="font-size: 1.125rem; font-weight: 500; margin-bottom: 24px;">Business Class</h3>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                            <span style="opacity: 0.75;">Flights</span>
+                            <div style="text-align: right;">
+                                <div style="font-size: 2rem; font-weight: 600;" id="businessCount">0</div>
+                                <div style="font-size: 0.875rem; opacity: 0.6;" id="businessPercent">0%</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                            <span style="opacity: 0.75;">Avg Cost</span>
+                            <span style="font-size: 1.25rem; font-weight: 500;" id="businessCost">$0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="opacity: 0.75;">Cost per Mile</span>
+                            <span style="font-size: 1.25rem; font-weight: 500;" id="businessPerMile">$0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 2rem; font-weight: 300; margin-bottom: 32px;">Breakdown by Airline</h3>
+                    <div class="grid grid-2">
+                        <div>
+                            <h4 style="font-size: 1.125rem; font-weight: 500; margin-bottom: 16px;">Restricted Economy</h4>
+                            <div id="restrictedAirlines"></div>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.125rem; font-weight: 500; margin-bottom: 16px;">Flexible Economy</h4>
+                            <div id="flexibleAirlines"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="savingsSection" class="card">
+                <div style="margin-bottom: 32px;">
+                    <h2 style="font-size: 2rem; font-weight: 300;">Savings Calculator</h2>
+                </div>
+                <div style="margin-bottom: 32px;">
+                    <label style="display: block; font-size: 1.125rem; font-weight: 500; margin-bottom: 16px;">
+                        Move <span id="sliderValue">20</span>% of Flexible Economy to Restricted
+                    </label>
+                    <input type="range" id="savingsSlider" min="0" max="100" value="20" style="width: 100%; height: 8px; border-radius: 4px; background: #E5E5E5; outline: none; cursor: pointer;">
+                </div>
+                <div class="grid grid-2">
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 500; margin-bottom: 16px;">Current Cost Per Mile</h3>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span style="color: #AAAAAA;">Flexible Avg:</span>
+                            <span style="font-weight: 600;" id="avgFlexCostPerMile">$0/mi</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span style="color: #AAAAAA;">Restricted Avg:</span>
+                            <span style="font-weight: 600;" id="avgRestrictedCostPerMile">$0/mi</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid #E5E5E5;">
+                            <span style="font-weight: 500;">Difference:</span>
+                            <span style="font-weight: 600; color: #00DE00;" id="costPerMileDifference">$0/mi</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 500; margin-bottom: 16px;">Impact</h3>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span style="color: #AAAAAA;">Flights to Move:</span>
+                            <span style="font-weight: 600;" id="flightsToMove">0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span style="color: #AAAAAA;">Miles to Move:</span>
+                            <span style="font-weight: 600;" id="totalMilesToMove">0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid #E5E5E5;">
+                            <span style="font-size: 1.25rem; font-weight: 500;">Total Savings:</span>
+                            <span style="font-size: 2rem; font-weight: 700; color: #00DE00;" id="totalSavings">$0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <p>An Ayi Haught-Leeder Production</p>
+            <p class="copyright">© 2025 Phillip Paterson</p>
+        </div>
+    </div>
+
+<script>
+let analysisData = null;
+
+document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+document.getElementById('savingsSlider').addEventListener('input', updateSavingsCalculation);
+
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        if (!file.name.match(/\.(xlsx|xls)$/)) {
+            showError('Please select an Excel file');
+            return;
+        }
+        processFile(file);
+    }
+}
+
+async function processFile(file) {
+    showLoading(true);
+    hideError();
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        if (jsonData.length === 0) throw new Error('File appears to be empty');
+        const domesticFlights = jsonData.filter(row => 
+            row['Dom | Int'] === 'DOMESTIC' && 
+            row['Depart Country'] === 'AUSTRALIA' && 
+            row['Arrive Country'] === 'AUSTRALIA'
+        );
+        if (domesticFlights.length === 0) throw new Error('No Domestic Australian flights found');
+        analyzeFlights(domesticFlights);
+    } catch (error) {
+        showError('Error: ' + error.message);
+    } finally {
+        showLoading(false);
+    }
+}
+
+function categorizeQantasFlight(classCode) {
+    if (['J', 'C', 'D', 'I'].includes(classCode)) return 'Business';
+    if (['Y', 'B', 'H', 'K'].includes(classCode)) return 'Flex';
+    if (['M', 'L', 'V', 'S', 'N', 'Q', 'O', 'E'].includes(classCode)) return 'Red eDeal';
+    return 'Other';
+}
+
+function categorizeVirginFlight(fareBasis) {
+    if (!fareBasis || fareBasis.length < 4) return 'Other';
+    const thirdFourthLetters = fareBasis.substring(2, 4).toUpperCase();
+    if (thirdFourthLetters === 'BU') return 'Business';
+    if (thirdFourthLetters === 'FL') return 'Flex';
+    if (thirdFourthLetters === 'CH') return 'Choice';
+    return 'Other';
+}
+
+function categorizeRegionalExpressFlight(classCode) {
+    if (['O', 'N', 'U', 'R', 'L', 'T'].includes(classCode)) return 'PromoSaver';
+    if (['G', 'K', 'M', 'Y'].includes(classCode)) return 'Flex';
+    return 'Other';
+}
+
+function analyzeFlights(flights) {
+    const categorizedFlights = flights.map(flight => {
+        let category = 'Other';
+        let fareType = 'Other';
+        if (flight.Vendor === 'QANTAS AIRWAYS LIMITED') {
+            category = categorizeQantasFlight(flight['Class Code']);
+            if (category === 'Red eDeal') fareType = 'Restricted Economy';
+            else if (category === 'Flex') fareType = 'Flexible Economy';
+            else if (category === 'Business') fareType = 'Business Class';
+        } else if (flight.Vendor === 'VIRGIN AUSTRALIA') {
+            category = categorizeVirginFlight(flight['Fare Basis']);
+            if (category === 'Choice') fareType = 'Restricted Economy';
+            else if (category === 'Flex') fareType = 'Flexible Economy';
+            else if (category === 'Business') fareType = 'Business Class';
+        } else if (flight.Vendor === 'REGIONAL EXPRESS') {
+            category = categorizeRegionalExpressFlight(flight['Class Code']);
+            if (category === 'PromoSaver') fareType = 'Restricted Economy';
+            else if (category === 'Flex') fareType = 'Flexible Economy';
+        }
+        return {
+            ...flight,
+            category: category,
+            fareType: fareType,
+            costPerMile: flight.Miles > 0 ? flight['Segment Fare'] / flight.Miles : 0
+        };
+    });
+    const totalFlights = categorizedFlights.length;
+    const restrictedEconomy = categorizedFlights.filter(f => f.fareType === 'Restricted Economy');
+    const flexibleEconomy = categorizedFlights.filter(f => f.fareType === 'Flexible Economy');
+    const businessClass = categorizedFlights.filter(f => f.fareType === 'Business Class');
+    function calculateStats(flights) {
+        return {
+            count: flights.length,
+            percentage: totalFlights > 0 ? (flights.length / totalFlights * 100).toFixed(1) : 0,
+            avgCost: flights.length > 0 ? (flights.reduce((sum, f) => sum + (f['Segment Fare'] || 0), 0) / flights.length).toFixed(2) : 0,
+            avgCostPerMile: flights.length > 0 ? (flights.reduce((sum, f) => sum + f.costPerMile, 0) / flights.length).toFixed(3) : 0
+        };
+    }
+    function calculateAirlineBreakdown(flights) {
+        const airlineGroups = {};
+        flights.forEach(flight => {
+            const airline = flight.Vendor;
+            if (!airlineGroups[airline]) airlineGroups[airline] = [];
+            airlineGroups[airline].push(flight);
+        });
+        const breakdown = {};
+        Object.entries(airlineGroups).forEach(([airline, airlineFlights]) => {
+            breakdown[airline] = {
+                count: airlineFlights.length,
+                percentage: totalFlights > 0 ? (airlineFlights.length / totalFlights * 100).toFixed(1) : 0,
+                avgCost: (airlineFlights.reduce((sum, f) => sum + (f['Segment Fare'] || 0), 0) / airlineFlights.length).toFixed(2),
+                avgCostPerMile: (airlineFlights.reduce((sum, f) => sum + f.costPerMile, 0) / airlineFlights.length).toFixed(3)
+            };
+        });
+        return breakdown;
+    }
+    analysisData = {
+        totalFlights: totalFlights,
+        restrictedEconomy: calculateStats(restrictedEconomy),
+        flexibleEconomy: calculateStats(flexibleEconomy),
+        businessClass: calculateStats(businessClass),
+        airlineBreakdown: {
+            restricted: calculateAirlineBreakdown(restrictedEconomy),
+            flexible: calculateAirlineBreakdown(flexibleEconomy)
+        },
+        rawData: categorizedFlights
+    };
+    displayAnalysis();
+}
+
+function displayAnalysis() {
+    document.getElementById('uploadSection').classList.add('hidden');
+    document.getElementById('analysisSection').classList.remove('hidden');
+    document.getElementById('totalFlights').textContent = analysisData.totalFlights + ' Domestic Australian flights analyzed';
+    document.getElementById('restrictedCount').textContent = analysisData.restrictedEconomy.count;
+    document.getElementById('restrictedPercent').textContent = analysisData.restrictedEconomy.percentage + '%';
+    document.getElementById('restrictedCost').textContent = '$' + analysisData.restrictedEconomy.avgCost;
+    document.getElementById('restrictedPerMile').textContent = '$' + analysisData.restrictedEconomy.avgCostPerMile;
+    document.getElementById('flexibleCount').textContent = analysisData.flexibleEconomy.count;
+    document.getElementById('flexiblePercent').textContent = analysisData.flexibleEconomy.percentage + '%';
+    document.getElementById('flexibleCost').textContent = '$' + analysisData.flexibleEconomy.avgCost;
+    document.getElementById('flexiblePerMile').textContent = '$' + analysisData.flexibleEconomy.avgCostPerMile;
+    document.getElementById('businessCount').textContent = analysisData.businessClass.count;
+    document.getElementById('businessPercent').textContent = analysisData.businessClass.percentage + '%';
+    document.getElementById('businessCost').textContent = '$' + analysisData.businessClass.avgCost;
+    document.getElementById('businessPerMile').textContent = '$' + analysisData.businessClass.avgCostPerMile;
+    displayAirlineBreakdown('restrictedAirlines', analysisData.airlineBreakdown.restricted, '#E8F5E8');
+    displayAirlineBreakdown('flexibleAirlines', analysisData.airlineBreakdown.flexible, '#F0F0F0');
+    updateSavingsCalculation();
+}
+
+function displayAirlineBreakdown(containerId, breakdown, bgColor) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    const airlineOrder = ['QANTAS AIRWAYS LIMITED', 'VIRGIN AUSTRALIA', 'REGIONAL EXPRESS'];
+    const sortedAirlines = Object.keys(breakdown).sort((a, b) => {
+        const indexA = airlineOrder.indexOf(a);
+        const indexB = airlineOrder.indexOf(b);
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return a.localeCompare(b);
+    });
+    sortedAirlines.forEach(airline => {
+        const stats = breakdown[airline];
+        const airlineDiv = document.createElement('div');
+        airlineDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 12px; margin-bottom: 12px; background-color: ' + bgColor + ';';
+        airlineDiv.innerHTML = '<div><div style="font-weight: 500; color: #505050;">' + airline + '</div><div style="font-size: 0.875rem; color: #AAAAAA;">' + stats.count + ' flights (' + stats.percentage + '%)</div></div><div style="text-align: right;"><div style="font-weight: 600; color: #505050;">$' + stats.avgCost + '</div><div style="font-size: 0.875rem; color: #AAAAAA;">$' + stats.avgCostPerMile + '/mi</div></div>';
+        container.appendChild(airlineDiv);
+    });
+}
+
+function updateSavingsCalculation() {
+    if (!analysisData) return;
+    const slider = document.getElementById('savingsSlider');
+    const percentage = parseInt(slider.value);
+    document.getElementById('sliderValue').textContent = percentage;
+    const flexFlights = analysisData.rawData.filter(f => f.fareType === 'Flexible Economy');
+    const restrictedFlights = analysisData.rawData.filter(f => f.fareType === 'Restricted Economy');
+    if (flexFlights.length === 0 || restrictedFlights.length === 0) {
+        document.getElementById('savingsSection').style.display = 'none';
+        return;
+    }
+    const avgFlexCostPerMile = flexFlights.reduce((sum, f) => sum + f.costPerMile, 0) / flexFlights.length;
+    const avgRestrictedCostPerMile = restrictedFlights.reduce((sum, f) => sum + f.costPerMile, 0) / restrictedFlights.length;
+    const costPerMileDifference = avgFlexCostPerMile - avgRestrictedCostPerMile;
+    const flightsToMove = Math.floor(flexFlights.length * (percentage / 100));
+    const flightsToMoveList = flexFlights.slice(0, flightsToMove);
+    const totalMilesToMove = flightsToMoveList.reduce((sum, f) => sum + (f.Miles || 0), 0);
+    const totalSavings = costPerMileDifference * totalMilesToMove;
+    const remainingFlexFlights = flexFlights.length - flightsToMove;
+    document.getElementById('avgFlexCostPerMile').textContent = '$' + avgFlexCostPerMile.toFixed(3) + '/mi';
+    document.getElementById('avgRestrictedCostPerMile').textContent = '$' + avgRestrictedCostPerMile.toFixed(3) + '/mi';
+    document.getElementById('costPerMileDifference').textContent = '$' + costPerMileDifference.toFixed(3) + '/mi';
+    document.getElementById('flightsToMove').textContent = flightsToMove;
+    document.getElementById('totalMilesToMove').textContent = totalMilesToMove.toLocaleString() + ' miles';
+    document.getElementById('totalSavings').textContent = '$' + totalSavings.toFixed(0);
+}
+
+function showLoading(loading) {
+    const uploadTitle = document.getElementById('uploadTitle');
+    const buttonText = document.getElementById('buttonText');
+    const fileInput = document.getElementById('fileInput');
+    if (loading) {
+        uploadTitle.textContent = 'Processing...';
+        buttonText.textContent = 'Processing...';
+        fileInput.disabled = true;
+    } else {
+        uploadTitle.textContent = 'Upload Flight Data';
+        buttonText.textContent = 'Choose File';
+        fileInput.disabled = false;
+    }
+}
+
+function showError(message) {
+    const errorDiv = document.getElementById('errorMessage');
+    errorDiv.textContent = message;
+    errorDiv.classList.remove('hidden');
+}
+
+function hideError() {
+    document.getElementById('errorMessage').classList.add('hidden');
+}
+
+function resetApp() {
+    analysisData = null;
+    document.getElementById('uploadSection').classList.remove('hidden');
+    document.getElementById('analysisSection').classList.add('hidden');
+    document.getElementById('fileInput').value = '';
+    document.getElementById('savingsSlider').value = 20;
+    document.getElementById('sliderValue').textContent = '20';
+    hideError();
+}
+</script>
+
+</body>
+</html>

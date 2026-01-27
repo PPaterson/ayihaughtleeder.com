@@ -1,0 +1,2207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airfare Savings Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --fcm-green: #00DE00;
+            --deep-green: #17BE17;
+            --green-highlight: #E9F9E3;
+            --clarity-white: #FFFFFF;
+            --charcoal-grey: #505050;
+            --midnight-black: #000000;
+            --grey-1: #F5F5F5;
+            --grey-2: #E5E5E5;
+            --grey-3: #D9D9D9;
+            --grey-4: #C6C6C6;
+            --grey-5: #AAAAAA;
+            --grey-6: #818181;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--charcoal-grey);
+            background-color: var(--clarity-white);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+
+        header {
+            margin-bottom: 48px;
+            border-bottom: 1px solid var(--grey-2);
+            padding-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--midnight-black);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--grey-6);
+        }
+
+        .help-link {
+            color: var(--deep-green);
+            text-decoration: none;
+        }
+
+        .help-link:hover {
+            text-decoration: underline;
+        }
+
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-header {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--grey-6);
+            margin-bottom: 12px;
+        }
+
+        .section-note {
+            font-size: 12px;
+            color: var(--grey-6);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .client-profiles {
+            background-color: var(--grey-1);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            border-left: 3px solid var(--fcm-green);
+        }
+
+        .profile-controls {
+            display: flex;
+            align-items: flex-end;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .profile-load {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .profile-load label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--grey-6);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .profile-load select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--grey-3);
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 14px;
+            background-color: var(--clarity-white);
+            cursor: pointer;
+        }
+
+        .profile-load select:focus {
+            outline: none;
+            border-color: var(--deep-green);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .profile-btn {
+            padding: 10px 20px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid var(--grey-3);
+            background-color: var(--clarity-white);
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .profile-btn:hover {
+            border-color: var(--charcoal-grey);
+        }
+
+        .profile-btn.delete-btn {
+            color: var(--grey-6);
+        }
+
+        .profile-btn.delete-btn:hover {
+            border-color: #c00;
+            color: #c00;
+        }
+
+        .profile-backup {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .profile-btn.backup-btn {
+            background-color: var(--grey-1);
+            color: var(--grey-6);
+            font-size: 12px;
+            padding: 8px 14px;
+        }
+
+        .profile-btn.backup-btn:hover {
+            background-color: var(--grey-2);
+            border-color: var(--grey-5);
+            color: var(--charcoal-grey);
+        }
+
+        .upload-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .upload-box {
+            border: 1px dashed var(--grey-3);
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+            background-color: var(--grey-1);
+        }
+
+        .upload-box:hover {
+            border-color: var(--grey-5);
+        }
+
+        .upload-box.loaded {
+            border-style: solid;
+            border-color: var(--deep-green);
+            background-color: var(--green-highlight);
+        }
+
+        .upload-box input {
+            display: none;
+        }
+
+        .upload-label {
+            font-weight: 500;
+            color: var(--midnight-black);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: var(--grey-6);
+        }
+
+        .upload-source {
+            display: block;
+            font-size: 11px;
+            color: var(--grey-5);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .upload-status {
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--deep-green);
+        }
+
+        .discount-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .discount-panel {
+            background-color: var(--grey-1);
+            padding: 24px;
+        }
+
+        .discount-panel h3 {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--midnight-black);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--grey-2);
+        }
+
+        .airline-group {
+            margin-bottom: 24px;
+        }
+
+        .airline-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .domestic-discount-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+        }
+
+        .domestic-discount-grid .airline-group {
+            margin-bottom: 0;
+        }
+
+        .airline-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--charcoal-grey);
+            margin-bottom: 12px;
+        }
+
+        .fare-input-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .fare-label {
+            flex: 1;
+            font-size: 13px;
+            color: var(--grey-6);
+        }
+
+        .fare-input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 1px solid var(--grey-3);
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 13px;
+            text-align: right;
+            background-color: var(--clarity-white);
+        }
+
+        .fare-input:focus {
+            outline: none;
+            border-color: var(--deep-green);
+        }
+
+        .fare-input::placeholder {
+            color: var(--grey-5);
+        }
+
+        .fare-note {
+            font-size: 11px;
+            color: var(--grey-5);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .percent-symbol {
+            margin-left: 4px;
+            color: var(--grey-6);
+            font-size: 13px;
+        }
+
+        /* International Discounts */
+        .intl-discount-list {
+            border: 1px solid var(--grey-2);
+            background-color: var(--clarity-white);
+            margin-bottom: 16px;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .intl-discount-item {
+            display: grid;
+            grid-template-columns: 1fr 140px 180px 90px 32px;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--grey-2);
+            font-size: 13px;
+        }
+
+        .intl-discount-item:last-child {
+            border-bottom: none;
+        }
+
+        .intl-discount-header {
+            background-color: var(--grey-1);
+            font-weight: 500;
+            color: var(--grey-6);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .intl-discount-item select,
+        .intl-discount-item input {
+            padding: 8px 10px;
+            border: 1px solid var(--grey-3);
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 12px;
+            background-color: var(--clarity-white);
+        }
+
+        .intl-discount-item select:focus,
+        .intl-discount-item input:focus {
+            outline: none;
+            border-color: var(--deep-green);
+        }
+
+        .intl-discount-input-wrap {
+            display: flex;
+            align-items: center;
+        }
+
+        .intl-discount-input-wrap .fare-input {
+            width: 60px;
+        }
+
+        .intl-discount-input-wrap .percent-symbol {
+            margin-left: 4px;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--grey-5);
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .remove-btn:hover {
+            color: var(--charcoal-grey);
+        }
+
+        .add-discount-btn {
+            background-color: var(--clarity-white);
+            border: 1px solid var(--grey-3);
+            padding: 10px 16px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 13px;
+            color: var(--charcoal-grey);
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .add-discount-btn:hover {
+            border-color: var(--charcoal-grey);
+        }
+
+        .calculate-btn {
+            background-color: var(--midnight-black);
+            color: var(--clarity-white);
+            border: none;
+            padding: 14px 32px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .calculate-btn:hover {
+            background-color: var(--charcoal-grey);
+        }
+
+        .calculate-btn:disabled {
+            background-color: var(--grey-4);
+            cursor: not-allowed;
+        }
+
+        /* Results */
+        .results-section {
+            display: none;
+        }
+
+        .results-section.visible {
+            display: block;
+        }
+
+        .results-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .summary-card {
+            background-color: var(--grey-1);
+            padding: 24px;
+        }
+
+        .summary-card.highlight {
+            background-color: var(--green-highlight);
+        }
+
+        .summary-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--grey-6);
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: 500;
+            color: var(--midnight-black);
+        }
+
+        .summary-value.green {
+            color: var(--deep-green);
+        }
+
+        .results-table-container {
+            margin-top: 32px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .results-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background-color: var(--grey-1);
+            font-weight: 500;
+            color: var(--grey-6);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid var(--grey-2);
+        }
+
+        .results-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--grey-2);
+            color: var(--charcoal-grey);
+        }
+
+        .results-table tr:hover {
+            background-color: var(--grey-1);
+        }
+
+        .results-table .number {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .results-table .savings {
+            color: var(--deep-green);
+            font-weight: 500;
+        }
+
+        .results-table .airline-group-row {
+            background-color: var(--grey-1);
+            font-weight: 500;
+        }
+
+        .results-table .airline-group-row td {
+            padding-top: 16px;
+            padding-bottom: 8px;
+            border-bottom: none;
+        }
+
+        .results-table .subtotal-row {
+            background-color: var(--green-highlight);
+        }
+
+        .results-table .subtotal-row td {
+            font-weight: 500;
+            border-bottom: 2px solid var(--grey-3);
+        }
+
+        .results-table .grand-total-row {
+            background-color: var(--grey-1);
+        }
+
+        .results-table .grand-total-row td {
+            font-weight: 600;
+            padding-top: 16px;
+            padding-bottom: 16px;
+        }
+
+        .tab-container {
+            margin-bottom: 24px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid var(--grey-2);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 13px;
+            color: var(--grey-6);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            color: var(--midnight-black);
+            font-weight: 500;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--fcm-green);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px;
+            color: var(--grey-6);
+        }
+
+        @media (max-width: 768px) {
+            .upload-area,
+            .results-summary,
+            .domestic-discount-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .intl-discount-item {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+
+        .app-footer {
+            margin-top: 64px;
+            padding-top: 24px;
+            border-top: 1px solid var(--grey-2);
+            text-align: center;
+            font-size: 12px;
+            color: var(--grey-5);
+        }
+
+        .app-footer p {
+            margin: 4px 0;
+        }
+
+        .instructions-section {
+            margin-top: 64px;
+            padding-top: 48px;
+            border-top: 1px solid var(--grey-2);
+        }
+
+        .instructions-section h2 {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--midnight-black);
+            margin-bottom: 32px;
+        }
+
+        .instructions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .instruction-block {
+            background-color: var(--grey-1);
+            padding: 24px;
+        }
+
+        .instruction-block h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--midnight-black);
+            margin-bottom: 12px;
+        }
+
+        .instruction-block p {
+            font-size: 13px;
+            color: var(--charcoal-grey);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .instruction-block p:last-child {
+            margin-bottom: 0;
+        }
+
+        .instruction-block ul {
+            font-size: 13px;
+            color: var(--charcoal-grey);
+            margin: 0 0 12px 20px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .instructions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .export-row {
+            margin-bottom: 24px;
+        }
+
+        .export-btn {
+            background-color: var(--deep-green);
+            color: var(--clarity-white);
+            border: none;
+            padding: 12px 24px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .export-btn:hover {
+            background-color: var(--fcm-green);
+            color: var(--midnight-black);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Airfare Savings Calculator</h1>
+            <p class="subtitle">Calculate preferred airline discount savings from travel data · <a href="#instructions" class="help-link">How to use this tool</a></p>
+        </header>
+
+        <div class="section">
+            <div class="section-header">Upload Data Files</div>
+            <p class="section-note">Reports do not need to be pre-filtered. The calculator will automatically filter for Domestic Australia segments and International departures from Australia, and exclude exchanges and refunds.</p>
+            <div class="upload-area">
+                <div class="upload-box" id="segmentUpload">
+                    <input type="file" id="segmentFile" accept=".xlsx,.xls">
+                    <span class="upload-label">Segment Detail</span>
+                    <span class="upload-hint">For domestic Australia fare analysis</span>
+                    <span class="upload-source">Source: Air O&D and Segment reports in PowerBI</span>
+                    <div class="upload-status" id="segmentStatus"></div>
+                </div>
+                <div class="upload-box" id="airTransUpload">
+                    <input type="file" id="airTransFile" accept=".xlsx,.xls">
+                    <span class="upload-label">Air Transaction Detail</span>
+                    <span class="upload-hint">For international fare analysis</span>
+                    <span class="upload-source">Source: Financial Invoice reports in PowerBI</span>
+                    <div class="upload-status" id="airTransStatus"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">Configure Discounts</div>
+            
+            <div class="client-profiles">
+                <div class="profile-controls">
+                    <div class="profile-load">
+                        <label for="profileSelect">Client Settings</label>
+                        <select id="profileSelect">
+                            <option value="">Select a saved client...</option>
+                        </select>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="profile-btn" id="saveProfileBtn">Save</button>
+                        <button class="profile-btn delete-btn" id="deleteProfileBtn">Delete</button>
+                    </div>
+                    <div class="profile-backup">
+                        <button class="profile-btn backup-btn" id="exportAllBtn">Export All Settings</button>
+                        <button class="profile-btn backup-btn" id="importAllBtn">Import Settings</button>
+                        <input type="file" id="importFileInput" accept=".json" style="display: none;">
+                    </div>
+                </div>
+            </div>
+            <div class="discount-grid">
+                <div class="discount-panel">
+                    <h3>Domestic Australia</h3>
+                    
+                    <div class="domestic-discount-grid">
+                        <div class="airline-group">
+                            <div class="airline-name">Qantas</div>
+                            <div class="fare-input-row">
+                                <span class="fare-label">Business (J, C)</span>
+                                <input type="number" class="fare-input" id="qf-business" placeholder="0" min="0" max="100" step="1">
+                                <span class="percent-symbol">%</span>
+                            </div>
+                            <div class="fare-input-row">
+                                <span class="fare-label">Flex (Y, B, H, K)</span>
+                                <input type="number" class="fare-input" id="qf-flex" placeholder="0" min="0" max="100" step="1">
+                                <span class="percent-symbol">%</span>
+                            </div>
+                            <div class="fare-input-row">
+                                <span class="fare-label">Red eDeal (M, L, V, S, N, Q, O, E)</span>
+                                <input type="number" class="fare-input" id="qf-rededeal" placeholder="0" min="0" max="100" step="1">
+                                <span class="percent-symbol">%</span>
+                            </div>
+                            <div class="fare-note">D and I class fares typically do not attract corporate discounts</div>
+                        </div>
+                        
+                        <div class="airline-group">
+                            <div class="airline-name">Virgin Australia</div>
+                            <div class="fare-input-row">
+                                <span class="fare-label">Business (BU)</span>
+                                <input type="number" class="fare-input" id="va-business" placeholder="0" min="0" max="100" step="1">
+                                <span class="percent-symbol">%</span>
+                            </div>
+                            <div class="fare-input-row">
+                                <span class="fare-label">Flex (FL)</span>
+                                <input type="number" class="fare-input" id="va-flex" placeholder="0" min="0" max="100" step="1">
+                                <span class="percent-symbol">%</span>
+                            </div>
+                            <div class="fare-input-row">
+                                <span class="fare-label">Choice (CH)</span>
+                                <input type="number" class="fare-input" id="va-choice" placeholder="0" min="0" max="100" step="1">
+                                <span class="percent-symbol">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="discount-panel">
+                    <h3>International</h3>
+                    <p style="font-size: 12px; color: var(--grey-6); margin-bottom: 16px;">Flights departing Australia to international destinations</p>
+                    
+                    <div class="intl-discount-list" id="intlDiscountList">
+                        <div class="intl-discount-item intl-discount-header">
+                            <span>Airline</span>
+                            <span>Class</span>
+                            <span>Destination</span>
+                            <span>Discount</span>
+                            <span></span>
+                        </div>
+                    </div>
+                    
+                    <button class="add-discount-btn" id="addIntlDiscount">+ Add Discount Rule</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <button class="calculate-btn" id="calculateBtn" disabled>Calculate Savings</button>
+        </div>
+
+        <div class="section results-section" id="resultsSection">
+            <div class="section-header">Results</div>
+            
+            <div class="results-summary">
+                <div class="summary-card">
+                    <div class="summary-label">Domestic Spend Analysed</div>
+                    <div class="summary-value" id="domesticSpend">$0</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">International Spend Analysed</div>
+                    <div class="summary-value" id="intlSpend">$0</div>
+                </div>
+                <div class="summary-card highlight">
+                    <div class="summary-label">Total Estimated Savings</div>
+                    <div class="summary-value green" id="totalSavings">$0</div>
+                </div>
+            </div>
+
+            <div class="export-row">
+                <button class="export-btn" id="exportExcelBtn">Export to Excel</button>
+            </div>
+
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="summary">Summary</button>
+                    <button class="tab-btn" data-tab="domestic">Domestic Detail</button>
+                    <button class="tab-btn" data-tab="international">International Detail</button>
+                    <button class="tab-btn" data-tab="domesticDetail">Domestic Segments</button>
+                    <button class="tab-btn" data-tab="intlDetail">International Transactions</button>
+                </div>
+
+                <div class="tab-content active" id="summary-tab">
+                    <div class="results-table-container">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Airline</th>
+                                    <th class="number">Domestic Spend</th>
+                                    <th class="number">Domestic Savings</th>
+                                    <th class="number">Int'l Spend</th>
+                                    <th class="number">Int'l Savings</th>
+                                    <th class="number">Total Savings</th>
+                                </tr>
+                            </thead>
+                            <tbody id="summaryResults"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="domestic-tab">
+                    <div class="results-table-container">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Airline</th>
+                                    <th>Fare Type</th>
+                                    <th class="number">Segments</th>
+                                    <th class="number">Total Fare</th>
+                                    <th class="number">Discount</th>
+                                    <th class="number">Savings</th>
+                                </tr>
+                            </thead>
+                            <tbody id="domesticResults"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="international-tab">
+                    <div class="results-table-container">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Airline</th>
+                                    <th>Class</th>
+                                    <th>Destination</th>
+                                    <th class="number">Transactions</th>
+                                    <th class="number">Base Fare</th>
+                                    <th class="number">Discount</th>
+                                    <th class="number">Savings</th>
+                                </tr>
+                            </thead>
+                            <tbody id="intlResults"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="domesticDetail-tab">
+                    <div class="results-table-container">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket</th>
+                                    <th>Traveller</th>
+                                    <th>Route</th>
+                                    <th>Airline</th>
+                                    <th>Class</th>
+                                    <th>Fare Basis</th>
+                                    <th class="number">Segment Fare</th>
+                                    <th class="number">Savings</th>
+                                </tr>
+                            </thead>
+                            <tbody id="domesticDetailResults"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="intlDetail-tab">
+                    <div class="results-table-container">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket</th>
+                                    <th>Traveller</th>
+                                    <th>Route</th>
+                                    <th>Airline</th>
+                                    <th>Class</th>
+                                    <th class="number">Base Fare</th>
+                                    <th class="number">Savings</th>
+                                </tr>
+                            </thead>
+                            <tbody id="intlDetailResults"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="instructions-section" id="instructions">
+            <h2>How to Use This Tool</h2>
+
+            <div class="instructions-grid">
+                <div class="instruction-block">
+                    <h3>1. Get Your Data</h3>
+                    <p>Export two reports from PowerBI:</p>
+                    <ul>
+                        <li><strong>Segment Detail</strong> – from Air O&D and Segment reports (for domestic)</li>
+                        <li><strong>Air Transaction Detail</strong> – from Financial Invoice reports (for international)</li>
+                    </ul>
+                    <p>No need to filter the reports – the calculator handles that automatically.</p>
+                </div>
+
+                <div class="instruction-block">
+                    <h3>2. Upload Files</h3>
+                    <p>Click each upload box and select your file. You'll see a green border and row count when loaded.</p>
+                </div>
+
+                <div class="instruction-block">
+                    <h3>3. Enter Discounts</h3>
+                    <p>Fill in discount percentages for domestic fares (Qantas, Virgin Australia).</p>
+                    <p>For international, click <strong>+ Add Discount Rule</strong> and select airline, class, destination, and percentage.</p>
+                </div>
+
+                <div class="instruction-block">
+                    <h3>4. Calculate & Export</h3>
+                    <p>Click <strong>Calculate Savings</strong> to see results. Click <strong>Export to Excel</strong> to download a spreadsheet.</p>
+                </div>
+            </div>
+
+            <div class="instructions-grid">
+                <div class="instruction-block">
+                    <h3>Saving Client Settings</h3>
+                    <p><strong>Save:</strong> Enter discounts, click Save, type client name (e.g. "USYD")</p>
+                    <p><strong>Load:</strong> Select client from dropdown – discounts fill in automatically</p>
+                    <p><strong>Update:</strong> Load client, make changes, click Save</p>
+                    <p><strong>Delete:</strong> Select client, click Delete</p>
+                </div>
+
+                <div class="instruction-block">
+                    <h3>Backing Up Settings</h3>
+                    <p>Settings are stored in your browser. To protect against data loss:</p>
+                    <p><strong>Backup:</strong> Click <strong>Export All Settings</strong> and save the file to OneDrive or Documents</p>
+                    <p><strong>Restore:</strong> Click <strong>Import Settings</strong> and select your backup file</p>
+                    <p>Do this whenever you add new clients.</p>
+                </div>
+            </div>
+
+            <div class="instruction-block">
+                <h3>Need Help?</h3>
+                <p>Contact Phil Paterson if you have questions or something isn't working.</p>
+            </div>
+        </section>
+
+        <footer class="app-footer">
+            <p>An Ayi Haught-Leeder Production</p>
+            <p>© 2026 Phillip Paterson</p>
+        </footer>
+    </div>
+
+    <script>
+        // Global data storage
+        let segmentData = null;
+        let airTransData = null;
+        let lastResults = null; // Store results for export
+
+        // Airline list for international
+        const airlines = [
+            'QANTAS AIRWAYS LIMITED',
+            'SINGAPORE AIRLINES',
+            'AIR NEW ZEALAND',
+            'EMIRATES',
+            'CATHAY PACIFIC AIRWAYS',
+            'AIR NIUGINI',
+            'QATAR AIRWAYS',
+            'VIRGIN AUSTRALIA',
+            'UNITED AIRLINES INC.',
+            'MALAYSIA AIRLINES',
+            'FIJI AIRWAYS',
+            'BRITISH AIRWAYS P.L.C.',
+            'THAI AIRWAYS INTERNATIONAL',
+            'TURKISH AIRLINES INC.',
+            'PHILIPPINE AIRLINES',
+            'CHINA EASTERN AIRLINES',
+            'JETSTAR AIRWAYS',
+            'VIETNAM AIRLINES',
+            'AIR CANADA',
+            'AIRLINK',
+            'ETIHAD AIRWAYS',
+            'AMERICAN AIRLINES INC.',
+            'DELTA AIR LINES INC.',
+            'SOUTH AFRICAN AIRWAYS',
+            'BRUSSELS AIRLINES',
+            'CHINA SOUTHERN AIRLINES',
+            'LUFTHANSA',
+            'KLM',
+            'JAPAN AIRLINES CO., LTD',
+            'HAHN AIR',
+            'ALL NIPPON AIRWAYS',
+            'KOREAN AIR',
+            'LATAM AIRLINES GROUP',
+            'AIR FRANCE',
+            'AIR INDIA',
+            'GARUDA INDONESIA',
+            'AIR CHINA INTERNATIONAL',
+            'CHINA AIRLINES',
+            'ETHIOPIAN AIRLINES',
+            'ASIANA AIRLINES',
+            'SCOOT',
+            'BATIK AIR',
+            'FINNAIR',
+            'IBERIA LINEAS AEREAS DE ESPANA S.A. OPERADORA',
+            'SWISS',
+            'SCANDINAVIAN AIRLINES SYSTEMS (SAS)',
+            'ROYAL BRUNEI AIRLINES',
+            'SRILANKAN AIRLINES',
+            'NAURU AIRLINES',
+            'PT. BATIK AIR INDONESIA',
+            'AIRASIA INDONESIA',
+            'XIAMEN AIRLINES',
+            'AIRASIA',
+            'SOLOMON AIRLINES',
+            'AER LINGUS',
+            'EVA AIRWAYS',
+            'AUSTRIAN AIRLINES',
+            'TAP AIR PORTUGAL',
+            'KENYA AIRWAYS',
+            'ITA AIRWAYS',
+            'HAWAIIAN AIRLINES',
+            'WESTJET',
+            'LOT POLISH AIRLINES',
+            'AIR TANZANIA COMPANY LTD',
+            'APG AIRLINES',
+            'AEROMEXICO',
+            'HONG KONG AIRLINES',
+            'AEGEAN AIRLINES',
+            'SAUDI ARABIAN AIRLINES CORP',
+            'VIRGIN ATLANTIC AIRWAYS',
+            'ROYAL AIR MAROC',
+            'COPA AIRLINES',
+            'EGYPTAIR',
+            'AIR TAHITI NUI',
+            'LAO AIRLINES',
+            'FLEXFLIGHT APS',
+            'JUNEYAO AIRLINES',
+            'VIPPER BV',
+            'SICHUAN AIRLINES',
+            'AVIANCA',
+            'BANGKOK AIRWAYS',
+            'AIR BOTSWANA',
+            'ALASKA AIRLINES',
+            'AIRCALIN',
+            'HAINAN AIRLINES',
+            'OMAN AIR',
+            'AIRNORTH',
+            'AIR MAURITIUS',
+            'VIETJET AVIATION'
+        ].sort();
+
+        // Class options for international
+        const classOptions = ['ALL CLASSES', 'ECONOMY', 'PREMIUM ECONOMY', 'BUSINESS', 'FIRST'];
+
+        // Airline name normalisation mapping
+        const airlineNameMap = {
+            'QANTAS': 'Qantas',
+            'QANTAS AIRWAYS LIMITED': 'Qantas',
+            'VIRGIN AUSTRALIA': 'Virgin Australia',
+            'SINGAPORE AIRLINES': 'Singapore Airlines',
+            'EMIRATES': 'Emirates',
+            'CATHAY PACIFIC AIRWAYS': 'Cathay Pacific',
+            'AIR NEW ZEALAND': 'Air New Zealand',
+            'QATAR AIRWAYS': 'Qatar Airways',
+            'UNITED AIRLINES INC.': 'United Airlines',
+            'BRITISH AIRWAYS P.L.C.': 'British Airways',
+            'LUFTHANSA': 'Lufthansa',
+            'AIR CANADA': 'Air Canada',
+            'ETIHAD AIRWAYS': 'Etihad Airways',
+            'KOREAN AIR': 'Korean Air',
+            'ALL NIPPON AIRWAYS': 'All Nippon Airways',
+            'JAPAN AIRLINES CO., LTD': 'Japan Airlines',
+            'THAI AIRWAYS INTERNATIONAL': 'Thai Airways',
+            'MALAYSIA AIRLINES': 'Malaysia Airlines',
+            'GARUDA INDONESIA': 'Garuda Indonesia',
+            'CHINA EASTERN AIRLINES': 'China Eastern',
+            'CHINA SOUTHERN AIRLINES': 'China Southern',
+            'AIR CHINA INTERNATIONAL': 'Air China',
+            'DELTA AIR LINES INC.': 'Delta Air Lines',
+            'AMERICAN AIRLINES INC.': 'American Airlines',
+            'JETSTAR AIRWAYS': 'Jetstar',
+            'FIJI AIRWAYS': 'Fiji Airways',
+            'AIR NIUGINI': 'Air Niugini',
+            'VIETNAM AIRLINES': 'Vietnam Airlines',
+            'PHILIPPINE AIRLINES': 'Philippine Airlines',
+            'TURKISH AIRLINES INC.': 'Turkish Airlines',
+            'KLM': 'KLM',
+            'AIR FRANCE': 'Air France',
+            'FINNAIR': 'Finnair',
+            'SWISS': 'Swiss',
+            'AUSTRIAN AIRLINES': 'Austrian Airlines',
+            'BRUSSELS AIRLINES': 'Brussels Airlines',
+            'SOUTH AFRICAN AIRWAYS': 'South African Airways',
+            'ETHIOPIAN AIRLINES': 'Ethiopian Airlines',
+            'SCOOT': 'Scoot',
+            'LATAM AIRLINES GROUP': 'LATAM',
+            'EVA AIRWAYS': 'EVA Air',
+            'CHINA AIRLINES': 'China Airlines',
+            'ASIANA AIRLINES': 'Asiana Airlines',
+            'HAWAIIAN AIRLINES': 'Hawaiian Airlines',
+            'ALASKA AIRLINES': 'Alaska Airlines',
+            'WESTJET': 'WestJet',
+            'ROYAL BRUNEI AIRLINES': 'Royal Brunei',
+            'SRILANKAN AIRLINES': 'SriLankan Airlines',
+            'BATIK AIR': 'Batik Air',
+            'AIRASIA': 'AirAsia',
+            'IBERIA LINEAS AEREAS DE ESPANA S.A. OPERADORA': 'Iberia',
+            'SCANDINAVIAN AIRLINES SYSTEMS (SAS)': 'SAS',
+            'TAP AIR PORTUGAL': 'TAP Portugal',
+            'AER LINGUS': 'Aer Lingus',
+            'ITA AIRWAYS': 'ITA Airways',
+            'LOT POLISH AIRLINES': 'LOT Polish',
+            'AEGEAN AIRLINES': 'Aegean Airlines',
+            'VIRGIN ATLANTIC AIRWAYS': 'Virgin Atlantic',
+            'HAHN AIR': 'Hahn Air',
+            'OMAN AIR': 'Oman Air',
+            'SAUDI ARABIAN AIRLINES CORP': 'Saudia',
+            'COPA AIRLINES': 'Copa Airlines',
+            'AVIANCA': 'Avianca',
+            'AEROMEXICO': 'Aeromexico',
+            'AIR INDIA': 'Air India',
+            'BANGKOK AIRWAYS': 'Bangkok Airways',
+            'AIRCALIN': 'Aircalin',
+            'SOLOMON AIRLINES': 'Solomon Airlines',
+            'NAURU AIRLINES': 'Nauru Airlines',
+            'HAINAN AIRLINES': 'Hainan Airlines',
+            'XIAMEN AIRLINES': 'Xiamen Airlines',
+            'SICHUAN AIRLINES': 'Sichuan Airlines',
+            'JUNEYAO AIRLINES': 'Juneyao Airlines',
+            'HONG KONG AIRLINES': 'Hong Kong Airlines',
+            'AIR TAHITI NUI': 'Air Tahiti Nui',
+            'ROYAL AIR MAROC': 'Royal Air Maroc',
+            'EGYPTAIR': 'EgyptAir',
+            'KENYA AIRWAYS': 'Kenya Airways',
+            'AIR MAURITIUS': 'Air Mauritius',
+            'AIR BOTSWANA': 'Air Botswana',
+            'AIRLINK': 'Airlink',
+            'VIETJET AVIATION': 'VietJet',
+            'LAO AIRLINES': 'Lao Airlines'
+        };
+
+        function normaliseAirlineName(name) {
+            if (!name) return 'Unknown';
+            const upper = name.toUpperCase().trim();
+            return airlineNameMap[upper] || name;
+        }
+
+        // Destination regions with country codes
+        const destinationRegions = {
+            'EUROPE': ['GB', 'FR', 'ES', 'IT', 'NL', 'DE', 'PT', 'CH', 'DK', 'NO', 'SE', 'IE', 'AT', 'PL', 'GR', 'BE', 'CZ', 'HU', 'FI', 'IS', 'MT', 'HR', 'BA', 'BG', 'CY', 'TR'],
+            'AFRICA': ['MA', 'ZA', 'ET', 'NG', 'UG', 'SN', 'KE', 'BW', 'MU', 'EG'],
+            'MIDDLE EAST': ['AE', 'QA', 'SA', 'JO', 'IL', 'LB', 'OM', 'KW', 'BH'],
+            'ASIA': ['SG', 'MY', 'JP', 'KR', 'TH', 'ID', 'VN', 'PH', 'HK', 'TW', 'CN', 'IN', 'BD', 'LK', 'KH', 'MN', 'KZ', 'UZ', 'AM', 'LA', 'BN', 'MM'],
+            'NORTH AMERICA': ['US', 'CA', 'MX'],
+            'SOUTH AMERICA': ['BR', 'CL', 'AR', 'PE', 'CO'],
+            'NEW ZEALAND': ['NZ'],
+            'PACIFIC (EXCL. NEW ZEALAND)': ['FJ', 'PG', 'NC', 'VU', 'TL', 'PF', 'NR', 'SB']
+        };
+
+        // File upload handlers
+        document.getElementById('segmentUpload').addEventListener('click', () => {
+            document.getElementById('segmentFile').click();
+        });
+
+        document.getElementById('airTransUpload').addEventListener('click', () => {
+            document.getElementById('airTransFile').click();
+        });
+
+        document.getElementById('segmentFile').addEventListener('change', (e) => {
+            handleFileUpload(e, 'segment');
+        });
+
+        document.getElementById('airTransFile').addEventListener('change', (e) => {
+            handleFileUpload(e, 'airTrans');
+        });
+
+        function handleFileUpload(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+                if (type === 'segment') {
+                    segmentData = jsonData;
+                    document.getElementById('segmentUpload').classList.add('loaded');
+                    document.getElementById('segmentStatus').textContent = `${jsonData.length} rows loaded`;
+                } else {
+                    airTransData = jsonData;
+                    document.getElementById('airTransUpload').classList.add('loaded');
+                    document.getElementById('airTransStatus').textContent = `${jsonData.length} rows loaded`;
+                }
+
+                updateCalculateButton();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function updateCalculateButton() {
+            const btn = document.getElementById('calculateBtn');
+            btn.disabled = !(segmentData || airTransData);
+        }
+
+        // ==========================================
+        // Client Profile Management
+        // ==========================================
+        
+        const STORAGE_KEY = 'airfareSavingsProfiles';
+
+        function getProfiles() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                return data ? JSON.parse(data) : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveProfiles(profiles) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+        }
+
+        function populateProfileDropdown() {
+            const select = document.getElementById('profileSelect');
+            const profiles = getProfiles();
+            const clientNames = Object.keys(profiles).sort();
+            
+            // Clear existing options except the first placeholder
+            select.innerHTML = '<option value="">Select a saved client...</option>';
+            
+            clientNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+        }
+
+        function getCurrentSettings() {
+            // Gather all domestic settings
+            const domestic = {
+                qfBusiness: document.getElementById('qf-business').value,
+                qfFlex: document.getElementById('qf-flex').value,
+                qfRededeal: document.getElementById('qf-rededeal').value,
+                vaBusiness: document.getElementById('va-business').value,
+                vaFlex: document.getElementById('va-flex').value,
+                vaChoice: document.getElementById('va-choice').value
+            };
+
+            // Gather all international discount rules
+            const international = [];
+            document.querySelectorAll('#intlDiscountList .intl-discount-item:not(.intl-discount-header)').forEach(row => {
+                international.push({
+                    airline: row.querySelector('.intl-airline').value,
+                    classValue: row.querySelector('.intl-class').value,
+                    destination: row.querySelector('.intl-destination').value,
+                    discount: row.querySelector('.intl-discount-pct').value
+                });
+            });
+
+            return { domestic, international };
+        }
+
+        function applySettings(settings) {
+            // Apply domestic settings
+            if (settings.domestic) {
+                document.getElementById('qf-business').value = settings.domestic.qfBusiness || '';
+                document.getElementById('qf-flex').value = settings.domestic.qfFlex || '';
+                document.getElementById('qf-rededeal').value = settings.domestic.qfRededeal || '';
+                document.getElementById('va-business').value = settings.domestic.vaBusiness || '';
+                document.getElementById('va-flex').value = settings.domestic.vaFlex || '';
+                document.getElementById('va-choice').value = settings.domestic.vaChoice || '';
+            }
+
+            // Clear existing international rules (except header)
+            const list = document.getElementById('intlDiscountList');
+            const rows = list.querySelectorAll('.intl-discount-item:not(.intl-discount-header)');
+            rows.forEach(row => row.remove());
+
+            // Add international rules from settings
+            if (settings.international && settings.international.length > 0) {
+                settings.international.forEach(rule => {
+                    addIntlDiscountRow();
+                    const newRow = list.querySelector('.intl-discount-item:last-child');
+                    newRow.querySelector('.intl-airline').value = rule.airline || '';
+                    newRow.querySelector('.intl-class').value = rule.classValue || 'ALL CLASSES';
+                    newRow.querySelector('.intl-destination').value = rule.destination || 'ALL';
+                    newRow.querySelector('.intl-discount-pct').value = rule.discount || '';
+                });
+            }
+        }
+
+        function clearAllSettings() {
+            document.getElementById('qf-business').value = '';
+            document.getElementById('qf-flex').value = '';
+            document.getElementById('qf-rededeal').value = '';
+            document.getElementById('va-business').value = '';
+            document.getElementById('va-flex').value = '';
+            document.getElementById('va-choice').value = '';
+
+            const list = document.getElementById('intlDiscountList');
+            const rows = list.querySelectorAll('.intl-discount-item:not(.intl-discount-header)');
+            rows.forEach(row => row.remove());
+        }
+
+        // Profile dropdown change handler
+        document.getElementById('profileSelect').addEventListener('change', (e) => {
+            const clientName = e.target.value;
+            if (!clientName) {
+                clearAllSettings();
+                return;
+            }
+
+            const profiles = getProfiles();
+            if (profiles[clientName]) {
+                applySettings(profiles[clientName]);
+            }
+        });
+
+        // Save button handler
+        document.getElementById('saveProfileBtn').addEventListener('click', () => {
+            const select = document.getElementById('profileSelect');
+            let clientName = select.value;
+
+            // If no client selected, prompt for new name
+            if (!clientName) {
+                clientName = prompt('Enter client name:');
+                if (!clientName || !clientName.trim()) return;
+                clientName = clientName.trim();
+            } else {
+                // Confirm update for existing client
+                if (!confirm(`Update settings for "${clientName}"?`)) {
+                    // Ask if they want to save as new
+                    const newName = prompt('Save as new client (or Cancel):');
+                    if (!newName || !newName.trim()) return;
+                    clientName = newName.trim();
+                }
+            }
+
+            const profiles = getProfiles();
+            profiles[clientName] = getCurrentSettings();
+            saveProfiles(profiles);
+            populateProfileDropdown();
+            
+            // Select the saved profile
+            document.getElementById('profileSelect').value = clientName;
+            
+            alert(`Settings saved for "${clientName}"`);
+        });
+
+        // Delete button handler
+        document.getElementById('deleteProfileBtn').addEventListener('click', () => {
+            const select = document.getElementById('profileSelect');
+            const clientName = select.value;
+
+            if (!clientName) {
+                alert('Please select a client to delete.');
+                return;
+            }
+
+            if (!confirm(`Delete saved settings for "${clientName}"?`)) {
+                return;
+            }
+
+            const profiles = getProfiles();
+            delete profiles[clientName];
+            saveProfiles(profiles);
+            populateProfileDropdown();
+            clearAllSettings();
+            
+            alert(`Settings deleted for "${clientName}"`);
+        });
+
+        // Initialize profile dropdown on page load
+        populateProfileDropdown();
+
+        // ==========================================
+        // Export/Import All Settings
+        // ==========================================
+
+        document.getElementById('exportAllBtn').addEventListener('click', () => {
+            const profiles = getProfiles();
+            const clientCount = Object.keys(profiles).length;
+
+            if (clientCount === 0) {
+                alert('No saved client settings to export.');
+                return;
+            }
+
+            const dataStr = JSON.stringify(profiles, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const today = new Date().toISOString().split('T')[0];
+            const filename = `Airfare_Calculator_Settings_${today}.json`;
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert(`Exported ${clientCount} client(s) to ${filename}\n\nSave this file somewhere safe to restore your settings if needed.`);
+        });
+
+        document.getElementById('importAllBtn').addEventListener('click', () => {
+            document.getElementById('importFileInput').click();
+        });
+
+        document.getElementById('importFileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    
+                    // Validate structure
+                    if (typeof imported !== 'object' || Array.isArray(imported)) {
+                        throw new Error('Invalid file format');
+                    }
+
+                    const importedCount = Object.keys(imported).length;
+                    if (importedCount === 0) {
+                        alert('The file contains no client settings.');
+                        return;
+                    }
+
+                    // Check for existing profiles
+                    const existing = getProfiles();
+                    const existingCount = Object.keys(existing).length;
+
+                    let confirmMsg = `Import ${importedCount} client(s)?`;
+                    if (existingCount > 0) {
+                        confirmMsg = `This will merge ${importedCount} client(s) with your existing ${existingCount} client(s).\n\nIf a client exists in both, the imported version will replace the existing one.\n\nContinue?`;
+                    }
+
+                    if (!confirm(confirmMsg)) {
+                        return;
+                    }
+
+                    // Merge imported with existing (imported takes precedence)
+                    const merged = { ...existing, ...imported };
+                    saveProfiles(merged);
+                    populateProfileDropdown();
+
+                    alert(`Successfully imported ${importedCount} client(s).`);
+
+                } catch (err) {
+                    alert('Could not read the file. Please make sure it\'s a valid settings file exported from this calculator.');
+                }
+            };
+            reader.readAsText(file);
+
+            // Reset file input so the same file can be selected again
+            e.target.value = '';
+        });
+
+        // International discount management
+        document.getElementById('addIntlDiscount').addEventListener('click', addIntlDiscountRow);
+
+        function addIntlDiscountRow() {
+            const list = document.getElementById('intlDiscountList');
+            const row = document.createElement('div');
+            row.className = 'intl-discount-item';
+            row.innerHTML = `
+                <select class="intl-airline">
+                    <option value="">Select airline</option>
+                    ${airlines.map(a => `<option value="${a}">${a}</option>`).join('')}
+                </select>
+                <select class="intl-class">
+                    ${classOptions.map(c => `<option value="${c}">${c}</option>`).join('')}
+                </select>
+                <select class="intl-destination">
+                    <option value="ALL">All Destinations</option>
+                    <option value="NEW ZEALAND">New Zealand</option>
+                    <option value="PACIFIC (EXCL. NEW ZEALAND)">Pacific (excl. New Zealand)</option>
+                    <option value="ASIA">Asia</option>
+                    <option value="EUROPE">Europe</option>
+                    <option value="NORTH AMERICA">North America</option>
+                    <option value="SOUTH AMERICA">South America</option>
+                    <option value="MIDDLE EAST">Middle East</option>
+                    <option value="AFRICA">Africa</option>
+                </select>
+                <div class="intl-discount-input-wrap">
+                    <input type="number" class="fare-input intl-discount-pct" placeholder="0" min="0" max="100" step="1">
+                    <span class="percent-symbol">%</span>
+                </div>
+                <button class="remove-btn" onclick="this.parentElement.remove()">×</button>
+            `;
+            list.appendChild(row);
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(`${btn.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+
+        // Calculate savings
+        document.getElementById('calculateBtn').addEventListener('click', calculateSavings);
+
+        function calculateSavings() {
+            const results = {
+                domestic: [],
+                domesticDetail: [],
+                international: [],
+                intlDetail: [],
+                domesticTotal: 0,
+                intlTotal: 0,
+                domesticSavings: 0,
+                intlSavings: 0
+            };
+
+            // Get domestic discount values
+            const domesticDiscounts = {
+                qf: {
+                    business: parseFloat(document.getElementById('qf-business').value) || 0,
+                    flex: parseFloat(document.getElementById('qf-flex').value) || 0,
+                    rededeal: parseFloat(document.getElementById('qf-rededeal').value) || 0
+                },
+                va: {
+                    business: parseFloat(document.getElementById('va-business').value) || 0,
+                    flex: parseFloat(document.getElementById('va-flex').value) || 0,
+                    choice: parseFloat(document.getElementById('va-choice').value) || 0
+                }
+            };
+
+            // Qantas booking class mappings
+            const qfBusinessClasses = ['J', 'C'];
+            const qfFlexClasses = ['Y', 'B', 'H', 'K'];
+            const qfRedeDealClasses = ['M', 'L', 'V', 'S', 'N', 'Q', 'O', 'E'];
+
+            // Process domestic segments
+            if (segmentData) {
+                const domesticSegments = segmentData.filter(row => 
+                    row['Dom | Int'] === 'DOMESTIC' &&
+                    row['Depart Country'] === 'AUSTRALIA' &&
+                    row['Arrive Country'] === 'AUSTRALIA' &&
+                    parseFloat(row['Segment Fare']) > 0
+                );
+
+                // Aggregate data for summary
+                const domesticSummary = {};
+
+                domesticSegments.forEach(row => {
+                    const vendor = row['Vendor'] || '';
+                    const classCode = (row['Class Code'] || '').toUpperCase();
+                    const fareBasis = (row['Fare Basis'] || '').toUpperCase();
+                    const segmentFare = parseFloat(row['Segment Fare']) || 0;
+                    
+                    let discount = 0;
+                    let fareType = 'Other';
+                    let airlineName = '';
+
+                    // Qantas
+                    if (vendor.includes('QANTAS') && !vendor.includes('JETSTAR')) {
+                        airlineName = 'Qantas';
+                        if (qfBusinessClasses.includes(classCode)) {
+                            fareType = 'Business';
+                            discount = domesticDiscounts.qf.business;
+                        } else if (qfFlexClasses.includes(classCode)) {
+                            fareType = 'Flex';
+                            discount = domesticDiscounts.qf.flex;
+                        } else if (qfRedeDealClasses.includes(classCode)) {
+                            fareType = 'Red eDeal';
+                            discount = domesticDiscounts.qf.rededeal;
+                        }
+                    }
+                    // Virgin Australia
+                    else if (vendor.includes('VIRGIN')) {
+                        airlineName = 'Virgin Australia';
+                        const fareCode = fareBasis.length >= 4 ? fareBasis.substring(2, 4) : '';
+                        if (fareCode === 'BU') {
+                            fareType = 'Business';
+                            discount = domesticDiscounts.va.business;
+                        } else if (fareCode === 'FL') {
+                            fareType = 'Flex';
+                            discount = domesticDiscounts.va.flex;
+                        } else if (fareCode === 'CH') {
+                            fareType = 'Choice';
+                            discount = domesticDiscounts.va.choice;
+                        }
+                    }
+
+                    if (airlineName && discount > 0) {
+                        const savings = segmentFare * (discount / 100);
+                        const key = `${airlineName}|${fareType}`;
+                        
+                        if (!domesticSummary[key]) {
+                            domesticSummary[key] = {
+                                airline: airlineName,
+                                fareType: fareType,
+                                segments: 0,
+                                totalFare: 0,
+                                discount: discount,
+                                savings: 0
+                            };
+                        }
+                        
+                        domesticSummary[key].segments++;
+                        domesticSummary[key].totalFare += segmentFare;
+                        domesticSummary[key].savings += savings;
+
+                        results.domesticDetail.push({
+                            ticket: row['Ticket Number'],
+                            traveller: row['Traveller'],
+                            route: row['City Pair'],
+                            airline: airlineName,
+                            classCode: classCode,
+                            fareBasis: fareBasis,
+                            segmentFare: segmentFare,
+                            savings: savings
+                        });
+
+                        results.domesticTotal += segmentFare;
+                        results.domesticSavings += savings;
+                    }
+                });
+
+                results.domestic = Object.values(domesticSummary);
+            }
+
+            // Get international discount rules
+            const intlDiscountRules = [];
+            document.querySelectorAll('#intlDiscountList .intl-discount-item:not(.intl-discount-header)').forEach(row => {
+                const airline = row.querySelector('.intl-airline').value;
+                const classValue = row.querySelector('.intl-class').value.toUpperCase();
+                const destination = row.querySelector('.intl-destination').value;
+                const discount = parseFloat(row.querySelector('.intl-discount-pct').value) || 0;
+
+                if (airline && discount > 0) {
+                    intlDiscountRules.push({
+                        airline,
+                        classValue: (classValue === 'ALL CLASSES' || classValue === '') ? 'ALL' : classValue,
+                        destination,
+                        discount
+                    });
+                }
+            });
+
+            // Process international transactions
+            if (airTransData && intlDiscountRules.length > 0) {
+                // Filter for international/transborder, departing Australia, exclude exchanges/refunds
+                const intlTransactions = airTransData.filter(row => {
+                    const domInt = row['Dom | Int'] || '';
+                    const departCountry = row['Depart Country'] || '';
+                    const destCountry = row['Destination Country'] || '';
+                    const transaction = (row['Transaction'] || '').toUpperCase();
+                    const baseFare = parseFloat(row['Base Fare']) || 0;
+                    
+                    return (domInt === 'INTERNATIONAL' || domInt === 'TRANSBORDER') &&
+                           departCountry === 'AU' &&
+                           destCountry !== 'AU' &&
+                           transaction === 'TICKET' &&
+                           baseFare > 0;
+                });
+
+                const intlSummary = {};
+
+                intlTransactions.forEach(row => {
+                    const airlineRaw = row['Airline'] || '';
+                    const airline = normaliseAirlineName(airlineRaw);
+                    const classType = (row['Class'] || '').toUpperCase();
+                    const destCountry = row['Destination Country'] || '';
+                    const baseFare = parseFloat(row['Base Fare']) || 0;
+
+                    // Find matching discount rule
+                    let matchedRule = null;
+                    for (const rule of intlDiscountRules) {
+                        // Compare normalised names
+                        const ruleAirline = normaliseAirlineName(rule.airline);
+                        if (ruleAirline !== airline) continue;
+
+                        // Check class match
+                        const classMatch = rule.classValue === 'ALL' || rule.classValue === '' || 
+                                         classType === rule.classValue;
+                        if (!classMatch) continue;
+
+                        // Check destination match
+                        let destMatch = false;
+                        if (rule.destination === 'ALL') {
+                            destMatch = true;
+                        } else {
+                            const regionCountries = destinationRegions[rule.destination] || [];
+                            destMatch = regionCountries.includes(destCountry);
+                        }
+
+                        if (destMatch) {
+                            matchedRule = rule;
+                            break;
+                        }
+                    }
+
+                    if (matchedRule) {
+                        const savings = baseFare * (matchedRule.discount / 100);
+                        const key = `${airline}|${classType}|${matchedRule.destination}`;
+
+                        // Determine region name for display
+                        let regionName = matchedRule.destination;
+                        if (regionName === 'ALL') regionName = 'All Destinations';
+
+                        if (!intlSummary[key]) {
+                            intlSummary[key] = {
+                                airline: airline,
+                                classType: classType,
+                                destination: regionName,
+                                transactions: 0,
+                                baseFare: 0,
+                                discount: matchedRule.discount,
+                                savings: 0
+                            };
+                        }
+
+                        intlSummary[key].transactions++;
+                        intlSummary[key].baseFare += baseFare;
+                        intlSummary[key].savings += savings;
+
+                        results.intlDetail.push({
+                            ticket: row['Ticket Number'],
+                            traveller: row['Traveller'],
+                            route: `${row['Depart City']} - ${row['Destination City']}`,
+                            airline: airline,
+                            classType: classType,
+                            baseFare: baseFare,
+                            savings: savings
+                        });
+
+                        results.intlTotal += baseFare;
+                        results.intlSavings += savings;
+                    }
+                });
+
+                results.international = Object.values(intlSummary);
+            }
+
+            // Render results
+            renderResults(results);
+        }
+
+        function formatCurrency(value) {
+            return '$' + value.toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function renderResults(results) {
+            document.getElementById('resultsSection').classList.add('visible');
+            
+            // Store results for export
+            lastResults = results;
+
+            // Summary cards
+            document.getElementById('domesticSpend').textContent = formatCurrency(results.domesticTotal);
+            document.getElementById('intlSpend').textContent = formatCurrency(results.intlTotal);
+            document.getElementById('totalSavings').textContent = formatCurrency(results.domesticSavings + results.intlSavings);
+
+            // Simple Summary table - by airline only
+            const summaryBody = document.getElementById('summaryResults');
+            const allAirlines = new Set();
+            
+            // Collect all airlines from both domestic and international
+            results.domestic.forEach(r => allAirlines.add(r.airline));
+            results.international.forEach(r => allAirlines.add(r.airline));
+
+            if (allAirlines.size === 0) {
+                summaryBody.innerHTML = '<tr><td colspan="6" class="empty-state">No matching data found</td></tr>';
+            } else {
+                // Calculate totals per airline
+                const airlineSummary = {};
+                
+                results.domestic.forEach(r => {
+                    if (!airlineSummary[r.airline]) {
+                        airlineSummary[r.airline] = { domSpend: 0, domSavings: 0, intlSpend: 0, intlSavings: 0 };
+                    }
+                    airlineSummary[r.airline].domSpend += r.totalFare;
+                    airlineSummary[r.airline].domSavings += r.savings;
+                });
+
+                results.international.forEach(r => {
+                    if (!airlineSummary[r.airline]) {
+                        airlineSummary[r.airline] = { domSpend: 0, domSavings: 0, intlSpend: 0, intlSavings: 0 };
+                    }
+                    airlineSummary[r.airline].intlSpend += r.baseFare;
+                    airlineSummary[r.airline].intlSavings += r.savings;
+                });
+
+                let summaryHtml = '';
+                Object.keys(airlineSummary).sort().forEach(airline => {
+                    const s = airlineSummary[airline];
+                    const totalSavings = s.domSavings + s.intlSavings;
+                    summaryHtml += `
+                        <tr>
+                            <td>${airline}</td>
+                            <td class="number">${s.domSpend > 0 ? formatCurrency(s.domSpend) : '–'}</td>
+                            <td class="number ${s.domSavings > 0 ? 'savings' : ''}">${s.domSavings > 0 ? formatCurrency(s.domSavings) : '–'}</td>
+                            <td class="number">${s.intlSpend > 0 ? formatCurrency(s.intlSpend) : '–'}</td>
+                            <td class="number ${s.intlSavings > 0 ? 'savings' : ''}">${s.intlSavings > 0 ? formatCurrency(s.intlSavings) : '–'}</td>
+                            <td class="number savings">${formatCurrency(totalSavings)}</td>
+                        </tr>
+                    `;
+                });
+
+                // Grand total row
+                summaryHtml += `
+                    <tr class="grand-total-row">
+                        <td>Total</td>
+                        <td class="number">${formatCurrency(results.domesticTotal)}</td>
+                        <td class="number savings">${formatCurrency(results.domesticSavings)}</td>
+                        <td class="number">${formatCurrency(results.intlTotal)}</td>
+                        <td class="number savings">${formatCurrency(results.intlSavings)}</td>
+                        <td class="number savings">${formatCurrency(results.domesticSavings + results.intlSavings)}</td>
+                    </tr>
+                `;
+
+                summaryBody.innerHTML = summaryHtml;
+            }
+
+            // Domestic summary table - grouped by airline
+            const domesticBody = document.getElementById('domesticResults');
+            if (results.domestic.length === 0) {
+                domesticBody.innerHTML = '<tr><td colspan="6" class="empty-state">No matching domestic segments found</td></tr>';
+            } else {
+                // Group by airline
+                const domesticByAirline = {};
+                results.domestic.forEach(row => {
+                    if (!domesticByAirline[row.airline]) {
+                        domesticByAirline[row.airline] = [];
+                    }
+                    domesticByAirline[row.airline].push(row);
+                });
+
+                let domesticHtml = '';
+                Object.keys(domesticByAirline).sort().forEach(airline => {
+                    const airlineRows = domesticByAirline[airline];
+                    const airlineTotal = airlineRows.reduce((sum, r) => sum + r.totalFare, 0);
+                    const airlineSavings = airlineRows.reduce((sum, r) => sum + r.savings, 0);
+                    const airlineSegments = airlineRows.reduce((sum, r) => sum + r.segments, 0);
+
+                    // Airline header row
+                    domesticHtml += `<tr class="airline-group-row"><td colspan="6">${airline}</td></tr>`;
+
+                    // Fare type rows
+                    airlineRows.forEach(row => {
+                        domesticHtml += `
+                            <tr>
+                                <td></td>
+                                <td>${row.fareType}</td>
+                                <td class="number">${row.segments}</td>
+                                <td class="number">${formatCurrency(row.totalFare)}</td>
+                                <td class="number">${row.discount}%</td>
+                                <td class="number savings">${formatCurrency(row.savings)}</td>
+                            </tr>
+                        `;
+                    });
+
+                    // Airline subtotal
+                    domesticHtml += `
+                        <tr class="subtotal-row">
+                            <td></td>
+                            <td>Subtotal</td>
+                            <td class="number">${airlineSegments}</td>
+                            <td class="number">${formatCurrency(airlineTotal)}</td>
+                            <td></td>
+                            <td class="number savings">${formatCurrency(airlineSavings)}</td>
+                        </tr>
+                    `;
+                });
+
+                // Grand total row
+                domesticHtml += `
+                    <tr class="grand-total-row">
+                        <td colspan="3">Total</td>
+                        <td class="number">${formatCurrency(results.domesticTotal)}</td>
+                        <td></td>
+                        <td class="number savings">${formatCurrency(results.domesticSavings)}</td>
+                    </tr>
+                `;
+
+                domesticBody.innerHTML = domesticHtml;
+            }
+
+            // International summary table - grouped by airline
+            const intlBody = document.getElementById('intlResults');
+            if (results.international.length === 0) {
+                intlBody.innerHTML = '<tr><td colspan="7" class="empty-state">No matching international transactions found</td></tr>';
+            } else {
+                // Group by airline
+                const intlByAirline = {};
+                results.international.forEach(row => {
+                    if (!intlByAirline[row.airline]) {
+                        intlByAirline[row.airline] = [];
+                    }
+                    intlByAirline[row.airline].push(row);
+                });
+
+                let intlHtml = '';
+                Object.keys(intlByAirline).sort().forEach(airline => {
+                    const airlineRows = intlByAirline[airline];
+                    const airlineTotal = airlineRows.reduce((sum, r) => sum + r.baseFare, 0);
+                    const airlineSavings = airlineRows.reduce((sum, r) => sum + r.savings, 0);
+                    const airlineTransactions = airlineRows.reduce((sum, r) => sum + r.transactions, 0);
+
+                    // Airline header row
+                    intlHtml += `<tr class="airline-group-row"><td colspan="7">${airline}</td></tr>`;
+
+                    // Class/destination rows
+                    airlineRows.forEach(row => {
+                        intlHtml += `
+                            <tr>
+                                <td></td>
+                                <td>${row.classType}</td>
+                                <td>${row.destination}</td>
+                                <td class="number">${row.transactions}</td>
+                                <td class="number">${formatCurrency(row.baseFare)}</td>
+                                <td class="number">${row.discount}%</td>
+                                <td class="number savings">${formatCurrency(row.savings)}</td>
+                            </tr>
+                        `;
+                    });
+
+                    // Airline subtotal
+                    intlHtml += `
+                        <tr class="subtotal-row">
+                            <td></td>
+                            <td colspan="2">Subtotal</td>
+                            <td class="number">${airlineTransactions}</td>
+                            <td class="number">${formatCurrency(airlineTotal)}</td>
+                            <td></td>
+                            <td class="number savings">${formatCurrency(airlineSavings)}</td>
+                        </tr>
+                    `;
+                });
+
+                // Grand total row
+                intlHtml += `
+                    <tr class="grand-total-row">
+                        <td colspan="4">Total</td>
+                        <td class="number">${formatCurrency(results.intlTotal)}</td>
+                        <td></td>
+                        <td class="number savings">${formatCurrency(results.intlSavings)}</td>
+                    </tr>
+                `;
+
+                intlBody.innerHTML = intlHtml;
+            }
+
+            // Domestic detail table
+            const domesticDetailBody = document.getElementById('domesticDetailResults');
+            if (results.domesticDetail.length === 0) {
+                domesticDetailBody.innerHTML = '<tr><td colspan="8" class="empty-state">No matching domestic segments found</td></tr>';
+            } else {
+                domesticDetailBody.innerHTML = results.domesticDetail.map(row => `
+                    <tr>
+                        <td>${row.ticket}</td>
+                        <td>${row.traveller}</td>
+                        <td>${row.route}</td>
+                        <td>${row.airline}</td>
+                        <td>${row.classCode}</td>
+                        <td>${row.fareBasis}</td>
+                        <td class="number">${formatCurrency(row.segmentFare)}</td>
+                        <td class="number savings">${formatCurrency(row.savings)}</td>
+                    </tr>
+                `).join('');
+            }
+
+            // International detail table
+            const intlDetailBody = document.getElementById('intlDetailResults');
+            if (results.intlDetail.length === 0) {
+                intlDetailBody.innerHTML = '<tr><td colspan="7" class="empty-state">No matching international transactions found</td></tr>';
+            } else {
+                intlDetailBody.innerHTML = results.intlDetail.map(row => `
+                    <tr>
+                        <td>${row.ticket}</td>
+                        <td>${row.traveller}</td>
+                        <td>${row.route}</td>
+                        <td>${row.airline}</td>
+                        <td>${row.classType}</td>
+                        <td class="number">${formatCurrency(row.baseFare)}</td>
+                        <td class="number savings">${formatCurrency(row.savings)}</td>
+                    </tr>
+                `).join('');
+            }
+
+            // Scroll to results
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // Export to Excel
+        // ==========================================
+        
+        document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+
+        function exportToExcel() {
+            if (!lastResults) {
+                alert('No results to export. Please calculate savings first.');
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+
+            // Get selected client name for filename
+            const clientName = document.getElementById('profileSelect').value || 'Client';
+            const today = new Date().toISOString().split('T')[0];
+
+            // Sheet 1: Summary by Airline
+            const summaryData = [];
+            const allAirlines = new Set();
+            lastResults.domestic.forEach(r => allAirlines.add(r.airline));
+            lastResults.international.forEach(r => allAirlines.add(r.airline));
+
+            const airlineSummary = {};
+            lastResults.domestic.forEach(r => {
+                if (!airlineSummary[r.airline]) {
+                    airlineSummary[r.airline] = { domSpend: 0, domSavings: 0, intlSpend: 0, intlSavings: 0 };
+                }
+                airlineSummary[r.airline].domSpend += r.totalFare;
+                airlineSummary[r.airline].domSavings += r.savings;
+            });
+            lastResults.international.forEach(r => {
+                if (!airlineSummary[r.airline]) {
+                    airlineSummary[r.airline] = { domSpend: 0, domSavings: 0, intlSpend: 0, intlSavings: 0 };
+                }
+                airlineSummary[r.airline].intlSpend += r.baseFare;
+                airlineSummary[r.airline].intlSavings += r.savings;
+            });
+
+            Object.keys(airlineSummary).sort().forEach(airline => {
+                const s = airlineSummary[airline];
+                summaryData.push({
+                    'Airline': airline,
+                    'Domestic Spend': Math.round((s.domSpend || 0) * 100) / 100,
+                    'Domestic Savings': Math.round((s.domSavings || 0) * 100) / 100,
+                    'International Spend': Math.round((s.intlSpend || 0) * 100) / 100,
+                    'International Savings': Math.round((s.intlSavings || 0) * 100) / 100,
+                    'Total Savings': Math.round((s.domSavings + s.intlSavings) * 100) / 100
+                });
+            });
+            summaryData.push({
+                'Airline': 'TOTAL',
+                'Domestic Spend': Math.round(lastResults.domesticTotal * 100) / 100,
+                'Domestic Savings': Math.round(lastResults.domesticSavings * 100) / 100,
+                'International Spend': Math.round(lastResults.intlTotal * 100) / 100,
+                'International Savings': Math.round(lastResults.intlSavings * 100) / 100,
+                'Total Savings': Math.round((lastResults.domesticSavings + lastResults.intlSavings) * 100) / 100
+            });
+
+            const summarySheet = XLSX.utils.json_to_sheet(summaryData);
+            XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
+
+            // Sheet 2: Domestic Detail by Fare Type
+            const domesticData = [];
+            lastResults.domestic.forEach(r => {
+                domesticData.push({
+                    'Airline': r.airline,
+                    'Fare Type': r.fareType,
+                    'Segments': r.segments,
+                    'Total Fare': Math.round(r.totalFare * 100) / 100,
+                    'Discount %': r.discount,
+                    'Savings': Math.round(r.savings * 100) / 100
+                });
+            });
+            if (domesticData.length > 0) {
+                domesticData.push({
+                    'Airline': 'TOTAL',
+                    'Fare Type': '',
+                    'Segments': domesticData.reduce((sum, r) => sum + (r.Segments || 0), 0),
+                    'Total Fare': Math.round(lastResults.domesticTotal * 100) / 100,
+                    'Discount %': '',
+                    'Savings': Math.round(lastResults.domesticSavings * 100) / 100
+                });
+            }
+            const domesticSheet = XLSX.utils.json_to_sheet(domesticData);
+            XLSX.utils.book_append_sheet(wb, domesticSheet, 'Domestic Detail');
+
+            // Sheet 3: International Detail by Class/Destination
+            const intlData = [];
+            lastResults.international.forEach(r => {
+                intlData.push({
+                    'Airline': r.airline,
+                    'Class': r.classType,
+                    'Destination': r.destination,
+                    'Transactions': r.transactions,
+                    'Base Fare': Math.round(r.baseFare * 100) / 100,
+                    'Discount %': r.discount,
+                    'Savings': Math.round(r.savings * 100) / 100
+                });
+            });
+            if (intlData.length > 0) {
+                intlData.push({
+                    'Airline': 'TOTAL',
+                    'Class': '',
+                    'Destination': '',
+                    'Transactions': intlData.reduce((sum, r) => sum + (r.Transactions || 0), 0),
+                    'Base Fare': Math.round(lastResults.intlTotal * 100) / 100,
+                    'Discount %': '',
+                    'Savings': Math.round(lastResults.intlSavings * 100) / 100
+                });
+            }
+            const intlSheet = XLSX.utils.json_to_sheet(intlData);
+            XLSX.utils.book_append_sheet(wb, intlSheet, 'International Detail');
+
+            // Sheet 4: Domestic Segments (line items)
+            const domSegmentsData = lastResults.domesticDetail.map(r => ({
+                'Ticket': r.ticket,
+                'Traveller': r.traveller,
+                'Route': r.route,
+                'Airline': r.airline,
+                'Class Code': r.classCode,
+                'Fare Basis': r.fareBasis,
+                'Segment Fare': Math.round(r.segmentFare * 100) / 100,
+                'Savings': Math.round(r.savings * 100) / 100
+            }));
+            const domSegmentsSheet = XLSX.utils.json_to_sheet(domSegmentsData);
+            XLSX.utils.book_append_sheet(wb, domSegmentsSheet, 'Domestic Segments');
+
+            // Sheet 5: International Transactions (line items)
+            const intlTransData = lastResults.intlDetail.map(r => ({
+                'Ticket': r.ticket,
+                'Traveller': r.traveller,
+                'Route': r.route,
+                'Airline': r.airline,
+                'Class': r.classType,
+                'Base Fare': Math.round(r.baseFare * 100) / 100,
+                'Savings': Math.round(r.savings * 100) / 100
+            }));
+            const intlTransSheet = XLSX.utils.json_to_sheet(intlTransData);
+            XLSX.utils.book_append_sheet(wb, intlTransSheet, 'International Transactions');
+
+            // Generate and download
+            const filename = `Airfare_Savings_${clientName.replace(/[^a-zA-Z0-9]/g, '_')}_${today}.xlsx`;
+            XLSX.writeFile(wb, filename);
+        }
+    </script>
+</body>
+</html>
