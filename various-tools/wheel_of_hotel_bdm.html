@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel of Hotel BDM</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .lights-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .light {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: blink 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 10px;
+            z-index: 1;
+        }
+        
+        .title-emoji {
+            font-size: 3rem;
+        }
+        
+        .title {
+            font-family: 'Bangers', cursive;
+            font-size: clamp(2rem, 8vw, 4rem);
+            color: #ffd700;
+            text-shadow: 
+                3px 3px 0 #c70039,
+                -1px -1px 0 #8b0000;
+            text-align: center;
+            letter-spacing: 4px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #e94560;
+            margin-bottom: 30px;
+            text-align: center;
+            font-style: italic;
+            z-index: 1;
+        }
+        
+        .game-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .wheel-container {
+            position: relative;
+            width: 380px;
+            height: 380px;
+        }
+        
+        .wheel-outer-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffd700, #b8860b);
+            padding: 12px;
+            box-shadow: 
+                0 0 40px rgba(255, 215, 0, 0.4),
+                0 8px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .wheel-inner-ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
+            padding: 8px;
+        }
+        
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            overflow: hidden;
+            background: conic-gradient(
+                from 0deg,
+                #e94560 0deg 24deg,
+                #ff6b00 24deg 48deg,
+                #00d4ff 48deg 72deg,
+                #7b2cbf 72deg 96deg,
+                #2ec4b6 96deg 120deg,
+                #ff9f1c 120deg 144deg,
+                #e71d36 144deg 168deg,
+                #1a535c 168deg 192deg,
+                #41ead4 192deg 216deg,
+                #ff00aa 216deg 240deg,
+                #fdca40 240deg 264deg,
+                #9b5de5 264deg 288deg,
+                #00f5d4 288deg 312deg,
+                #f15bb5 312deg 336deg,
+                #fee440 336deg 360deg
+            );
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .wheel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-conic-gradient(
+                from 0deg,
+                transparent 0deg 12deg,
+                rgba(255,255,255,0.1) 12deg 24deg
+            );
+            border-radius: 50%;
+        }
+        
+        .segment-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transform-origin: left center;
+        }
+        
+        .pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+        }
+        
+        .pointer svg {
+            width: 50px;
+            height: 60px;
+        }
+        
+        .center-hub {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(145deg, #ffd700, #b8860b);
+            border-radius: 50%;
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.4),
+                inset 0 2px 10px rgba(255, 255, 255, 0.4),
+                inset 0 -2px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+        
+        .center-hub-inner {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #1a1a2e, #2a2a4a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffd700;
+            font-family: 'Bangers', cursive;
+            letter-spacing: 1px;
+        }
+        
+        .spin-btn {
+            margin-top: 35px;
+            padding: 18px 70px;
+            font-family: 'Bangers', cursive;
+            font-size: 2rem;
+            letter-spacing: 4px;
+            background: linear-gradient(145deg, #e94560, #c70039);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 
+                0 6px 0 #8b0000,
+                0 10px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.1s ease;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        .spin-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 0 #8b0000,
+                0 14px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .spin-btn:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: 
+                0 2px 0 #8b0000,
+                0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+        
+        .spin-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .result-container {
+            margin-top: 30px;
+            padding: 25px 35px;
+            background: linear-gradient(145deg, #16213e, #1a1a2e);
+            border-radius: 15px;
+            border: 3px solid #ffd700;
+            max-width: 500px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 20px rgba(255, 215, 0, 0.3),
+                inset 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .result-label {
+            font-size: 0.9rem;
+            color: #e94560;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .result-text {
+            font-size: 1.3rem;
+            color: #fff;
+            text-align: center;
+            line-height: 1.5;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s ease;
+        }
+        
+        .result-text.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .result-emoji {
+            font-size: 2.5rem;
+            margin-top: 15px;
+            opacity: 0;
+            transition: all 0.5s ease 0.2s;
+        }
+        
+        .result-emoji.show {
+            opacity: 1;
+        }
+        
+        .winning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .category-badge.show {
+            opacity: 1;
+        }
+        
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .confetti {
+            position: absolute;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="lights-container" id="lights"></div>
+    <div class="winning-overlay" id="confetti-container"></div>
+    
+    <div class="title-container">
+        <span class="title-emoji">🏨</span>
+        <h1 class="title">WHEEL OF HOTEL BDM</h1>
+        <span class="title-emoji">🛎️</span>
+    </div>
+    <p class="subtitle">"Partnering for Success" since 1987</p>
+    
+    <div class="game-container">
+        <div class="wheel-container">
+            <div class="pointer">
+                <svg viewBox="0 0 50 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M25 60 L5 10 Q5 0 25 0 Q45 0 45 10 L25 60Z" fill="#e94560"/>
+                    <path d="M25 55 L10 12 Q10 5 25 5 Q40 5 40 12 L25 55Z" fill="#ff6b6b"/>
+                    <circle cx="25" cy="12" r="6" fill="#ffd700"/>
+                </svg>
+            </div>
+            <div class="wheel-outer-ring">
+                <div class="wheel-inner-ring">
+                    <div class="wheel" id="wheel">
+                        <!-- Segment lines will be added by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="center-hub">
+                <div class="center-hub-inner">BDM</div>
+            </div>
+        </div>
+        
+        <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN!</button>
+    </div>
+    
+    <div class="result-container">
+        <div class="result-label">Your BDM Says...</div>
+        <div class="category-badge" id="categoryBadge"></div>
+        <div class="result-text" id="result">Give it a spin! 🎲</div>
+        <div class="result-emoji" id="resultEmoji"></div>
+    </div>
+    
+    <script>
+        const quotes = [
+            {
+                text: "We're a property in suburban Melbourne and there is an onsite cafe...",
+                category: "The Pitch",
+                emoji: "☕"
+            },
+            {
+                text: "We noticed that your customer has had two room nights with us over the last quarter - are they interested in a 100 room night per year agreement?",
+                category: "The Optimist",
+                emoji: "📈"
+            },
+            {
+                text: "Can you resend the Hotel Rate Loading instructions again?",
+                category: "The Classic",
+                emoji: "📧"
+            },
+            {
+                text: "The updated rates are the same as the first proposal.",
+                category: "Why Bother",
+                emoji: "🤦"
+            },
+            {
+                text: "I'm in Sydney this week, are you free for a coffee catchup? At 10am tomorrow morning?",
+                category: "Calendar Terrorist",
+                emoji: "📅"
+            },
+            {
+                text: "So, have you got any conference leads?",
+                category: "The Desperate",
+                emoji: "🎪"
+            },
+            {
+                text: "Let me show you some pictures on my iPad...",
+                category: "The Trap",
+                emoji: "📱"
+            },
+            {
+                text: "We'll have those rates loaded by end of week.",
+                category: "The Lie",
+                emoji: "🤥"
+            },
+            {
+                text: "Our wifi is complimentary and very fast.",
+                category: "Also A Lie",
+                emoji: "📶"
+            },
+            {
+                text: "We used to get so much business from you guys...",
+                category: "Guilt Trip",
+                emoji: "😢"
+            },
+            {
+                text: "I brought you a branded pen and notepad.",
+                category: "The Bribe",
+                emoji: "🖊️"
+            },
+            {
+                text: "Can you run a report of all your client's stays in Brisbane?",
+                category: "The Audacity",
+                emoji: "📊"
+            },
+            {
+                text: "I'll be in your area between 2pm and 2:15pm next Tuesday - can we do lunch?",
+                category: "Calendar Terrorist",
+                emoji: "⏰"
+            },
+            {
+                text: "Did you know we have a rooftop bar now?",
+                category: "The Renovation",
+                emoji: "🍸"
+            },
+            {
+                text: "Does your client travel much to Iron Knob?",
+                category: "The Reach",
+                emoji: "🏜️"
+            }
+        ];
+        
+        const categoryColors = {
+            "The Pitch": "#e94560",
+            "The Optimist": "#ff6b00",
+            "The Classic": "#00d4ff",
+            "Why Bother": "#7b2cbf",
+            "Calendar Terrorist": "#2ec4b6",
+            "The Desperate": "#ff9f1c",
+            "The Trap": "#e71d36",
+            "The Lie": "#1a535c",
+            "Also A Lie": "#41ead4",
+            "Guilt Trip": "#ff00aa",
+            "The Bribe": "#fdca40",
+            "The Audacity": "#9b5de5",
+            "The Renovation": "#f15bb5",
+            "The Reach": "#fee440"
+        };
+        
+        let isSpinning = false;
+        let currentRotation = 0;
+        
+        // Create segment divider lines
+        function createWheel() {
+            const wheel = document.getElementById('wheel');
+            const segmentAngle = 360 / quotes.length;
+            
+            for (let i = 0; i < quotes.length; i++) {
+                const line = document.createElement('div');
+                line.className = 'segment-line';
+                line.style.transform = `rotate(${i * segmentAngle}deg)`;
+                wheel.appendChild(line);
+            }
+        }
+        
+        // Create border lights
+        function createLights() {
+            const container = document.getElementById('lights');
+            const colors = ['#ffd700', '#e94560', '#00d4ff', '#ff6b00', '#7b2cbf'];
+            
+            // Top and bottom rows
+            for (let i = 0; i < 20; i++) {
+                const lightTop = document.createElement('div');
+                lightTop.className = 'light';
+                lightTop.style.left = `${(i + 0.5) * 5}%`;
+                lightTop.style.top = '10px';
+                lightTop.style.backgroundColor = colors[i % colors.length];
+                lightTop.style.animationDelay = `${i * 0.1}s`;
+                container.appendChild(lightTop);
+                
+                const lightBottom = document.createElement('div');
+                lightBottom.className = 'light';
+                lightBottom.style.left = `${(i + 0.5) * 5}%`;
+                lightBottom.style.bottom = '10px';
+                lightBottom.style.backgroundColor = colors[(i + 2) % colors.length];
+                lightBottom.style.animationDelay = `${i * 0.1 + 0.5}s`;
+                container.appendChild(lightBottom);
+            }
+            
+            // Left and right columns
+            for (let i = 0; i < 12; i++) {
+                const lightLeft = document.createElement('div');
+                lightLeft.className = 'light';
+                lightLeft.style.left = '10px';
+                lightLeft.style.top = `${(i + 1) * 7.5}%`;
+                lightLeft.style.backgroundColor = colors[(i + 1) % colors.length];
+                lightLeft.style.animationDelay = `${i * 0.1 + 0.25}s`;
+                container.appendChild(lightLeft);
+                
+                const lightRight = document.createElement('div');
+                lightRight.className = 'light';
+                lightRight.style.right = '10px';
+                lightRight.style.top = `${(i + 1) * 7.5}%`;
+                lightRight.style.backgroundColor = colors[(i + 3) % colors.length];
+                lightRight.style.animationDelay = `${i * 0.1 + 0.75}s`;
+                container.appendChild(lightRight);
+            }
+        }
+        
+        // Create confetti
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.style.display = 'block';
+            container.innerHTML = '';
+            
+            const colors = ['#ffd700', '#e94560', '#00d4ff', '#ff6b00', '#7b2cbf', '#2ec4b6'];
+            const shapes = ['■', '●', '▲', '★', '♦'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.fontSize = `${Math.random() * 20 + 10}px`;
+                confetti.style.animation = `fall ${Math.random() * 2 + 2}s ease-out forwards`;
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+                container.appendChild(confetti);
+            }
+            
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 3000);
+        }
+        
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            const btn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const result = document.getElementById('result');
+            const resultEmoji = document.getElementById('resultEmoji');
+            const categoryBadge = document.getElementById('categoryBadge');
+            
+            btn.disabled = true;
+            result.classList.remove('show');
+            resultEmoji.classList.remove('show');
+            categoryBadge.classList.remove('show');
+            
+            // Random number of full rotations (5-10) plus random segment
+            const segmentAngle = 360 / quotes.length;
+            const randomSegment = Math.floor(Math.random() * quotes.length);
+            const extraRotations = (Math.floor(Math.random() * 6) + 5) * 360;
+            const targetRotation = currentRotation + extraRotations + (360 - randomSegment * segmentAngle - segmentAngle / 2);
+            
+            currentRotation = targetRotation;
+            wheel.style.transform = `rotate(${targetRotation}deg)`;
+            
+            // Show result after spin
+            setTimeout(() => {
+                const winningQuote = quotes[randomSegment];
+                const badgeColor = categoryColors[winningQuote.category] || '#e94560';
+                
+                categoryBadge.textContent = winningQuote.category;
+                categoryBadge.style.backgroundColor = badgeColor;
+                categoryBadge.style.color = isLightColor(badgeColor) ? '#000' : '#fff';
+                
+                result.textContent = `"${winningQuote.text}"`;
+                resultEmoji.textContent = winningQuote.emoji;
+                
+                categoryBadge.classList.add('show');
+                result.classList.add('show');
+                resultEmoji.classList.add('show');
+                
+                createConfetti();
+                
+                isSpinning = false;
+                btn.disabled = false;
+            }, 4100);
+        }
+        
+        function isLightColor(color) {
+            const lightColors = ['#ffd700', '#fdca40', '#fee440', '#ff9f1c', '#41ead4', '#00f5d4'];
+            return lightColors.includes(color.toLowerCase());
+        }
+        
+        // Initialize
+        createWheel();
+        createLights();
+        
+        // Show initial message
+        document.getElementById('result').classList.add('show');
+    </script>
+</body>
+</html>
