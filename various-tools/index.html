@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Various Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -18,6 +19,7 @@
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            overflow-x: hidden;
         }
 
         .password-overlay {
@@ -32,72 +34,109 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            transition: clip-path 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+            clip-path: circle(150% at 50% 50%);
         }
 
-        .password-overlay.hidden {
-            display: none;
+        .password-overlay.reveal {
+            clip-path: circle(0% at 50% 50%);
         }
 
         .password-form {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
+            gap: 2.5rem;
         }
 
         .password-form label {
             color: #ffffff;
-            font-family: Helvetica, Arial, sans-serif;
-            font-weight: bold;
-            font-size: 1.2rem;
+            font-family: 'Italiana', serif;
+            font-weight: 400;
+            font-size: 4rem;
+            letter-spacing: 0.15em;
+            text-transform: lowercase;
         }
 
         .password-form input[type="password"] {
-            padding: 0.75rem 1rem;
-            font-family: Helvetica, Arial, sans-serif;
-            font-size: 1rem;
+            padding: 1rem 1.5rem;
+            font-family: 'Italiana', serif;
+            font-size: 1.5rem;
             border: none;
-            border-radius: 8px;
-            width: 250px;
+            border-radius: 0;
+            border-bottom: 2px solid #ffffff;
+            background: transparent;
+            color: #ffffff;
+            width: 300px;
             text-align: center;
+            outline: none;
+        }
+
+        .password-form input[type="password"]::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'Italiana', serif;
         }
 
         .password-form button {
-            padding: 0.75rem 2rem;
-            background: #ffffff;
-            color: #668cb4;
-            font-family: Helvetica, Arial, sans-serif;
-            font-weight: bold;
-            font-size: 1rem;
-            border: none;
-            border-radius: 50px;
+            padding: 1rem 3rem;
+            background: transparent;
+            color: #ffffff;
+            font-family: 'Italiana', serif;
+            font-weight: 400;
+            font-size: 1.2rem;
+            letter-spacing: 0.3em;
+            text-transform: lowercase;
+            border: 1px solid #ffffff;
             cursor: pointer;
-            transition: opacity 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .password-form button:hover {
-            opacity: 0.9;
+            background: #ffffff;
+            color: #668cb4;
         }
 
-        .password-error {
+        .error-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #cc0000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .error-flash.show {
+            animation: flashError 0.6s ease-out;
+        }
+
+        .error-flash span {
             color: #ffffff;
             font-family: Helvetica, Arial, sans-serif;
             font-weight: bold;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            visibility: hidden;
+            font-size: 5rem;
+            letter-spacing: 0.1em;
         }
 
-        .password-error.show {
-            visibility: visible;
+        @keyframes flashError {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         .main-content {
-            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s;
         }
 
         .main-content.visible {
-            display: block;
+            opacity: 1;
+            transform: scale(1);
         }
 
         .title-capsule {
@@ -159,12 +198,15 @@
     </style>
 </head>
 <body>
+    <div class="error-flash" id="errorFlash">
+        <span>TRY AGAIN!</span>
+    </div>
+
     <div class="password-overlay" id="passwordOverlay">
         <div class="password-form">
-            <label for="password">Enter Password</label>
-            <input type="password" id="password" placeholder="Password" onkeypress="if(event.key === 'Enter') checkPassword()">
-            <button onclick="checkPassword()">ENTER</button>
-            <div class="password-error" id="passwordError">Incorrect password</div>
+            <label for="password">enter password</label>
+            <input type="password" id="password" placeholder="•••••••" onkeypress="if(event.key === 'Enter') checkPassword()">
+            <button onclick="checkPassword()">entrer</button>
         </div>
     </div>
 
@@ -220,13 +262,16 @@
             const password = document.getElementById('password').value;
             const overlay = document.getElementById('passwordOverlay');
             const mainContent = document.getElementById('mainContent');
-            const errorMsg = document.getElementById('passwordError');
+            const errorFlash = document.getElementById('errorFlash');
 
             if (password === 'thoughtleadership2026!') {
-                overlay.classList.add('hidden');
                 mainContent.classList.add('visible');
+                overlay.classList.add('reveal');
             } else {
-                errorMsg.classList.add('show');
+                errorFlash.classList.remove('show');
+                void errorFlash.offsetWidth;
+                errorFlash.classList.add('show');
+                document.getElementById('password').value = '';
             }
         }
     </script>
