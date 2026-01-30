@@ -1,20 +1,8 @@
-:root {
-    --paper-cream: #f4ead5;
-    --paper-aged: #e8dcc4;
-    --ink-black: #1a1a18;
-    --ink-dark: #2d2a26;
-    --rule-brown: #8b7355;
-    --accent-red: #8b2020;
-    --accent-navy: #1e3a5f;
-    --accent-green: #2d4a2d;
-    --warning-red: #a03030;
-    --cover-red: #b84c4c;
-}
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
     background: #d4c4a8;
     font-family: 'Source Serif 4', Georgia, serif;
-    color: #1a1a18;
+    color: #1a1a18 !important;
     line-height: 1.4;
     font-size: 15px;
 }
@@ -42,18 +30,18 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     line-height: 1.2;
-    color: #1a1a18;
+    color: #1a1a18 !important;
 }
-.cover-subtitle { font-size: 13px; color: #f4ead5; letter-spacing: 1px; margin-bottom: 5px; }
-.cover-authority { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; color: #f4ead5; text-transform: uppercase; letter-spacing: 2px; }
-.cover-division { font-size: 12px; font-style: italic; color: #f4ead5; margin-bottom: 20px; }
-.cover-main-title { font-family: 'Oswald', sans-serif; font-size: 42px; font-weight: 700; color: #f4ead5; text-transform: uppercase; letter-spacing: 4px; text-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
-.cover-sub-title { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 500; color: #f4ead5; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px; }
-.cover-location { font-family: 'IM Fell English', serif; font-size: 36px; font-style: italic; color: #f4ead5; margin-bottom: 5px; }
-.cover-date { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 500; color: #f4ead5; text-transform: uppercase; letter-spacing: 2px; }
-.cover-note { font-size: 11px; font-style: italic; color: #f4ead5; opacity: 0.9; margin-top: 5px; }
-.cover-ornament { margin: 15px 0 10px; color: #f4ead5; font-size: 18px; letter-spacing: 8px; }
-.cover-office { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 500; color: #f4ead5; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3); }
+.cover-subtitle { font-size: 13px; color: #f4ead5 !important; letter-spacing: 1px; margin-bottom: 5px; }
+.cover-authority { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; color: #f4ead5 !important; text-transform: uppercase; letter-spacing: 2px; }
+.cover-division { font-size: 12px; font-style: italic; color: #f4ead5 !important; margin-bottom: 20px; }
+.cover-main-title { font-family: 'Oswald', sans-serif; font-size: 42px; font-weight: 700; color: #f4ead5 !important; text-transform: uppercase; letter-spacing: 4px; text-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+.cover-sub-title { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 500; color: #f4ead5 !important; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px; }
+.cover-location { font-family: 'IM Fell English', serif; font-size: 36px; font-style: italic; color: #f4ead5 !important; margin-bottom: 5px; }
+.cover-date { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 500; color: #f4ead5 !important; text-transform: uppercase; letter-spacing: 2px; }
+.cover-note { font-size: 11px; font-style: italic; color: #f4ead5 !important; opacity: 0.9; margin-top: 5px; }
+.cover-ornament { margin: 15px 0 10px; color: #f4ead5 !important; font-size: 18px; letter-spacing: 8px; }
+.cover-office { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 500; color: #f4ead5 !important; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3); }
 .directory-nav {
     background: #e8dcc4;
     border-bottom: 2px solid #1a1a18;
@@ -64,7 +52,7 @@ body {
     font-size: 12px; font-weight: 600;
     text-transform: uppercase; letter-spacing: 2px;
     text-align: center; margin-bottom: 12px;
-    color: #1a1a18;
+    color: #1a1a18 !important;
 }
 .directory-tabs { display: flex; justify-content: center; flex-wrap: wrap; }
 .directory-tab {
@@ -75,17 +63,17 @@ body {
     border: 1px solid #1a1a18;
     border-right: none;
     background: #f4ead5;
-    color: #1a1a18;
+    color: #1a1a18 !important;
     cursor: pointer;
     transition: all 0.15s ease;
     text-decoration: none;
 }
 .directory-tab:last-child { border-right: 1px solid #1a1a18; }
-.directory-tab:hover, .directory-tab.active { background: #1a1a18; color: #f4ead5; }
-.main-content { padding: 25px 35px; }
+.directory-tab:hover, .directory-tab.active { background: #1a1a18; color: #f4ead5 !important; }
+.main-content { padding: 25px 35px; color: #1a1a18 !important; }
 .bulletin-strip {
     background: #a03030;
-    color: #f4ead5;
+    color: #f4ead5 !important;
     padding: 10px 20px;
     margin: -25px -35px 25px;
     border-bottom: 2px solid #1a1a18;
@@ -96,11 +84,11 @@ body {
     text-transform: uppercase; letter-spacing: 2px;
     margin-bottom: 5px;
     display: flex; align-items: center; gap: 10px;
-    color: #f4ead5;
+    color: #f4ead5 !important;
 }
 .bulletin-header::before { content: '●'; animation: blink 1s infinite; }
 @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
-.bulletin-text { font-family: 'Special Elite', monospace; font-size: 12px; letter-spacing: 0.5px; color: #f4ead5; }
+.bulletin-text { font-family: 'Special Elite', monospace; font-size: 12px; letter-spacing: 0.5px; color: #f4ead5 !important; }
 .section-header {
     font-family: 'Oswald', sans-serif;
     font-size: 18px; font-weight: 600;
@@ -111,7 +99,7 @@ body {
     border: 2px solid #1a1a18;
     border-left: 6px solid #1a1a18;
     background: #e8dcc4;
-    color: #1a1a18;
+    color: #1a1a18 !important;
 }
 .section-header:first-child { margin-top: 0; }
 .section-subheader {
@@ -120,23 +108,25 @@ body {
     text-transform: uppercase; letter-spacing: 2px;
     text-align: center;
     margin: 15px 0 10px;
-    color: #2d2a26;
+    color: #2d2a26 !important;
 }
 .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
 @media (max-width: 700px) { .two-column { grid-template-columns: 1fr; } }
 .timetable-block { border: 1px solid #1a1a18; margin-bottom: 20px; background: #f4ead5; }
 .timetable-header {
     background: #1a1a18;
-    color: #f4ead5;
+    color: #f4ead5 !important;
     padding: 10px 15px;
     text-align: center;
 }
-.timetable-direction { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: #f4ead5; }
-.timetable-route { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 3px 0; color: #f4ead5; }
-.timetable-day { font-size: 13px; font-style: italic; color: #f4ead5; }
-.timetable-content { padding: 10px; }
-.timetable-subheader { font-size: 11px; text-align: center; margin-bottom: 8px; color: #2d2a26; }
-.time-grid { width: 100%; border-collapse: collapse; font-size: 11px; }
+.timetable-direction { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: #f4ead5 !important; }
+.timetable-route { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 3px 0; color: #f4ead5 !important; }
+.timetable-day { font-size: 13px; font-style: italic; color: #f4ead5 !important; }
+.timetable-content { padding: 10px; color: #1a1a18 !important; }
+.timetable-subheader { font-size: 11px; text-align: center; margin-bottom: 8px; color: #2d2a26 !important; }
+
+/* TIMETABLE GRID - CRITICAL FIX */
+.time-grid { width: 100%; border-collapse: collapse; font-size: 11px; color: #1a1a18 !important; }
 .time-grid th {
     font-family: 'Oswald', sans-serif;
     font-size: 10px; font-weight: 500;
@@ -145,27 +135,31 @@ body {
     border-bottom: 2px solid #1a1a18;
     text-align: center;
     background: #e8dcc4;
-    color: #1a1a18;
+    color: #1a1a18 !important;
 }
+.time-grid tbody { color: #1a1a18 !important; }
+.time-grid tr { color: #1a1a18 !important; }
 .time-grid td { 
     padding: 3px 4px; 
     text-align: center; 
     border-bottom: 1px solid rgba(139,115,85,0.3); 
-    color: #1a1a18;
+    color: #1a1a18 !important;
+    background: transparent;
 }
-.time-grid tr:nth-child(even) td { background: rgba(139,115,85,0.08); }
-.time-grid .depot { color: #1e3a5f; font-weight: 600; }
-.time-grid .railway { color: #2d4a2d; font-weight: 600; }
-.time-grid .entertainment { color: #8b2020; font-weight: 600; }
+.time-grid tr:nth-child(even) td { background: rgba(139,115,85,0.08); color: #1a1a18 !important; }
+.time-grid td.depot { color: #1e3a5f !important; font-weight: 600; }
+.time-grid td.railway { color: #2d4a2d !important; font-weight: 600; }
+.time-grid td.entertainment { color: #8b2020 !important; font-weight: 600; }
+
 .timetable-legend {
     font-size: 10px;
     padding: 8px 10px;
     border-top: 1px solid #1a1a18;
     background: #e8dcc4;
     line-height: 1.6;
-    color: #1a1a18;
+    color: #1a1a18 !important;
 }
-.timetable-legend strong { font-family: 'Oswald', sans-serif; font-weight: 600; }
+.timetable-legend strong { font-family: 'Oswald', sans-serif; font-weight: 600; color: #1a1a18 !important; }
 .day-selector { display: flex; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
 .day-btn {
     font-family: 'Oswald', sans-serif;
@@ -175,35 +169,35 @@ body {
     border: 1px solid #1a1a18;
     border-right: none;
     background: #f4ead5;
-    color: #1a1a18;
+    color: #1a1a18 !important;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 .day-btn:last-child { border-right: 1px solid #1a1a18; }
-.day-btn:hover, .day-btn.active { background: #1e3a5f; color: #f4ead5; }
+.day-btn:hover, .day-btn.active { background: #1e3a5f; color: #f4ead5 !important; }
 .fares-section { border: 1px solid #1a1a18; margin: 20px 0; }
 .fares-header {
     background: #1a1a18;
-    color: #f4ead5;
+    color: #f4ead5 !important;
     padding: 10px 15px;
     text-align: center;
     font-family: 'Oswald', sans-serif;
     font-size: 16px; font-weight: 600;
     text-transform: uppercase; letter-spacing: 2px;
 }
-.fares-content { padding: 15px 20px; }
-.fare-item { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px dotted #8b7355; color: #1a1a18; }
+.fares-content { padding: 15px 20px; color: #1a1a18 !important; }
+.fare-item { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px dotted #8b7355; color: #1a1a18 !important; }
 .fare-item:last-child { border-bottom: none; }
-.fare-description { font-size: 13px; flex: 1; color: #1a1a18; }
-.fare-price { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 13px; color: #1a1a18; }
-.fare-subsection { font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 15px 0 8px; padding-top: 10px; border-top: 1px solid #1a1a18; color: #1a1a18; }
+.fare-description { font-size: 13px; flex: 1; color: #1a1a18 !important; }
+.fare-price { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 13px; color: #1a1a18 !important; }
+.fare-subsection { font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 15px 0 8px; padding-top: 10px; border-top: 1px solid #1a1a18; color: #1a1a18 !important; }
 .fare-subsection:first-child { margin-top: 0; padding-top: 0; border-top: none; }
-.regulations { font-size: 12px; line-height: 1.6; color: #1a1a18; }
-.regulations h4 { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 15px 0 8px; color: #1a1a18; }
+.regulations { font-size: 12px; line-height: 1.6; color: #1a1a18 !important; }
+.regulations h4 { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 15px 0 8px; color: #1a1a18 !important; }
 .regulations h4:first-child { margin-top: 0; }
-.regulations p { margin-bottom: 8px; color: #1a1a18; }
-.regulations ul { margin-left: 20px; margin-bottom: 12px; color: #1a1a18; }
-.regulations li { margin-bottom: 4px; color: #1a1a18; }
+.regulations p { margin-bottom: 8px; color: #1a1a18 !important; }
+.regulations ul { margin-left: 20px; margin-bottom: 12px; color: #1a1a18 !important; }
+.regulations li { margin-bottom: 4px; color: #1a1a18 !important; }
 .official-notice {
     border: 1px solid #1a1a18;
     padding: 15px 20px;
@@ -220,9 +214,9 @@ body {
     font-family: 'Oswald', sans-serif;
     font-size: 10px; font-weight: 600;
     text-transform: uppercase; letter-spacing: 1px;
-    color: #1e3a5f;
+    color: #1e3a5f !important;
 }
-.notice-text { font-size: 13px; line-height: 1.5; color: #1a1a18; }
+.notice-text { font-size: 13px; line-height: 1.5; color: #1a1a18 !important; }
 .ad-block {
     border: 3px solid #1a1a18;
     padding: 20px;
@@ -230,36 +224,37 @@ body {
     background: #f9f3e3;
     text-align: center;
     position: relative;
+    color: #1a1a18 !important;
 }
 .ad-block::before, .ad-block::after { content: ''; position: absolute; width: 15px; height: 15px; border: 2px solid #1a1a18; }
 .ad-block::before { top: 5px; left: 5px; border-right: none; border-bottom: none; }
 .ad-block::after { bottom: 5px; right: 5px; border-left: none; border-top: none; }
-.ad-headline { font-family: 'IM Fell English', serif; font-size: 28px; margin-bottom: 8px; color: #1a1a18; }
-.ad-tagline { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; color: #1a1a18; }
-.ad-body { font-size: 13px; line-height: 1.5; max-width: 350px; margin: 0 auto 15px; color: #1a1a18; }
+.ad-headline { font-family: 'IM Fell English', serif; font-size: 28px; margin-bottom: 8px; color: #1a1a18 !important; }
+.ad-tagline { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; color: #1a1a18 !important; }
+.ad-body { font-size: 13px; line-height: 1.5; max-width: 350px; margin: 0 auto 15px; color: #1a1a18 !important; }
 .ad-bullet { display: inline-block; width: 8px; height: 8px; background: #1a1a18; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
-.ad-authority { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 15px; padding-top: 12px; border-top: 1px solid #1a1a18; color: #1a1a18; }
-.ad-dept { font-size: 11px; font-style: italic; color: #1a1a18; }
-.ad-illustration { width: 120px; height: 100px; margin: 15px auto; border: 1px solid #1a1a18; display: flex; align-items: center; justify-content: center; background: #f4ead5; font-family: 'Special Elite', monospace; font-size: 10px; color: #8b7355; }
+.ad-authority { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 15px; padding-top: 12px; border-top: 1px solid #1a1a18; color: #1a1a18 !important; }
+.ad-dept { font-size: 11px; font-style: italic; color: #1a1a18 !important; }
+.ad-illustration { width: 120px; height: 100px; margin: 15px auto; border: 1px solid #1a1a18; display: flex; align-items: center; justify-content: center; background: #f4ead5; font-family: 'Special Elite', monospace; font-size: 10px; color: #8b7355 !important; }
 .route-map-container { border: 2px solid #1a1a18; padding: 20px; margin: 20px 0; background: #f4ead5; text-align: center; }
-.map-title { font-family: 'IM Fell English', serif; font-size: 28px; font-style: italic; margin-bottom: 5px; color: #1a1a18; }
-.map-subtitle { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; color: #1a1a18; }
-.map-note { font-size: 12px; font-style: italic; margin-top: 10px; color: #1a1a18; }
+.map-title { font-family: 'IM Fell English', serif; font-size: 28px; font-style: italic; margin-bottom: 5px; color: #1a1a18 !important; }
+.map-subtitle { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; color: #1a1a18 !important; }
+.map-note { font-size: 12px; font-style: italic; margin-top: 10px; color: #1a1a18 !important; }
 .route-map svg { width: 100%; max-width: 500px; height: auto; }
-.enquiry-form { border: 2px solid #1a1a18; padding: 20px; margin: 20px 0; background: #f4ead5; }
-.form-header { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #1a1a18; color: #1a1a18; }
+.enquiry-form { border: 2px solid #1a1a18; padding: 20px; margin: 20px 0; background: #f4ead5; color: #1a1a18 !important; }
+.form-header { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #1a1a18; color: #1a1a18 !important; }
 .form-row { display: flex; align-items: center; margin-bottom: 12px; gap: 10px; }
-.form-label { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; width: 100px; flex-shrink: 0; color: #1a1a18; }
-.form-input { flex: 1; border: none; border-bottom: 1px solid #1a1a18; background: transparent; padding: 5px 8px; font-family: 'Special Elite', monospace; font-size: 13px; color: #1a1a18; }
+.form-label { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; width: 100px; flex-shrink: 0; color: #1a1a18 !important; }
+.form-input { flex: 1; border: none; border-bottom: 1px solid #1a1a18; background: transparent; padding: 5px 8px; font-family: 'Special Elite', monospace; font-size: 13px; color: #1a1a18 !important; }
 .form-input:focus { outline: none; border-bottom: 2px solid #1a1a18; }
-.form-input::placeholder { color: #8b7355; }
-.form-select { flex: 1; border: 1px solid #1a1a18; background: #f4ead5; padding: 6px 10px; font-family: 'Source Serif 4', serif; font-size: 13px; color: #1a1a18; }
-.form-submit { display: block; width: 100%; margin-top: 15px; padding: 12px; border: 2px solid #1a1a18; background: #1a1a18; color: #f4ead5; font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: all 0.15s ease; }
-.form-submit:hover { background: #f4ead5; color: #1a1a18; }
-.page-footer { background: #1a1a18; color: #f4ead5; padding: 20px 35px; text-align: center; }
-.footer-authority { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; color: #f4ead5; }
-.footer-address { font-size: 12px; margin-bottom: 10px; color: #f4ead5; }
-.footer-stamp { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); color: #f4ead5; }
+.form-input::placeholder { color: #8b7355 !important; }
+.form-select { flex: 1; border: 1px solid #1a1a18; background: #f4ead5; padding: 6px 10px; font-family: 'Source Serif 4', serif; font-size: 13px; color: #1a1a18 !important; }
+.form-submit { display: block; width: 100%; margin-top: 15px; padding: 12px; border: 2px solid #1a1a18; background: #1a1a18; color: #f4ead5 !important; font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: all 0.15s ease; }
+.form-submit:hover { background: #f4ead5; color: #1a1a18 !important; }
+.page-footer { background: #1a1a18; color: #f4ead5 !important; padding: 20px 35px; text-align: center; }
+.footer-authority { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; color: #f4ead5 !important; }
+.footer-address { font-size: 12px; margin-bottom: 10px; color: #f4ead5 !important; }
+.footer-stamp { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); color: #f4ead5 !important; }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 @media (max-width: 600px) {
