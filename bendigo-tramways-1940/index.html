@@ -7,18 +7,79 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Oswald:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Special+Elite&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #d4c4a8; font-family: 'Source Serif 4', Georgia, serif; color: #1a1a18; line-height: 1.4; font-size: 15px; }
+        .page { max-width: 900px; margin: 0 auto; background: #f4ead5; box-shadow: 0 0 0 1px #8b7355, 4px 4px 20px rgba(0,0,0,0.3); }
+        .cover { background: #b84c4c; padding: 30px 40px; text-align: center; border-bottom: 4px double #1a1a18; }
+        .crest { width: 70px; height: 70px; margin: 0 auto 15px; border: 2px solid #1a1a18; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #f4ead5; font-family: 'Oswald', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2; color: #1a1a18; }
+        .cover-subtitle { font-size: 13px; color: #f4ead5; letter-spacing: 1px; margin-bottom: 5px; }
+        .cover-authority { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; color: #f4ead5; text-transform: uppercase; letter-spacing: 2px; }
+        .cover-division { font-size: 12px; font-style: italic; color: #f4ead5; margin-bottom: 20px; }
+        .cover-main { font-family: 'Oswald', sans-serif; font-size: 42px; font-weight: 700; color: #f4ead5; text-transform: uppercase; letter-spacing: 4px; text-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+        .cover-sub { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 500; color: #f4ead5; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 15px; }
+        .cover-location { font-family: 'IM Fell English', serif; font-size: 36px; font-style: italic; color: #f4ead5; margin-bottom: 5px; }
+        .cover-date { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 500; color: #f4ead5; text-transform: uppercase; letter-spacing: 2px; }
+        .cover-note { font-size: 11px; font-style: italic; color: #f4ead5; opacity: 0.9; margin-top: 5px; }
+        .cover-ornament { margin: 15px 0 10px; color: #f4ead5; font-size: 18px; letter-spacing: 8px; }
+        .cover-office { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 500; color: #f4ead5; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3); }
+        .nav { background: #e8dcc4; border-bottom: 2px solid #1a1a18; padding: 15px 30px; }
+        .nav h2 { font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 12px; color: #1a1a18; }
+        .nav-tabs { display: flex; justify-content: center; flex-wrap: wrap; }
+        .nav-tab { font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; padding: 8px 15px; border: 1px solid #1a1a18; border-right: none; background: #f4ead5; color: #1a1a18; cursor: pointer; text-decoration: none; }
+        .nav-tab:last-child { border-right: 1px solid #1a1a18; }
+        .nav-tab:hover, .nav-tab.active { background: #1a1a18; color: #f4ead5; }
+        .main { padding: 25px 35px; }
+        .bulletin { background: #a03030; color: #f4ead5; padding: 10px 20px; margin: -25px -35px 25px; border-bottom: 2px solid #1a1a18; }
+        .bulletin-head { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+        .bulletin-head::before { content: '●'; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
+        .bulletin-text { font-family: 'Special Elite', monospace; font-size: 12px; letter-spacing: 0.5px; }
+        .section-head { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 3px; text-align: center; padding: 12px 20px; margin: 25px 0 20px; border: 2px solid #1a1a18; border-left: 6px solid #1a1a18; background: #e8dcc4; color: #1a1a18; }
+        .section-head:first-child { margin-top: 0; }
+        .route-head { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; text-align: center; margin: 15px 0 10px; color: #2d2a26; }
+        .day-sel { display: flex; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+        .day-btn { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; border: 1px solid #1a1a18; border-right: none; background: #f4ead5; color: #1a1a18; cursor: pointer; }
+        .day-btn:last-child { border-right: 1px solid #1a1a18; }
+        .day-btn:hover, .day-btn.active { background: #1e3a5f; color: #f4ead5; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+        .tt-block { border: 1px solid #1a1a18; margin-bottom: 20px; background: #f4ead5; }
+        .tt-header { background: #1a1a18; color: #f4ead5; padding: 10px 15px; text-align: center; }
+        .tt-dir { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+        .tt-route { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 3px 0; }
+        .tt-day { font-size: 13px; font-style: italic; }
+        .tt-content { padding: 10px; }
+        .tt-sub { font-size: 11px; text-align: center; margin-bottom: 8px; color: #2d2a26; }
+        table.tt { width: 100%; border-collapse: collapse; font-size: 11px; }
+        table.tt th { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 4px; border-bottom: 2px solid #1a1a18; text-align: center; background: #e8dcc4; color: #1a1a18; }
+        table.tt td { padding: 4px; text-align: center; border-bottom: 1px solid rgba(139,115,85,0.3); color: #1a1a18; }
+        table.tt tr:nth-child(even) td { background: rgba(139,115,85,0.08); }
+        table.tt .d { color: #1e3a5f; font-weight: 600; }
+        table.tt .r { color: #2d4a2d; font-weight: 600; }
+        table.tt .e { color: #8b2020; font-weight: 600; }
+        .tt-legend { font-size: 10px; padding: 8px 10px; border-top: 1px solid #1a1a18; background: #e8dcc4; line-height: 1.6; color: #1a1a18; }
+        .tt-legend b { font-family: 'Oswald', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .day-content { display: none; }
+        .day-content.active { display: block; }
+        .footer { background: #1a1a18; color: #f4ead5; padding: 20px 35px; text-align: center; }
+        .footer-auth { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+        .footer-addr { font-size: 12px; margin-bottom: 10px; }
+        .footer-stamp { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); }
+        @media (max-width: 600px) { .cover { padding: 20px; } .cover-main { font-size: 28px; } .main { padding: 15px 20px; } .bulletin { margin: -15px -20px 20px; } }
+    </style>
 </head>
 <body>
-    <div class="page-container">
-        <!-- Cover/Masthead -->
+    <div class="page">
         <header class="cover">
             <div class="crest"><div>State<br>of<br>Victoria</div></div>
             <div class="cover-subtitle">State Electricity Commission</div>
             <div class="cover-authority">of Victoria</div>
             <div class="cover-division">(Provincial Tramways)</div>
-            <div class="cover-main-title">Official</div>
-            <div class="cover-sub-title">Time Table</div>
+            <div class="cover-main">Official</div>
+            <div class="cover-sub">Time Table</div>
             <div class="cover-location">Bendigo</div>
             <div class="cover-date">June, 1940</div>
             <div class="cover-note">(Cancelling all previous time-tables.)</div>
@@ -26,694 +87,1426 @@
             <div class="cover-office">Electricity Supply Dept. and Tramway Offices<br>Hargreaves Street · Bendigo</div>
         </header>
 
-        <!-- Navigation -->
-        <nav class="directory-nav">
+        <nav class="nav">
             <h2>— Consult Directory —</h2>
-            <div class="directory-tabs">
-                <a href="#" class="directory-tab active" data-tab="timetables">Timetables</a>
-                <a href="#" class="directory-tab" data-tab="routes">Route Map</a>
-                <a href="#" class="directory-tab" data-tab="fares">Fares</a>
-                <a href="#" class="directory-tab" data-tab="regulations">Regulations</a>
-                <a href="#" class="directory-tab" data-tab="enquiry">Enquiry Form</a>
+            <div class="nav-tabs">
+                <a href="#" class="nav-tab active" data-tab="routes">Route Map</a>
+                <a href="#" class="nav-tab" data-tab="eaglehawk">Eaglehawk</a>
+                <a href="#" class="nav-tab" data-tab="weeroona">Lake Weeroona</a>
+                <a href="#" class="nav-tab" data-tab="golden">Golden Square</a>
+                <a href="#" class="nav-tab" data-tab="quarry">Quarry Hill</a>
+                <a href="#" class="nav-tab" data-tab="fares">Fares</a>
+                <a href="#" class="nav-tab" data-tab="regulations">Regulations</a>
             </div>
         </nav>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Bulletin Strip -->
-            <div class="bulletin-strip">
-            <!-- TIMETABLES TAB -->
-            <section id="timetables" class="tab-content active">
-                <div class="section-header">Official Timetables</div>
-                
-                <div class="day-selector">
-                    <button class="day-btn active" data-day="mon-thu">Mon–Thu</button>
-                    <button class="day-btn" data-day="friday">Friday</button>
-                    <button class="day-btn" data-day="saturday">Saturday</button>
-                    <button class="day-btn" data-day="sunday">Sunday</button>
-                </div>
+        <main class="main">
+            <div class="bulletin">
+                <div class="bulletin-head">Latest Bulletin — Notice No. 17/1940</div>
+                <div class="bulletin-text">PASSENGERS WOULD FACILITATE TRAFFIC BY — Distinctly hailing tram at stopping place. Having correct fare ready for conductor. Promptly notifying conductor of desired destination.</div>
+            </div>
 
-                <!-- EAGLEHAWK ROUTE -->
-                <div class="section-subheader">— Eaglehawk Line —</div>
-                
-                <div class="two-column">
-                    <div class="timetable-block">
-                        <div class="timetable-header">
-                            <div class="timetable-direction">Out</div>
-                            <div class="timetable-route">City to Eaglehawk</div>
-                            <div class="timetable-day">Monday to Thursday</div>
-                        </div>
-                        <div class="timetable-content">
-                            <div class="timetable-subheader">Trams leave City:—</div>
-                            <table class="time-grid">
-                                <thead>
-                                    <tr><th>Leave City</th><th>Leave L.G. Br.</th><th>Leave City</th><th>Leave L.G. Br.</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td class="depot">D6.0 a.m.</td><td>6.12 a.m.</td><td>3.0 p.m.</td><td>3.12 p.m.</td></tr>
-                                    <tr><td class="depot">D6.30 ,,</td><td>6.42 ,,</td><td>3.15 ,,</td><td>3.27 ,,</td></tr>
-                                    <tr><td>7.0 ,,</td><td>7.12 ,,</td><td>3.30 ,,</td><td>3.42 ,,</td></tr>
-                                    <tr><td class="depot">D7.15 ,,</td><td>7.27 ,,</td><td>3.45 ,,</td><td>3.57 ,,</td></tr>
-                                    <tr><td>7.30 ,,</td><td>7.42 ,,</td><td>4.0 ,,</td><td>4.12 ,,</td></tr>
-                                    <tr><td>7.45 ,,</td><td>7.57 ,,</td><td>4.15 ,,</td><td>4.27 ,,</td></tr>
-                                    <tr><td>8.0 ,,</td><td>8.12 ,,</td><td>4.30 ,,</td><td>4.42 ,,</td></tr>
-                                    <tr><td>8.15 ,,</td><td>8.27 ,,</td><td>4.45 ,,</td><td>4.57 ,,</td></tr>
-                                    <tr><td>8.30 ,,</td><td>8.42 ,,</td><td>5.0 ,,</td><td>5.12 ,,</td></tr>
-                                    <tr><td>8.45 ,,</td><td>8.57 ,,</td><td>5.15 ,,</td><td>5.27 ,,</td></tr>
-                                    <tr><td>9.0 ,,</td><td>9.12 ,,</td><td>5.30 ,,</td><td>5.42 ,,</td></tr>
-                                    <tr><td>9.15 ,,</td><td>9.27 ,,</td><td>5.45 ,,</td><td>5.57 ,,</td></tr>
-                                    <tr><td>9.30 ,,</td><td>9.42 ,,</td><td>6.15 ,,</td><td>6.27 ,,</td></tr>
-                                    <tr><td>9.50 ,,</td><td>10.2 ,,</td><td>6.30 ,,</td><td>6.42 ,,</td></tr>
-                                    <tr><td>10.10 ,,</td><td>10.22 ,,</td><td>6.45 ,,</td><td>6.57 ,,</td></tr>
-                                    <tr><td>10.30 ,,</td><td>10.42 ,,</td><td>7.0 ,,</td><td>7.12 ,,</td></tr>
-                                    <tr><td>10.50 ,,</td><td>11.2 ,,</td><td>7.15 ,,</td><td>7.27 ,,</td></tr>
-                                    <tr><td>11.10 ,,</td><td>11.22 ,,</td><td>7.30 ,,</td><td>7.42 ,,</td></tr>
-                                    <tr><td>11.30 ,,</td><td>11.42 ,,</td><td>7.45 ,,</td><td>7.57 ,,</td></tr>
-                                    <tr><td>11.45 ,,</td><td>11.57 ,,</td><td>8.0 ,,</td><td>8.12 ,,</td></tr>
-                                    <tr><td>12.5 p.m.</td><td>12.15 p.m.</td><td>8.15 ,,</td><td>8.27 ,,</td></tr>
-                                    <tr><td class="depot">D12.15 ,,</td><td>12.27 ,,</td><td>8.30 ,,</td><td>8.42 ,,</td></tr>
-                                    <tr><td>12.30 ,,</td><td>12.42 ,,</td><td>8.50 ,,</td><td>9.2 ,,</td></tr>
-                                    <tr><td>12.45 ,,</td><td>12.57 ,,</td><td>9.30 ,,</td><td>9.42 ,,</td></tr>
-                                    <tr><td>1.15 ,,</td><td>1.27 ,,</td><td>9.50 ,,</td><td>10.2 ,,</td></tr>
-                                    <tr><td>1.30 ,,</td><td>1.42 ,,</td><td>10.10 ,,</td><td>10.22 ,,</td></tr>
-                                    <tr><td>1.45 ,,</td><td>1.57 ,,</td><td class="entertainment">*10.30 ,,</td><td class="entertainment">*10.42 ,,</td></tr>
-                                    <tr><td>2.0 ,,</td><td>2.12 ,,</td><td class="entertainment">*10.50 ,,</td><td class="entertainment">*11.2 ,,</td></tr>
-                                    <tr><td>2.15 ,,</td><td>2.27 ,,</td><td class="entertainment">*11.0 ,,</td><td class="entertainment">*11.12 ,,</td></tr>
-                                    <tr><td>2.30 ,,</td><td>2.42 ,,</td><td></td><td></td></tr>
-                                    <tr><td>2.45 ,,</td><td>2.57 ,,</td><td></td><td></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="timetable-legend">
-                            <strong>D</strong> denotes from Depot. <strong>*</strong> subject to terminating times of entertainments.
-                        </div>
-                    </div>
-
-                    <div class="timetable-block">
-                        <div class="timetable-header">
-                            <div class="timetable-direction">In</div>
-                            <div class="timetable-route">Eaglehawk to City</div>
-                            <div class="timetable-day">Monday to Thursday</div>
-                        </div>
-                        <div class="timetable-content">
-                            <div class="timetable-subheader">Trams leave Eaglehawk:—</div>
-                            <table class="time-grid">
-                                <thead>
-                                    <tr><th>Leave Eaglehawk</th><th>Leave L.G. Br.</th><th>Leave Eaglehawk</th><th>Leave L.G. Br.</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>6.25 a.m.</td><td>6.37 a.m.</td><td>3.25 p.m.</td><td>3.37 p.m.</td></tr>
-                                    <tr><td>6.55 ,,</td><td>7.7 ,,</td><td>3.40 ,,</td><td>3.52 ,,</td></tr>
-                                    <tr><td>7.25 ,,</td><td>7.37 ,,</td><td>3.55 ,,</td><td>4.7 ,,</td></tr>
-                                    <tr><td>7.40 ,,</td><td>7.52 ,,</td><td>4.10 ,,</td><td>4.22 ,,</td></tr>
-                                    <tr><td>7.55 ,,</td><td>8.7 ,,</td><td>4.25 ,,</td><td>4.37 ,,</td></tr>
-                                    <tr><td>8.10 ,,</td><td>8.22 ,,</td><td>4.40 ,,</td><td>4.52 ,,</td></tr>
-                                    <tr><td>8.25 ,,</td><td>8.37 ,,</td><td>4.55 ,,</td><td>5.7 ,,</td></tr>
-                                    <tr><td>8.40 ,,</td><td>8.52 ,,</td><td>5.10 ,,</td><td>5.22 ,,</td></tr>
-                                    <tr><td class="depot">†8.55 ,,</td><td class="depot">†9.7 ,,</td><td>5.25 ,,</td><td>5.37 ,,</td></tr>
-                                    <tr><td>9.10 ,,</td><td>9.22 ,,</td><td>5.40 ,,</td><td>5.52 ,,</td></tr>
-                                    <tr><td>9.25 ,,</td><td>9.37 ,,</td><td>5.55 ,,</td><td>6.7 ,,</td></tr>
-                                    <tr><td>9.40 ,,</td><td>9.52 ,,</td><td>6.10 ,,</td><td>6.22 ,,</td></tr>
-                                    <tr><td>9.55 ,,</td><td>10.7 ,,</td><td>6.25 ,,</td><td>6.37 ,,</td></tr>
-                                    <tr><td>10.15 ,,</td><td>10.27 ,,</td><td>6.40 ,,</td><td>6.52 ,,</td></tr>
-                                    <tr><td>10.35 ,,</td><td>10.47 ,,</td><td>6.55 ,,</td><td>7.7 ,,</td></tr>
-                                    <tr><td>10.55 ,,</td><td>11.7 ,,</td><td>7.10 ,,</td><td>7.22 ,,</td></tr>
-                                    <tr><td>11.15 ,,</td><td>11.27 ,,</td><td>7.25 ,,</td><td>7.37 ,,</td></tr>
-                                    <tr><td>11.35 ,,</td><td>11.47 ,,</td><td>7.40 ,,</td><td>7.52 ,,</td></tr>
-                                    <tr><td>11.55 ,,</td><td>12.7 p.m.</td><td class="depot">†7.55 ,,</td><td class="depot">†8.7 ,,</td></tr>
-                                    <tr><td>12.10 p.m.</td><td>12.22 ,,</td><td>8.10 ,,</td><td>8.21 ,,</td></tr>
-                                    <tr><td>12.25 ,,</td><td>12.37 ,,</td><td>8.25 ,,</td><td>8.37 ,,</td></tr>
-                                    <tr><td>12.40 ,,</td><td>12.52 ,,</td><td>8.40 ,,</td><td>8.52 ,,</td></tr>
-                                    <tr><td>12.55 ,,</td><td>1.7 ,,</td><td>8.55 ,,</td><td>9.7 ,,</td></tr>
-                                    <tr><td>1.10 ,,</td><td>1.22 ,,</td><td>9.15 ,,</td><td>9.27 ,,</td></tr>
-                                    <tr><td>1.40 ,,</td><td>1.52 ,,</td><td>9.55 ,,</td><td>10.7 ,,</td></tr>
-                                    <tr><td>1.55 ,,</td><td>2.7 ,,</td><td>10.15 ,,</td><td>10.27 ,,</td></tr>
-                                    <tr><td>2.10 ,,</td><td>2.22 ,,</td><td class="entertainment">*10.35 ,,</td><td class="entertainment">*10.47 ,,</td></tr>
-                                    <tr><td>2.25 ,,</td><td>2.37 ,,</td><td class="entertainment">*10.55 ,,</td><td class="entertainment">*11.7 ,,</td></tr>
-                                    <tr><td>2.40 ,,</td><td>2.52 ,,</td><td class="entertainment">*11.15 ,,</td><td class="entertainment">*11.27 ,,</td></tr>
-                                    <tr><td>2.55 ,,</td><td>3.7 ,,</td><td class="entertainment">*11.25 ,,</td><td class="entertainment">*11.37 ,,</td></tr>
-                                    <tr><td>3.10 ,,</td><td>3.22 ,,</td><td></td><td></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="timetable-legend">
-                            <strong>†</strong> denotes to Depot. <strong>*</strong> subject to terminating times of entertainments.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- QUARRY HILL ROUTE -->
-                <div class="section-subheader">— Quarry Hill Line —</div>
-                
-                <div class="two-column">
-                    <div class="timetable-block">
-                        <div class="timetable-header">
-                            <div class="timetable-direction">Out</div>
-                            <div class="timetable-route">City to Quarry Hill</div>
-                            <div class="timetable-day">Monday to Thursday</div>
-                        </div>
-                        <div class="timetable-content">
-                            <div class="timetable-subheader">Trams leave City:—</div>
-                            <table class="time-grid">
-                                <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
-                                <tbody>
-                                    <tr><td>6.50 a.m.</td><td>11.0 a.m.</td><td>3.5 p.m.</td><td>6.50 p.m.</td></tr>
-                                    <tr><td class="railway">to R</td><td>11.20 ,,</td><td>3.20 ,,</td><td>7.5 ,,</td></tr>
-                                    <tr><td class="depot">D7.5 ,,</td><td>11.40 ,,</td><td>3.35 ,,</td><td>7.20 ,,</td></tr>
-                                    <tr><td>7.20 ,,</td><td>12.5 p.m.</td><td>3.50 ,,</td><td>7.35 ,,</td></tr>
-                                    <tr><td class="depot">D7.35 ,,</td><td>12.20 ,,</td><td>4.5 ,,</td><td>7.50 ,,</td></tr>
-                                    <tr><td>7.50 ,,</td><td>12.35 ,,</td><td>4.20 ,,</td><td>8.5 ,,</td></tr>
-                                    <tr><td>8.5 ,,</td><td>12.50 ,,</td><td>4.35 ,,</td><td>8.34 ,,</td></tr>
-                                    <tr><td>8.20 ,,</td><td>1.5 ,,</td><td>4.50 ,,</td><td>8.50 ,,</td></tr>
-                                    <tr><td>8.35 ,,</td><td>1.20 ,,</td><td>5.5 ,,</td><td>9.5 ,,</td></tr>
-                                    <tr><td>8.50 ,,</td><td>1.35 ,,</td><td>5.20 ,,</td><td>9.20 ,,</td></tr>
-                                    <tr><td>9.5 ,,</td><td>1.50 ,,</td><td>5.35 ,,</td><td>9.40 ,,</td></tr>
-                                    <tr><td>9.34 ,,</td><td>2.5 ,,</td><td>5.50 ,,</td><td>10.0 ,,</td></tr>
-                                    <tr><td>9.50 ,,</td><td>2.20 ,,</td><td>6.5 ,,</td><td>10.20 ,,</td></tr>
-                                    <tr><td>10.5 ,,</td><td>2.35 ,,</td><td>6.20 ,,</td><td class="entertainment">*10.40 ,,</td></tr>
-                                    <tr><td>10.20 ,,</td><td>2.50 ,,</td><td>6.35 ,,</td><td class="entertainment">*11.0 ,,</td></tr>
-                                    <tr><td>10.40 ,,</td><td></td><td></td><td></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="timetable-legend">
-                            <strong>R</strong> Railway Station. <strong>D</strong> from Depot. <strong>*</strong> subject to entertainments.
-                        </div>
-                    </div>
-
-                    <div class="timetable-block">
-                        <div class="timetable-header">
-                            <div class="timetable-direction">In</div>
-                            <div class="timetable-route">Quarry Hill to City</div>
-                            <div class="timetable-day">Monday to Thursday</div>
-                        </div>
-                        <div class="timetable-content">
-                            <div class="timetable-subheader">Trams leave Quarry Hill:—</div>
-                            <table class="time-grid">
-                                <thead><tr><th>Leave Q.H.</th><th>Leave Q.H.</th><th>Leave Q.H.</th><th>Leave Q.H.</th></tr></thead>
-                                <tbody>
-                                    <tr><td class="railway">R6.55 a.m.</td><td>11.16 a.m.</td><td>3.20 p.m.</td><td>7.5 p.m.</td></tr>
-                                    <tr><td>7.20 ,,</td><td>11.35 ,,</td><td>3.35 ,,</td><td>7.20 ,,</td></tr>
-                                    <tr><td>7.35 ,,</td><td>11.50 ,,</td><td>3.50 ,,</td><td>7.35 ,,</td></tr>
-                                    <tr><td>7.50 ,,</td><td>12.19 p.m.</td><td>4.5 ,,</td><td>7.50 ,,</td></tr>
-                                    <tr><td>8.5 ,,</td><td>12.35 ,,</td><td>4.20 ,,</td><td>8.5 ,,</td></tr>
-                                    <tr><td>8.20 ,,</td><td>12.50 ,,</td><td>4.35 ,,</td><td>8.20 ,,</td></tr>
-                                    <tr><td>8.35 ,,</td><td>1.5 ,,</td><td>4.50 ,,</td><td>8.43 ,,</td></tr>
-                                    <tr><td>8.50 ,,</td><td>1.20 ,,</td><td>5.5 ,,</td><td>9.0 ,,</td></tr>
-                                    <tr><td>9.5 ,,</td><td>1.35 ,,</td><td>5.20 ,,</td><td>9.20 ,,</td></tr>
-                                    <tr><td>9.20 ,,</td><td>1.50 ,,</td><td>5.35 ,,</td><td>9.36 ,,</td></tr>
-                                    <tr><td>9.43 ,,</td><td>2.5 ,,</td><td>5.50 ,,</td><td>9.56 ,,</td></tr>
-                                    <tr><td>10.0 ,,</td><td>2.20 ,,</td><td>6.5 ,,</td><td>10.16 ,,</td></tr>
-                                    <tr><td>10.16 ,,</td><td>2.35 ,,</td><td>6.20 ,,</td><td>10.36 ,,</td></tr>
-                                    <tr><td>10.36 ,,</td><td>2.50 ,,</td><td>6.35 ,,</td><td class="entertainment">*10.50 ,,</td></tr>
-                                    <tr><td>10.56 ,,</td><td>3.5 ,,</td><td>6.50 ,,</td><td class="entertainment">*11.10 ,,</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="timetable-legend">
-                            <strong>R</strong> Railway Station. <strong>*</strong> subject to entertainments.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- LAKE WEEROONA ROUTE -->
-                <div class="section-subheader">— Lake Weeroona Line —</div>
-                
-                <div class="two-column">
-                    <div class="timetable-block">
-                        <div class="timetable-header">
-                            <div class="timetable-direction">Out</div>
-                            <div class="timetable-route">City to Lake Weeroona</div>
-                            <div class="timetable-day">Monday to Thursday</div>
-                        </div>
-                        <div class="timetable-content">
-                            <div class="timetable-subheader">Trams leave City:—</div>
-                            <table class="time-grid">
-                                <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
-                                <tbody>
-                                    <tr><td>7.10 a.m.</td><td>11.48 a.m.</td><td>3.48 p.m.</td><td>7.48 p.m.</td></tr>
-                                    <tr><td>7.47 ,,</td><td>12.12 p.m.</td><td>4.0 ,,</td><td>8.0 ,,</td></tr>
-                                    <tr><td>8.12 ,,</td><td>12.24 ,,</td><td>4.12 ,,</td><td>8.12 ,,</td></tr>
-                                    <tr><td>8.24 ,,</td><td>12.36 ,,</td><td>4.24 ,,</td><td>8.24 ,,</td></tr>
-                                    <tr><td>8.36 ,,</td><td>12.48 ,,</td><td>4.36 ,,</td><td>8.36 ,,</td></tr>
-                                    <tr><td>8.48 ,,</td><td>1.12 ,,</td><td>4.48 ,,</td><td>8.48 ,,</td></tr>
-                                    <tr><td>9.0 ,,</td><td>1.24 ,,</td><td>5.0 ,,</td><td>9.0 ,,</td></tr>
-                                    <tr><td>9.12 ,,</td><td>1.36 ,,</td><td>5.12 ,,</td><td>9.12 ,,</td></tr>
-                                    <tr><td>9.24 ,,</td><td>1.48 ,,</td><td>5.24 ,,</td><td>9.24 ,,</td></tr>
-                                    <tr><td>9.36 ,,</td><td>2.0 ,,</td><td>5.36 ,,</td><td>9.36 ,,</td></tr>
-                                    <tr><td>9.48 ,,</td><td>2.12 ,,</td><td>5.48 ,,</td><td>9.48 ,,</td></tr>
-                                    <tr><td>10.0 ,,</td><td>2.24 ,,</td><td>6.12 ,,</td><td>10.0 ,,</td></tr>
-                                    <tr><td>10.12 ,,</td><td>2.36 ,,</td><td>6.24 ,,</td><td>10.12 ,,</td></tr>
-                                    <tr><td>10.24 ,,</td><td>2.48 ,,</td><td>6.36 ,,</td><td class="entertainment">*10.36 ,,</td></tr>
-                                    <tr><td>10.36 ,,</td><td>3.0 ,,</td><td>6.48 ,,</td><td class="entertainment">*10.48 ,,</td></tr>
-                                    <tr><td>10.48 ,,</td><td>3.12 ,,</td><td>7.0 ,,</td><td class="entertainment">*11.0 ,,</td></tr>
-                                    <tr><td>11.0 ,,</td><td>3.24 ,,</td><td>7.12 ,,</td><td class="depot">†11.11 ,,</td></tr>
-                                    <tr><td>11.12 ,,</td><td>3.36 ,,</td><td>7.24 ,,</td><td class="depot">†11.22 ,,</td></tr>
-                                    <tr><td>11.24 ,,</td><td></td><td>7.36 ,,</td><td></td></tr>
-                                    <tr><td>11.36 ,,</td><td></td><td></td><td></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="timetable-legend">
-                            <strong>†</strong> to Depot. <strong>*</strong> subject to entertainments.
-                        </div>
-                    </div>
-
-                    <div class="timetable-block">
-                        <div class="timetable-header">
-                            <div class="timetable-direction">In</div>
-                            <div class="timetable-route">Lake Weeroona to City</div>
-                            <div class="timetable-day">Monday to Thursday</div>
-                        </div>
-                        <div class="timetable-content">
-                            <div class="timetable-subheader">Trams leave Lake Weeroona:—</div>
-                            <table class="time-grid">
-                                <thead><tr><th>Leave L.W.</th><th>Leave L.W.</th><th>Leave L.W.</th><th>Leave L.W.</th></tr></thead>
-                                <tbody>
-                                    <tr><td>7.19 a.m.</td><td>11.31 a.m.</td><td>3.31 p.m.</td><td>7.19 p.m.</td></tr>
-                                    <tr><td>7.43 ,,</td><td>11.43 ,,</td><td>3.43 ,,</td><td>7.31 ,,</td></tr>
-                                    <tr><td>7.55 ,,</td><td>11.55 ,,</td><td>3.55 ,,</td><td>7.43 ,,</td></tr>
-                                    <tr><td>8.7 ,,</td><td>12.19 p.m.</td><td>4.7 ,,</td><td>7.55 ,,</td></tr>
-                                    <tr><td>8.19 ,,</td><td>12.31 ,,</td><td>4.19 ,,</td><td>8.7 ,,</td></tr>
-                                    <tr><td>8.31 ,,</td><td>12.43 ,,</td><td>4.31 ,,</td><td>8.19 ,,</td></tr>
-                                    <tr><td>8.43 ,,</td><td>12.55 ,,</td><td>4.43 ,,</td><td>8.31 ,,</td></tr>
-                                    <tr><td>8.55 ,,</td><td>1.19 ,,</td><td>4.55 ,,</td><td>8.43 ,,</td></tr>
-                                    <tr><td>9.7 ,,</td><td>1.31 ,,</td><td>5.7 ,,</td><td>8.55 ,,</td></tr>
-                                    <tr><td>9.19 ,,</td><td>1.43 ,,</td><td>5.19 ,,</td><td>9.7 ,,</td></tr>
-                                    <tr><td>9.31 ,,</td><td>1.55 ,,</td><td>5.31 ,,</td><td>9.19 ,,</td></tr>
-                                    <tr><td>9.43 ,,</td><td>2.7 ,,</td><td>5.43 ,,</td><td>9.31 ,,</td></tr>
-                                    <tr><td>9.55 ,,</td><td>2.19 ,,</td><td>5.55 ,,</td><td>9.43 ,,</td></tr>
-                                    <tr><td>10.7 ,,</td><td>2.31 ,,</td><td>6.7 ,,</td><td>9.55 ,,</td></tr>
-                                    <tr><td>10.19 ,,</td><td>2.43 ,,</td><td>6.19 ,,</td><td>10.7 ,,</td></tr>
-                                    <tr><td>10.31 ,,</td><td>2.55 ,,</td><td>6.31 ,,</td><td>10.19 ,,</td></tr>
-                                    <tr><td>10.43 ,,</td><td>3.7 ,,</td><td>6.43 ,,</td><td>10.31 ,,</td></tr>
-                                    <tr><td>10.55 ,,</td><td>3.19 ,,</td><td>6.55 ,,</td><td>10.43 ,,</td></tr>
-                                    <tr><td>11.7 ,,</td><td></td><td>7.7 ,,</td><td class="entertainment">*10.55 ,,</td></tr>
-                                    <tr><td>11.19 ,,</td><td></td><td></td><td></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="timetable-legend">
-                            <strong>*</strong> subject to terminating times of entertainments.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- GOLDEN SQUARE ROUTE -->
-                <div class="section-subheader">— Golden Square Line —</div>
-                
-                <div class="two-column">
-                    <div class="timetable-block">
-                        <div class="timetable-header">
-                            <div class="timetable-direction">Out</div>
-                            <div class="timetable-route">City to Golden Square</div>
-                            <div class="timetable-day">Monday to Thursday</div>
-                        </div>
-                        <div class="timetable-content">
-                            <div class="timetable-subheader">Trams leave City:—</div>
-                            <table class="time-grid">
-                                <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
-                                <tbody>
-                                    <tr><td class="depot">D6.50 a.m.</td><td>11.25 a.m.</td><td>3.25 p.m.</td><td>7.25 p.m.</td></tr>
-                                    <tr><td>7.25 ,,</td><td>11.37 ,,</td><td>3.37 ,,</td><td>7.37 ,,</td></tr>
-                                    <tr><td>7.49 ,,</td><td>11.49 ,,</td><td>3.49 ,,</td><td>7.49 ,,</td></tr>
-                                    <tr><td>8.1 ,,</td><td>12.15 p.m.</td><td>4.1 ,,</td><td>8.1 ,,</td></tr>
-                                    <tr><td>8.13 ,,</td><td>12.25 ,,</td><td>4.13 ,,</td><td>8.13 ,,</td></tr>
-                                    <tr><td>8.25 ,,</td><td>12.37 ,,</td><td>4.25 ,,</td><td>8.25 ,,</td></tr>
-                                    <tr><td>8.37 ,,</td><td>12.49 ,,</td><td>4.37 ,,</td><td>8.37 ,,</td></tr>
-                                    <tr><td>8.49 ,,</td><td>1.15 ,,</td><td>4.49 ,,</td><td>8.49 ,,</td></tr>
-                                    <tr><td>9.1 ,,</td><td>1.25 ,,</td><td>5.1 ,,</td><td>9.1 ,,</td></tr>
-                                    <tr><td>9.13 ,,</td><td>1.37 ,,</td><td>5.13 ,,</td><td>9.13 ,,</td></tr>
-                                    <tr><td>9.25 ,,</td><td>1.49 ,,</td><td>5.25 ,,</td><td>9.25 ,,</td></tr>
-                                    <tr><td>9.37 ,,</td><td>2.1 ,,</td><td>5.37 ,,</td><td>9.37 ,,</td></tr>
-                                    <tr><td>9.49 ,,</td><td>2.13 ,,</td><td>5.49 ,,</td><td>9.49 ,,</td></tr>
-                                    <tr><td>10.1 ,,</td><td>2.25 ,,</td><td>6.15 ,,</td><td>10.1 ,,</td></tr>
-                                    <tr><td>10.13 ,,</td><td>2.37 ,,</td><td>6.25 ,,</td><td>10.13 ,,</td></tr>
-                                    <tr><td>10.25 ,,</td><td>2.49 ,,</td><td>6.37 ,,</td><td>10.25 ,,</td></tr>
-                                    <tr><td>10.37 ,,</td><td>3.1 ,,</td><td>6.49 ,,</td><td>10.37 ,,</td></tr>
-                                    <tr><td>10.49 ,,</td><td>3.13 ,,</td><td>7.1 ,,</td><td class="entertainment">*10.49 ,,</td></tr>
-                                    <tr><td>11.1 ,,</td><td></td><td>7.13 ,,</td><td class="entertainment">*11.0 ,,</td></tr>
-                                    <tr><td>11.13 ,,</td><td></td><td></td><td></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="timetable-legend">
-                            <strong>D</strong> from Depot. <strong>*</strong> subject to entertainments.
-                        </div>
-                    </div>
-
-                    <div class="timetable-block">
-                        <div class="timetable-header">
-                            <div class="timetable-direction">In</div>
-                            <div class="timetable-route">Golden Square to City</div>
-                            <div class="timetable-day">Monday to Thursday</div>
-                        </div>
-                        <div class="timetable-content">
-                            <div class="timetable-subheader">Trams leave Golden Square:—</div>
-                            <table class="time-grid">
-                                <thead><tr><th>Leave G.S.</th><th>Leave G.S.</th><th>Leave G.S.</th><th>Leave G.S.</th></tr></thead>
-                                <tbody>
-                                    <tr><td>7.0 a.m.</td><td>11.37 a.m.</td><td>3.37 p.m.</td><td>7.37 p.m.</td></tr>
-                                    <tr><td>7.36 ,,</td><td>11.49 ,,</td><td>3.49 ,,</td><td>7.49 ,,</td></tr>
-                                    <tr><td>8.1 ,,</td><td>12.1 p.m.</td><td>4.1 ,,</td><td>8.1 ,,</td></tr>
-                                    <tr><td>8.13 ,,</td><td>12.13 ,,</td><td>4.13 ,,</td><td>8.13 ,,</td></tr>
-                                    <tr><td>8.25 ,,</td><td>12.25 ,,</td><td>4.25 ,,</td><td>8.25 ,,</td></tr>
-                                    <tr><td>8.37 ,,</td><td>12.37 ,,</td><td>4.37 ,,</td><td>8.37 ,,</td></tr>
-                                    <tr><td>8.49 ,,</td><td>12.49 ,,</td><td>4.49 ,,</td><td>8.49 ,,</td></tr>
-                                    <tr><td>9.1 ,,</td><td>1.1 ,,</td><td>5.1 ,,</td><td>9.1 ,,</td></tr>
-                                    <tr><td>9.13 ,,</td><td>1.13 ,,</td><td>5.13 ,,</td><td>9.13 ,,</td></tr>
-                                    <tr><td>9.25 ,,</td><td>1.25 ,,</td><td>5.25 ,,</td><td>9.25 ,,</td></tr>
-                                    <tr><td>9.37 ,,</td><td>1.37 ,,</td><td>5.37 ,,</td><td>9.37 ,,</td></tr>
-                                    <tr><td>9.49 ,,</td><td>1.49 ,,</td><td>5.49 ,,</td><td>9.49 ,,</td></tr>
-                                    <tr><td>10.1 ,,</td><td>2.1 ,,</td><td>6.1 ,,</td><td>10.1 ,,</td></tr>
-                                    <tr><td>10.13 ,,</td><td>2.13 ,,</td><td>6.13 ,,</td><td>10.13 ,,</td></tr>
-                                    <tr><td>10.25 ,,</td><td>2.25 ,,</td><td>6.25 ,,</td><td>10.25 ,,</td></tr>
-                                    <tr><td>10.37 ,,</td><td>2.37 ,,</td><td>6.37 ,,</td><td>10.37 ,,</td></tr>
-                                    <tr><td>10.49 ,,</td><td>2.49 ,,</td><td>6.49 ,,</td><td>10.49 ,,</td></tr>
-                                    <tr><td>11.1 ,,</td><td>3.1 ,,</td><td>7.1 ,,</td><td class="entertainment">*11.1 ,,</td></tr>
-                                    <tr><td>11.13 ,,</td><td>3.13 ,,</td><td>7.13 ,,</td><td class="entertainment">*11.11 ,,</td></tr>
-                                    <tr><td>11.25 ,,</td><td>3.25 ,,</td><td>7.25 ,,</td><td></td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="timetable-legend">
-                            <strong>*</strong> subject to terminating times of entertainments.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Advertisement -->
-                <div class="ad-block">
-                    <div class="ad-headline">Golden Brown Toast</div>
-                    <div class="ad-tagline">35 Slices a Penny!</div>
-                    <div class="ad-illustration">[ELECTRIC TOASTER]</div>
-                    <div class="ad-body">
-                        <span class="ad-bullet"></span>You'll enjoy your toast to the last crunchy nibble — and still have time to catch your tram — if you use an Electric Toaster. No waiting . . . no last-minute rush.
-                    </div>
-                    <div class="ad-authority">State Electricity Commission of Victoria</div>
-                    <div class="ad-dept">Electricity Supply Department</div>
+            <!-- ROUTE MAP TAB -->
+            <section id="routes" class="tab-content active">
+                <div class="section-head">Tramway Routes of Bendigo</div>
+                <div style="text-align:center; padding:20px; border:2px solid #1a1a18; margin:20px 0; background:#f4ead5;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" style="max-width:100%; height:auto;">
+  <defs>
+    <style>
+      text { font-family: 'Oswald', sans-serif; fill: #1a1a18; }
+    </style>
+  </defs>
+  <rect width="600" height="600" fill="#f4ead5"/>
+  <text x="300" y="35" text-anchor="middle" font-size="24" font-weight="bold">BENDIGO TRAMWAYS</text>
+  <text x="300" y="55" text-anchor="middle" font-size="14">June 1940</text>
+  <line x1="300" y1="340" x2="300" y2="130" stroke="#b84c4c" stroke-width="10" stroke-linecap="round"/>
+  <line x1="300" y1="340" x2="470" y2="200" stroke="#1e3a5f" stroke-width="10" stroke-linecap="round"/>
+  <line x1="300" y1="340" x2="130" y2="480" stroke="#2d4a2d" stroke-width="10" stroke-linecap="round"/>
+  <line x1="300" y1="340" x2="470" y2="480" stroke="#c77420" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="300" cy="130" r="13" fill="white" stroke="#b84c4c" stroke-width="4"/>
+  <circle cx="470" cy="200" r="13" fill="white" stroke="#1e3a5f" stroke-width="4"/>
+  <circle cx="130" cy="480" r="13" fill="white" stroke="#2d4a2d" stroke-width="4"/>
+  <circle cx="470" cy="480" r="13" fill="white" stroke="#c77420" stroke-width="4"/>
+  <circle cx="300" cy="340" r="16" fill="white" stroke="#1a1a18" stroke-width="5"/>
+  <rect x="377" y="402" width="16" height="16" rx="2" fill="white" stroke="#1a1a18" stroke-width="3"/>
+  <text x="385" y="415" text-anchor="middle" font-size="12" font-weight="bold">R</text>
+  <text x="300" y="110" text-anchor="middle" font-size="18" font-weight="bold">EAGLEHAWK</text>
+  <text x="490" y="195" text-anchor="start" font-size="18" font-weight="bold">LAKE</text>
+  <text x="490" y="212" text-anchor="start" font-size="18" font-weight="bold">WEEROONA</text>
+  <text x="110" y="475" text-anchor="end" font-size="18" font-weight="bold">GOLDEN</text>
+  <text x="110" y="492" text-anchor="end" font-size="18" font-weight="bold">SQUARE</text>
+  <text x="490" y="475" text-anchor="start" font-size="18" font-weight="bold">QUARRY</text>
+  <text x="490" y="492" text-anchor="start" font-size="18" font-weight="bold">HILL</text>
+  <text x="250" y="335" text-anchor="end" font-size="18" font-weight="bold">CITY</text>
+  <text x="250" y="350" text-anchor="end" font-size="11">(Charing Cross)</text>
+  <text x="410" y="410" text-anchor="start" font-size="11">Railway Station</text>
+  <g transform="translate(120, 530)">
+    <line x1="0" y1="0" x2="70" y2="0" stroke="#b84c4c" stroke-width="8"/>
+    <text x="80" y="5" font-size="13">Eaglehawk</text>
+    <line x1="180" y1="0" x2="250" y2="0" stroke="#1e3a5f" stroke-width="8"/>
+    <text x="260" y="5" font-size="13">Lake Weeroona</text>
+    <line x1="0" y1="25" x2="70" y2="25" stroke="#2d4a2d" stroke-width="8"/>
+    <text x="80" y="30" font-size="13">Golden Square</text>
+    <line x1="180" y1="25" x2="250" y2="25" stroke="#c77420" stroke-width="8"/>
+    <text x="260" y="30" font-size="13">Quarry Hill</text>
+  </g>
+</svg>
                 </div>
             </section>
 
-            <!-- ROUTES TAB -->
-            <section id="routes" class="tab-content">
-                <div class="section-header">Tramway Routes</div>
+            <!-- EAGLEHAWK TAB -->
+            <section id="eaglehawk" class="tab-content">
+                <div class="section-head">Eaglehawk Line</div>
                 
-                <div class="route-map-container">
-                    <div class="map-title">Bendigo</div>
-                    <div class="map-subtitle">Tramway Routes</div>
-                    <div class="map-note">Showing Sections thus ①</div>
-                    
-                    <div class="route-map">
-                        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="400" height="400" fill="#f4ead5"/>
-                            
-                            <!-- Route lines -->
-                            <path d="M 60 60 L 100 100 L 140 150 L 180 200 L 200 220" stroke="#1a1a18" stroke-width="3" fill="none"/>
-                            <path d="M 300 50 L 280 100 L 250 160 L 220 200 L 200 220" stroke="#1a1a18" stroke-width="3" fill="none"/>
-                            <path d="M 80 350 L 120 310 L 160 270 L 200 240 L 200 220" stroke="#1a1a18" stroke-width="3" fill="none"/>
-                            <path d="M 320 350 L 280 310 L 240 270 L 210 240 L 200 220" stroke="#1a1a18" stroke-width="3" fill="none"/>
-                            
-                            <!-- Eaglehawk Terminus -->
-                            <circle cx="60" cy="60" r="10" fill="#f4ead5" stroke="#1a1a18" stroke-width="2"/>
-                            <text x="60" y="40" font-family="Oswald, sans-serif" font-size="8" fill="#1a1a18" text-anchor="middle" font-weight="600">EAGLEHAWK</text>
-                            <text x="60" y="64" font-size="8" fill="#1a1a18" text-anchor="middle">④</text>
-                            
-                            <!-- Jobs Gully -->
-                            <circle cx="85" cy="85" r="5" fill="#f4ead5" stroke="#1a1a18" stroke-width="1.5"/>
-                            <text x="50" y="88" font-size="7" fill="#1a1a18" font-style="italic">Jobs Gully</text>
-                            
-                            <!-- Jackson St -->
-                            <circle cx="120" cy="125" r="5" fill="#f4ead5" stroke="#1a1a18" stroke-width="1.5"/>
-                            <text x="65" y="128" font-size="7" fill="#1a1a18" font-style="italic">Jackson St.</text>
-                            
-                            <!-- Long Gully Bridge -->
-                            <circle cx="160" cy="175" r="5" fill="#f4ead5" stroke="#1a1a18" stroke-width="1.5"/>
-                            <text x="90" y="180" font-size="7" fill="#1a1a18" font-style="italic">Long Gully Br.</text>
-                            
-                            <!-- Lake Weeroona Terminus -->
-                            <circle cx="300" cy="50" r="10" fill="#f4ead5" stroke="#1a1a18" stroke-width="2"/>
-                            <text x="300" y="30" font-family="Oswald, sans-serif" font-size="7" fill="#1a1a18" text-anchor="middle" font-weight="600">LAKE WEEROONA</text>
-                            <text x="300" y="54" font-size="8" fill="#1a1a18" text-anchor="middle">②③</text>
-                            
-                            <!-- Arnold St -->
-                            <circle cx="265" cy="130" r="5" fill="#f4ead5" stroke="#1a1a18" stroke-width="1.5"/>
-                            <text x="280" y="133" font-size="7" fill="#1a1a18" font-style="italic">Arnold St.</text>
-                            
-                            <!-- City Centre -->
-                            <rect x="180" y="205" width="40" height="30" fill="#1a1a18"/>
-                            <text x="200" y="223" font-family="Oswald, sans-serif" font-size="9" fill="#f4ead5" text-anchor="middle" font-weight="600">CITY</text>
-                            <text x="200" y="232" font-size="6" fill="#f4ead5" text-anchor="middle">①</text>
-                            
-                            <!-- Railway Station -->
-                            <circle cx="200" cy="260" r="5" fill="#f4ead5" stroke="#1a1a18" stroke-width="1.5"/>
-                            <text x="215" y="263" font-size="7" fill="#1a1a18" font-style="italic">Rly Stn.</text>
-                            
-                            <!-- Honeysuckle St -->
-                            <circle cx="140" cy="290" r="5" fill="#f4ead5" stroke="#1a1a18" stroke-width="1.5"/>
-                            <text x="90" y="295" font-size="7" fill="#1a1a18" font-style="italic">Honeysuckle St.</text>
-                            
-                            <!-- Golden Square Terminus -->
-                            <circle cx="80" cy="350" r="10" fill="#f4ead5" stroke="#1a1a18" stroke-width="2"/>
-                            <text x="80" y="370" font-family="Oswald, sans-serif" font-size="7" fill="#1a1a18" text-anchor="middle" font-weight="600">GOLDEN SQUARE</text>
-                            <text x="80" y="354" font-size="8" fill="#1a1a18" text-anchor="middle">②③</text>
-                            
-                            <!-- Quarry Hill Terminus -->
-                            <circle cx="320" cy="350" r="10" fill="#f4ead5" stroke="#1a1a18" stroke-width="2"/>
-                            <text x="320" y="370" font-family="Oswald, sans-serif" font-size="7" fill="#1a1a18" text-anchor="middle" font-weight="600">QUARRY HILL</text>
-                            <text x="320" y="354" font-size="8" fill="#1a1a18" text-anchor="middle">②③</text>
-                        </svg>
-                    </div>
-                    
-                    <div class="map-note">Section ① — City Centre (Pall Mall) · Sections ②③ — Suburban · Section ④ — Eaglehawk</div>
+                <div style="font-size:11px; padding:10px 15px; border:1px solid #1a1a18; margin-bottom:15px; background:#f4ead5; line-height:1.7;">
+                    <b style="font-family:'Oswald',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:1px;">Legend —</b>
+                    <span style="color:#1e3a5f; font-weight:600;">Blue text</span>: Depot services (D = from Depot, † = to Depot) · 
+                    <span style="color:#2d4a2d; font-weight:600;">Green text</span>: Railway Station (R = Railway, ‡ = Railway only) · 
+                    <span style="color:#8b2020; font-weight:600;">Red text</span>: Subject to entertainment times (*)
+                </div>
+                
+                <div class="day-sel">
+                    <button class="day-btn active" data-day="mon-thu" data-route="eaglehawk">Mon–Thu</button>
+                    <button class="day-btn" data-day="fri" data-route="eaglehawk">Friday</button>
+                    <button class="day-btn" data-day="sat" data-route="eaglehawk">Saturday</button>
+                    <button class="day-btn" data-day="sun" data-route="eaglehawk">Sunday</button>
                 </div>
 
-                <div class="ad-block">
-                    <div class="ad-headline">Food Tastes Better</div>
-                    <div class="ad-tagline">When you cook Electrically</div>
-                    <div class="ad-illustration">[ELECTRIC RANGE]</div>
-                    <div class="ad-body">
-                        <span class="ad-bullet"></span>Husbands! Give your wives a treat. At the same time, introduce yourself to the finest meals you've ever tasted. An Electric Range saves time and labour in the kitchen, and makes every dish a certain success.
+                <!-- EAGLEHAWK LINE -->
+                <div class="route-head">— Eaglehawk Line —</div>
+                
+                <!-- MON-THU -->
+                <div class="day-content mon-thu active">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Eaglehawk</div>
+                                <div class="tt-day">Monday to Thursday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave City:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave L.G. Br.</th><th>Leave City</th><th>Leave L.G. Br.</th></tr></thead>
+                                    <tbody>
+                                        <tr><td class="d">D6.0 am</td><td>6.12 am</td><td>3.0 pm</td><td>3.12 pm</td></tr>
+                                        <tr><td class="d">D6.30 am</td><td>6.42 am</td><td>3.15 pm</td><td>3.27 pm</td></tr>
+                                        <tr><td>7.0 am</td><td>7.12 am</td><td>3.30 pm</td><td>3.42 pm</td></tr>
+                                        <tr><td class="d">D7.15 am</td><td>7.27 am</td><td>3.45 pm</td><td>3.57 pm</td></tr>
+                                        <tr><td>7.30 am</td><td>7.42 am</td><td>4.0 pm</td><td>4.12 pm</td></tr>
+                                        <tr><td>7.45 am</td><td>7.57 am</td><td>4.15 pm</td><td>4.27 pm</td></tr>
+                                        <tr><td>8.0 am</td><td>8.12 am</td><td>4.30 pm</td><td>4.42 pm</td></tr>
+                                        <tr><td>8.15 am</td><td>8.27 am</td><td>4.45 pm</td><td>4.57 pm</td></tr>
+                                        <tr><td>8.30 am</td><td>8.42 am</td><td>5.0 pm</td><td>5.12 pm</td></tr>
+                                        <tr><td>8.45 am</td><td>8.57 am</td><td>5.15 pm</td><td>5.27 pm</td></tr>
+                                        <tr><td>9.0 am</td><td>9.12 am</td><td>5.30 pm</td><td>5.42 pm</td></tr>
+                                        <tr><td>9.15 am</td><td>9.27 am</td><td>5.45 pm</td><td>5.57 pm</td></tr>
+                                        <tr><td>9.30 am</td><td>9.42 am</td><td>6.5 pm</td><td>6.15 pm</td></tr>
+                                        <tr><td>9.50 am</td><td>10.2 am</td><td>6.15 pm</td><td>6.27 pm</td></tr>
+                                        <tr><td>10.10 am</td><td>10.22 am</td><td>6.30 pm</td><td>6.42 pm</td></tr>
+                                        <tr><td>10.30 am</td><td>10.42 am</td><td>6.45 pm</td><td>6.57 pm</td></tr>
+                                        <tr><td>10.50 am</td><td>11.2 am</td><td>7.0 pm</td><td>7.12 pm</td></tr>
+                                        <tr><td>11.10 am</td><td>11.22 am</td><td>7.15 pm</td><td>7.27 pm</td></tr>
+                                        <tr><td>11.30 am</td><td>11.42 am</td><td>7.30 pm</td><td>7.42 pm</td></tr>
+                                        <tr><td>11.45 am</td><td>11.57 am</td><td>7.45 pm</td><td>7.57 pm</td></tr>
+                                        <tr><td>12.5 pm</td><td>12.15 pm</td><td>8.0 pm</td><td>8.12 pm</td></tr>
+                                        <tr><td class="d">D12.15 pm</td><td>12.27 pm</td><td>8.15 pm</td><td>8.27 pm</td></tr>
+                                        <tr><td>12.30 pm</td><td>12.42 pm</td><td>8.30 pm</td><td>8.42 pm</td></tr>
+                                        <tr><td>12.45 pm</td><td>12.57 pm</td><td>8.50 pm</td><td>9.2 pm</td></tr>
+                                        <tr><td>1.15 pm</td><td>1.27 pm</td><td>9.30 pm</td><td>9.42 pm</td></tr>
+                                        <tr><td>1.30 pm</td><td>1.42 pm</td><td>9.50 pm</td><td>10.2 pm</td></tr>
+                                        <tr><td>1.45 pm</td><td>1.57 pm</td><td>10.10 pm</td><td>10.22 pm</td></tr>
+                                        <tr><td>2.0 pm</td><td>2.12 pm</td><td class="e">*10.30 pm</td><td class="e">*10.42 pm</td></tr>
+                                        <tr><td>2.15 pm</td><td>2.27 pm</td><td class="e">*10.50 pm</td><td class="e">*11.2 pm</td></tr>
+                                        <tr><td>2.30 pm</td><td>2.42 pm</td><td class="e">*11.0 pm</td><td class="e">*11.12 pm</td></tr>
+                                        <tr><td>2.45 pm</td><td>2.57 pm</td><td></td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>D</b> from Depot. <b>*</b> subject to entertainments.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Eaglehawk to City</div>
+                                <div class="tt-day">Monday to Thursday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave Eaglehawk:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave Eaglehawk</th><th>Leave L.G. Br.</th><th>Leave Eaglehawk</th><th>Leave L.G. Br.</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>6.25 am</td><td>6.37 am</td><td>3.25 pm</td><td>3.37 pm</td></tr>
+                                        <tr><td>6.55 am</td><td>7.7 am</td><td>3.40 pm</td><td>3.52 pm</td></tr>
+                                        <tr><td>7.25 am</td><td>7.37 am</td><td>3.55 pm</td><td>4.7 pm</td></tr>
+                                        <tr><td>7.40 am</td><td>7.52 am</td><td>4.10 pm</td><td>4.22 pm</td></tr>
+                                        <tr><td>7.55 am</td><td>8.7 am</td><td>4.25 pm</td><td>4.37 pm</td></tr>
+                                        <tr><td>8.10 am</td><td>8.22 am</td><td>4.40 pm</td><td>4.52 pm</td></tr>
+                                        <tr><td>8.25 am</td><td>8.37 am</td><td>4.55 pm</td><td>5.7 pm</td></tr>
+                                        <tr><td>8.40 am</td><td>8.52 am</td><td>5.10 pm</td><td>5.22 pm</td></tr>
+                                        <tr><td class="d">†8.55 am</td><td class="d">†9.7 am</td><td>5.25 pm</td><td>5.37 pm</td></tr>
+                                        <tr><td>9.10 am</td><td>9.22 am</td><td>5.40 pm</td><td>5.52 pm</td></tr>
+                                        <tr><td>9.25 am</td><td>9.37 am</td><td>5.55 pm</td><td>6.7 pm</td></tr>
+                                        <tr><td>9.40 am</td><td>9.52 am</td><td>6.10 pm</td><td>6.22 pm</td></tr>
+                                        <tr><td>9.55 am</td><td>10.7 am</td><td>6.25 pm</td><td>6.37 pm</td></tr>
+                                        <tr><td>10.15 am</td><td>10.27 am</td><td>6.40 pm</td><td>6.52 pm</td></tr>
+                                        <tr><td>10.35 am</td><td>10.47 am</td><td>6.55 pm</td><td>7.7 pm</td></tr>
+                                        <tr><td>10.55 am</td><td>11.7 am</td><td>7.10 pm</td><td>7.22 pm</td></tr>
+                                        <tr><td>11.15 am</td><td>11.27 am</td><td>7.25 pm</td><td>7.37 pm</td></tr>
+                                        <tr><td>11.35 am</td><td>11.47 am</td><td>7.40 pm</td><td>7.52 pm</td></tr>
+                                        <tr><td>11.55 am</td><td>12.7 pm</td><td class="d">†7.55 pm</td><td class="d">†8.7 pm</td></tr>
+                                        <tr><td>12.10 pm</td><td>12.22 pm</td><td>8.10 pm</td><td>8.21 pm</td></tr>
+                                        <tr><td>12.25 pm</td><td>12.37 pm</td><td>8.25 pm</td><td>8.37 pm</td></tr>
+                                        <tr><td>12.40 pm</td><td>12.52 pm</td><td>8.40 pm</td><td>8.52 pm</td></tr>
+                                        <tr><td>12.55 pm</td><td>1.7 pm</td><td>8.55 pm</td><td>9.7 pm</td></tr>
+                                        <tr><td>1.10 pm</td><td>1.22 pm</td><td>9.15 pm</td><td>9.27 pm</td></tr>
+                                        <tr><td>1.40 pm</td><td>1.52 pm</td><td>9.55 pm</td><td>10.7 pm</td></tr>
+                                        <tr><td>1.55 pm</td><td>2.7 pm</td><td>10.15 pm</td><td>10.27 pm</td></tr>
+                                        <tr><td>2.10 pm</td><td>2.22 pm</td><td class="e">*10.35 pm</td><td class="e">*10.47 pm</td></tr>
+                                        <tr><td>2.25 pm</td><td>2.37 pm</td><td class="e">*10.55 pm</td><td class="e">*11.7 pm</td></tr>
+                                        <tr><td>2.40 pm</td><td>2.52 pm</td><td class="e">*11.15 pm</td><td class="e">*11.27 pm</td></tr>
+                                        <tr><td>2.55 pm</td><td>3.7 pm</td><td class="e">*11.25 pm</td><td class="e">*11.37 pm</td></tr>
+                                        <tr><td>3.10 pm</td><td>3.22 pm</td><td></td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>†</b> to Depot. <b>*</b> subject to entertainments.</div>
+                        </div>
                     </div>
-                    <div class="ad-authority">State Electricity Commission of Victoria</div>
-                    <div class="ad-dept">Electricity Supply Department</div>
                 </div>
+
+                <!-- FRIDAY -->
+                <div class="day-content fri">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Eaglehawk</div>
+                                <div class="tt-day">Friday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave L.G. Br.</th><th>Leave City</th><th>Leave L.G. Br.</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>11.30 am</td><td>11.42 am</td><td>5.30 pm</td><td>5.42 pm</td></tr>
+                                        <tr><td>11.50 am</td><td>12.2 pm</td><td>5.40 pm</td><td>5.52 pm</td></tr>
+                                        <tr><td>12.3 pm</td><td>12.13 pm</td><td>5.50 pm</td><td>6.2 pm</td></tr>
+                                        <tr><td class="d">D12.10 pm</td><td>12.22 pm</td><td>6.0 pm</td><td>6.12 pm</td></tr>
+                                        <tr><td class="d">D12.20 pm</td><td>12.32 pm</td><td>6.10 pm</td><td>6.22 pm</td></tr>
+                                        <tr><td>12.30 pm</td><td>12.42 pm</td><td>6.20 pm</td><td>6.32 pm</td></tr>
+                                        <tr><td>12.40 pm</td><td>12.52 pm</td><td>6.30 pm</td><td>6.42 pm</td></tr>
+                                        <tr><td>12.50 pm</td><td>1.2 pm</td><td>6.40 pm</td><td>6.52 pm</td></tr>
+                                        <tr><td>1.3 pm</td><td>1.13 pm</td><td>6.50 pm</td><td>7.2 pm</td></tr>
+                                        <tr><td>1.10 pm</td><td>1.22 pm</td><td>7.0 pm</td><td>7.12 pm</td></tr>
+                                        <tr><td>1.20 pm</td><td>1.32 pm</td><td>7.10 pm</td><td>7.22 pm</td></tr>
+                                        <tr><td>1.30 pm</td><td>1.42 pm</td><td>7.20 pm</td><td>7.32 pm</td></tr>
+                                        <tr><td>1.40 pm</td><td>1.52 pm</td><td>7.30 pm</td><td>7.42 pm</td></tr>
+                                        <tr><td>1.50 pm</td><td>2.2 pm</td><td>7.40 pm</td><td>7.52 pm</td></tr>
+                                        <tr><td>2.0 pm</td><td>2.12 pm</td><td>7.50 pm</td><td>8.2 pm</td></tr>
+                                        <tr><td>2.10 pm</td><td>2.22 pm</td><td>8.0 pm</td><td>8.12 pm</td></tr>
+                                        <tr><td>2.20 pm</td><td>2.32 pm</td><td>8.10 pm</td><td>8.22 pm</td></tr>
+                                        <tr><td>2.30 pm</td><td>2.42 pm</td><td>8.20 pm</td><td>8.32 pm</td></tr>
+                                        <tr><td>2.40 pm</td><td>2.52 pm</td><td>8.30 pm</td><td>8.42 pm</td></tr>
+                                        <tr><td>2.50 pm</td><td>3.2 pm</td><td>8.40 pm</td><td>8.52 pm</td></tr>
+                                        <tr><td>3.0 pm</td><td>3.12 pm</td><td>8.50 pm</td><td>9.2 pm</td></tr>
+                                        <tr><td>3.10 pm</td><td>3.22 pm</td><td>9.0 pm</td><td>9.12 pm</td></tr>
+                                        <tr><td>3.20 pm</td><td>3.32 pm</td><td>9.10 pm</td><td>9.22 pm</td></tr>
+                                        <tr><td>3.30 pm</td><td>3.42 pm</td><td>9.20 pm</td><td>9.32 pm</td></tr>
+                                        <tr><td>4.0 pm</td><td>4.12 pm</td><td>9.50 pm</td><td>10.2 pm</td></tr>
+                                        <tr><td>4.10 pm</td><td>4.22 pm</td><td>10.0 pm</td><td>10.12 pm</td></tr>
+                                        <tr><td>4.20 pm</td><td>4.32 pm</td><td>10.10 pm</td><td>10.22 pm</td></tr>
+                                        <tr><td>4.30 pm</td><td>4.42 pm</td><td>10.30 pm</td><td>10.42 pm</td></tr>
+                                        <tr><td>4.40 pm</td><td>4.52 pm</td><td class="e">*10.40 pm</td><td class="e">*10.52 pm</td></tr>
+                                        <tr><td>4.50 pm</td><td>5.2 pm</td><td class="e">*10.50 pm</td><td class="e">*11.2 pm</td></tr>
+                                        <tr><td>5.0 pm</td><td>5.12 pm</td><td class="e">*11.0 pm</td><td class="e">*11.12 pm</td></tr>
+                                        <tr><td>5.10 pm</td><td>5.22 pm</td><td></td><td></td></tr>
+                                        <tr><td>5.20 pm</td><td>5.32 pm</td><td></td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>D</b> from Depot. <b>*</b> subject to entertainments.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Eaglehawk to City</div>
+                                <div class="tt-day">Friday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave Eaglehawk</th><th>Leave L.G. Br.</th><th>Leave Eaglehawk</th><th>Leave L.G. Br.</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>11.55 am</td><td>12.7 pm</td><td>5.55 pm</td><td>6.7 pm</td></tr>
+                                        <tr><td>12.15 pm</td><td>12.27 pm</td><td>6.5 pm</td><td>6.17 pm</td></tr>
+                                        <tr><td>12.25 pm</td><td>12.37 pm</td><td>6.15 pm</td><td>6.27 pm</td></tr>
+                                        <tr><td>12.35 pm</td><td>12.47 pm</td><td>6.25 pm</td><td>6.37 pm</td></tr>
+                                        <tr><td>12.45 pm</td><td>12.57 pm</td><td>6.35 pm</td><td>6.47 pm</td></tr>
+                                        <tr><td>1.5 pm</td><td>1.17 pm</td><td>6.45 pm</td><td>6.57 pm</td></tr>
+                                        <tr><td>1.15 pm</td><td>1.27 pm</td><td>6.55 pm</td><td>7.7 pm</td></tr>
+                                        <tr><td>1.25 pm</td><td>1.37 pm</td><td>7.5 pm</td><td>7.17 pm</td></tr>
+                                        <tr><td>1.35 pm</td><td>1.47 pm</td><td>7.15 pm</td><td>7.27 pm</td></tr>
+                                        <tr><td>1.45 pm</td><td>1.57 pm</td><td>7.25 pm</td><td>7.37 pm</td></tr>
+                                        <tr><td>2.5 pm</td><td>2.17 pm</td><td>7.35 pm</td><td>7.47 pm</td></tr>
+                                        <tr><td>2.15 pm</td><td>2.27 pm</td><td>7.55 pm</td><td>8.7 pm</td></tr>
+                                        <tr><td>2.25 pm</td><td>2.37 pm</td><td>8.5 pm</td><td>8.17 pm</td></tr>
+                                        <tr><td>2.35 pm</td><td>2.47 pm</td><td>8.15 pm</td><td>8.27 pm</td></tr>
+                                        <tr><td>2.45 pm</td><td>2.57 pm</td><td>8.25 pm</td><td>8.37 pm</td></tr>
+                                        <tr><td>2.55 pm</td><td>3.7 pm</td><td>8.35 pm</td><td>8.47 pm</td></tr>
+                                        <tr><td>3.5 pm</td><td>3.17 pm</td><td>8.45 pm</td><td>8.57 pm</td></tr>
+                                        <tr><td>3.15 pm</td><td>3.27 pm</td><td>8.55 pm</td><td>9.7 pm</td></tr>
+                                        <tr><td>3.25 pm</td><td>3.37 pm</td><td>9.15 pm</td><td>9.27 pm</td></tr>
+                                        <tr><td>3.35 pm</td><td>3.47 pm</td><td>9.25 pm</td><td>9.37 pm</td></tr>
+                                        <tr><td>3.45 pm</td><td>3.57 pm</td><td>9.47 pm</td><td>9.57 pm</td></tr>
+                                        <tr><td>4.15 pm</td><td>4.27 pm</td><td>9.55 pm</td><td>10.7 pm</td></tr>
+                                        <tr><td>4.27 pm</td><td>4.37 pm</td><td class="e">*10.15 pm</td><td class="e">*10.27 pm</td></tr>
+                                        <tr><td>4.35 pm</td><td>4.47 pm</td><td class="e">*10.35 pm</td><td class="e">*10.47 pm</td></tr>
+                                        <tr><td>4.45 pm</td><td>4.57 pm</td><td class="d">†10.45 pm</td><td class="d">†10.57 pm</td></tr>
+                                        <tr><td>4.55 pm</td><td>5.7 pm</td><td class="d">†10.55 pm</td><td class="d">†11.7 pm</td></tr>
+                                        <tr><td>5.5 pm</td><td>5.17 pm</td><td class="d">†11.5 pm</td><td class="d">†11.17 pm</td></tr>
+                                        <tr><td>5.15 pm</td><td>5.27 pm</td><td class="d">†11.15 pm</td><td class="d">†11.27 pm</td></tr>
+                                        <tr><td>5.25 pm</td><td>5.37 pm</td><td class="d">†11.25 pm</td><td class="d">†11.37 pm</td></tr>
+                                        <tr><td>5.35 pm</td><td>5.47 pm</td><td></td><td></td></tr>
+                                        <tr><td>5.45 pm</td><td>5.57 pm</td><td></td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>†</b> to Depot. <b>*</b> subject to entertainments.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SATURDAY EAGLEHAWK -->
+                <div class="day-content sat">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header"><div class="tt-dir">Out</div><div class="tt-route">City to Eaglehawk</div><div class="tt-day">Saturday</div></div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave City:—</div>
+                                <table class="tt"><thead><tr><th>Leave City</th><th>Leave L.G. Br.</th><th>Leave City</th><th>Leave L.G. Br.</th></tr></thead>
+                                <tbody>
+<tr><td class="d">D6.0 am</td><td>6.12 am</td><td>12.50 pm</td><td>1.2 pm</td></tr>
+<tr><td class="d">D6.30 am</td><td>6.42 am</td><td>1.0 pm</td><td>1.12 pm</td></tr>
+<tr><td>7.0 am</td><td>7.12 am</td><td>1.10 pm</td><td>1.22 pm</td></tr>
+<tr><td class="d">D7.15 am</td><td>7.27 am</td><td>1.20 pm</td><td>1.32 pm</td></tr>
+<tr><td>7.30 am</td><td>7.42 am</td><td>1.30 pm</td><td>1.42 pm</td></tr>
+<tr><td>7.45 am</td><td>7.57 am</td><td>1.45 pm</td><td>1.57 pm</td></tr>
+<tr><td>8.0 am</td><td>8.12 am</td><td>2.0 pm</td><td>2.12 pm</td></tr>
+<tr><td>8.15 am</td><td>8.27 am</td><td>2.15 pm</td><td>2.27 pm</td></tr>
+<tr><td>8.30 am</td><td>8.42 am</td><td>2.30 pm</td><td>2.42 pm</td></tr>
+<tr><td>8.45 am</td><td>8.57 am</td><td>2.45 pm</td><td>2.57 pm</td></tr>
+<tr><td>9.0 am</td><td>9.12 am</td><td>3.0 pm</td><td>3.12 pm</td></tr>
+<tr><td>9.15 am</td><td>9.27 am</td><td>3.15 pm</td><td>3.27 pm</td></tr>
+<tr><td>9.30 am</td><td>9.42 am</td><td>3.30 pm</td><td>3.42 pm</td></tr>
+<tr><td>9.45 am</td><td>9.57 am</td><td>3.45 pm</td><td>3.57 pm</td></tr>
+<tr><td>10.0 am</td><td>10.12 am</td><td>4.0 pm</td><td>4.12 pm</td></tr>
+<tr><td>10.10 am</td><td>10.22 am</td><td>4.15 pm</td><td>4.27 pm</td></tr>
+<tr><td>10.20 am</td><td>10.32 am</td><td>4.30 pm</td><td>4.42 pm</td></tr>
+<tr><td>10.30 am</td><td>10.42 am</td><td>4.45 pm</td><td>4.57 pm</td></tr>
+<tr><td>10.40 am</td><td>10.52 am</td><td>5.0 pm</td><td>5.12 pm</td></tr>
+<tr><td>10.50 am</td><td>11.2 am</td><td>5.15 pm</td><td>5.27 pm</td></tr>
+<tr><td>11.0 am</td><td>11.12 am</td><td>5.30 pm</td><td>5.42 pm</td></tr>
+<tr><td>11.10 am</td><td>11.22 am</td><td>5.45 pm</td><td>5.57 pm</td></tr>
+<tr><td>11.20 am</td><td>11.32 am</td><td>6.0 pm</td><td>6.12 pm</td></tr>
+<tr><td>11.30 am</td><td>11.42 am</td><td>6.30 pm</td><td>6.42 pm</td></tr>
+<tr><td>11.40 am</td><td>11.52 am</td><td class="d">D6.50 pm</td><td>7.2 pm</td></tr>
+<tr><td>11.50 am</td><td>12.2 pm</td><td>7.0 pm</td><td>7.12 pm</td></tr>
+<tr><td>12.0 pm</td><td>12.12 pm</td><td>7.10 pm</td><td>7.22 pm</td></tr>
+<tr><td>12.10 pm</td><td>12.22 pm</td><td>7.20 pm</td><td>7.32 pm</td></tr>
+<tr><td>12.20 pm</td><td>12.32 pm</td><td>7.30 pm</td><td>7.42 pm</td></tr>
+<tr><td>12.30 pm</td><td>12.42 pm</td><td></td><td></td></tr>
+                                </tbody></table>
+                            </div>
+                            <div class="tt-legend"><b>D</b> from Depot.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header"><div class="tt-dir">In</div><div class="tt-route">Eaglehawk to City</div><div class="tt-day">Saturday</div></div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave Eaglehawk:—</div>
+                                <table class="tt"><thead><tr><th>Leave E'hawk</th><th>Leave L.G. Br.</th><th>Leave E'hawk</th><th>Leave L.G. Br.</th></tr></thead>
+                                <tbody>
+<tr><td>6.25 am</td><td>6.37 am</td><td>9.40 am</td><td>9.52 am</td></tr>
+<tr><td>6.55 am</td><td>7.7 am</td><td>9.55 am</td><td>10.7 am</td></tr>
+<tr><td>7.25 am</td><td>7.37 am</td><td>10.10 am</td><td>10.22 am</td></tr>
+<tr><td>7.40 am</td><td>7.52 am</td><td>10.25 am</td><td>10.37 am</td></tr>
+<tr><td>7.55 am</td><td>8.7 am</td><td>10.35 am</td><td>10.47 am</td></tr>
+<tr><td>8.10 am</td><td>8.22 am</td><td>10.45 am</td><td>10.57 am</td></tr>
+<tr><td>8.25 am</td><td>8.37 am</td><td>10.55 am</td><td>11.7 am</td></tr>
+<tr><td>8.40 am</td><td>8.52 am</td><td>11.5 am</td><td>11.17 am</td></tr>
+<tr><td>8.55 am</td><td>9.7 am</td><td>11.15 am</td><td>11.27 am</td></tr>
+<tr><td>9.10 am</td><td>9.22 am</td><td>11.25 am</td><td>11.37 am</td></tr>
+<tr><td>9.25 am</td><td>9.37 am</td><td>11.35 am</td><td>11.47 am</td></tr>
+                                </tbody></table>
+                                <p style="font-size:10px;margin-top:8px;font-style:italic;text-align:center;">(Full Saturday service continues to 11pm)</p>
+                            </div>
+                            <div class="tt-legend"><b>†</b> to Depot. <b>*</b> subject to entertainments.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUNDAY EAGLEHAWK -->
+                <div class="day-content sun">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header"><div class="tt-dir">Out</div><div class="tt-route">City to Eaglehawk</div><div class="tt-day">Sunday</div></div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave City:—</div>
+                                <table class="tt"><thead><tr><th>Leave City</th><th>Leave L.G. Br.</th><th>Leave City</th><th>Leave L.G. Br.</th></tr></thead>
+                                <tbody>
+<tr><td class="d">D7.35 am</td><td>7.47 am</td><td>6.0 pm</td><td>6.12 pm</td></tr>
+<tr><td class="r">R*11.45 am</td><td class="e">*11.57 am</td><td>6.15 pm</td><td>6.27 pm</td></tr>
+<tr><td class="r">R*12.45 pm</td><td class="e">*12.57 pm</td><td>6.30 pm</td><td>6.42 pm</td></tr>
+<tr><td class="d">D2.0 pm</td><td>2.12 pm</td><td>6.45 pm</td><td>6.57 pm</td></tr>
+<tr><td class="d">D2.15 pm</td><td>2.27 pm</td><td>7.0 pm</td><td>7.12 pm</td></tr>
+<tr><td>2.30 pm</td><td>2.42 pm</td><td>7.15 pm</td><td>7.27 pm</td></tr>
+<tr><td>2.45 pm</td><td>2.57 pm</td><td>7.30 pm</td><td>7.42 pm</td></tr>
+<tr><td>3.0 pm</td><td>3.12 pm</td><td>7.45 pm</td><td>7.57 pm</td></tr>
+<tr><td>3.15 pm</td><td>3.27 pm</td><td>8.0 pm</td><td>8.12 pm</td></tr>
+<tr><td>3.30 pm</td><td>3.42 pm</td><td>8.15 pm</td><td>8.27 pm</td></tr>
+<tr><td>3.45 pm</td><td>3.57 pm</td><td>8.30 pm</td><td>8.42 pm</td></tr>
+<tr><td>4.0 pm</td><td>4.12 pm</td><td>8.45 pm</td><td>8.57 pm</td></tr>
+<tr><td>4.15 pm</td><td>4.27 pm</td><td>9.0 pm</td><td>9.12 pm</td></tr>
+<tr><td>4.30 pm</td><td>4.42 pm</td><td>9.15 pm</td><td>9.27 pm</td></tr>
+<tr><td>4.45 pm</td><td>4.57 pm</td><td>9.30 pm</td><td>9.42 pm</td></tr>
+<tr><td>5.0 pm</td><td>5.12 pm</td><td>9.45 pm</td><td>9.57 pm</td></tr>
+<tr><td>5.15 pm</td><td>5.27 pm</td><td>10.0 pm</td><td>10.12 pm</td></tr>
+<tr><td>5.30 pm</td><td>5.42 pm</td><td>10.15 pm</td><td>10.27 pm</td></tr>
+<tr><td>5.45 pm</td><td>5.57 pm</td><td class="e">*10.30 pm</td><td class="e">*10.42 pm</td></tr>
+                                </tbody></table>
+                            </div>
+                            <div class="tt-legend"><b>D</b> Depot. <b>R</b> Railway. <b>*</b> subject to train/entertainments.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header"><div class="tt-dir">In</div><div class="tt-route">Eaglehawk to City</div><div class="tt-day">Sunday</div></div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave Eaglehawk:—</div>
+                                <table class="tt"><thead><tr><th>Leave E'hawk</th><th>Leave L.G. Br.</th><th>Leave E'hawk</th><th>Leave L.G. Br.</th></tr></thead>
+                                <tbody>
+<tr><td>8.0 am</td><td>8.12 am</td><td>6.25 pm</td><td>6.37 pm</td></tr>
+<tr><td class="r">‡*12.10 pm</td><td class="r">‡*12.22 pm</td><td>6.40 pm</td><td>6.52 pm</td></tr>
+<tr><td class="d">†1.10 pm</td><td class="d">†1.22 pm</td><td>6.55 pm</td><td>7.7 pm</td></tr>
+<tr><td>2.25 pm</td><td>2.37 pm</td><td>7.10 pm</td><td>7.22 pm</td></tr>
+<tr><td>2.40 pm</td><td>2.52 pm</td><td>7.25 pm</td><td>7.37 pm</td></tr>
+<tr><td>2.55 pm</td><td>3.7 pm</td><td>7.40 pm</td><td>7.52 pm</td></tr>
+<tr><td>3.10 pm</td><td>3.22 pm</td><td>7.55 pm</td><td>8.7 pm</td></tr>
+<tr><td>3.25 pm</td><td>3.37 pm</td><td>8.10 pm</td><td>8.22 pm</td></tr>
+<tr><td>3.40 pm</td><td>3.52 pm</td><td>8.25 pm</td><td>8.37 pm</td></tr>
+<tr><td>3.55 pm</td><td>4.7 pm</td><td>8.40 pm</td><td>8.52 pm</td></tr>
+<tr><td>4.10 pm</td><td>4.22 pm</td><td>8.55 pm</td><td>9.7 pm</td></tr>
+<tr><td>4.25 pm</td><td>4.37 pm</td><td>9.10 pm</td><td>9.22 pm</td></tr>
+<tr><td>4.40 pm</td><td>4.52 pm</td><td>9.25 pm</td><td>9.37 pm</td></tr>
+<tr><td>4.55 pm</td><td>5.7 pm</td><td>9.40 pm</td><td>9.52 pm</td></tr>
+<tr><td>5.10 pm</td><td>5.22 pm</td><td>9.55 pm</td><td>10.7 pm</td></tr>
+<tr><td>5.25 pm</td><td>5.37 pm</td><td>10.10 pm</td><td>10.22 pm</td></tr>
+<tr><td>5.40 pm</td><td>5.52 pm</td><td class="d">†10.25 pm</td><td class="d">†10.37 pm</td></tr>
+<tr><td>5.55 pm</td><td>6.7 pm</td><td class="d">†10.40 pm</td><td class="d">†10.52 pm</td></tr>
+<tr><td>6.10 pm</td><td>6.22 pm</td><td class="e">*10.55 pm</td><td class="e">*11.7 pm</td></tr>
+                                </tbody></table>
+                            </div>
+                            <div class="tt-legend"><b>†</b> to Depot. <b>‡</b> Railway only. <b>*</b> subject to entertainments.</div>
+                        </div>
+                    </div>
+                </div>
+
             </section>
 
-            <!-- FARES TAB -->
+            <!-- LAKE WEEROONA TAB -->
+            <section id="weeroona" class="tab-content">
+                <div class="section-head">Lake Weeroona Line</div>
+                
+                <div style="font-size:11px; padding:10px 15px; border:1px solid #1a1a18; margin-bottom:15px; background:#f4ead5; line-height:1.7;">
+                    <b style="font-family:'Oswald',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:1px;">Legend —</b>
+                    <span style="color:#1e3a5f; font-weight:600;">Blue text</span>: Depot services (D = from Depot, † = to Depot) · 
+                    <span style="color:#2d4a2d; font-weight:600;">Green text</span>: Railway Station (§ = Railway-related times) · 
+                    <span style="color:#8b2020; font-weight:600;">Red text</span>: Subject to entertainment times (*)
+                </div>
+                
+                <div class="day-sel">
+                    <button class="day-btn active" data-day="mon-thu" data-route="weeroona">Mon–Thu</button>
+                    <button class="day-btn" data-day="fri" data-route="weeroona">Friday</button>
+                    <button class="day-btn" data-day="sat" data-route="weeroona">Saturday</button>
+                    <button class="day-btn" data-day="sun" data-route="weeroona">Sunday</button>
+                </div>
+                
+                <!-- MON-THU -->
+                <div class="day-content mon-thu active">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Lake Weeroona</div>
+                                <div class="tt-day">Monday to Thursday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave City:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td>7.10 am</td><td>11.48 am</td><td>3.48 pm</td><td>7.48 pm</td></tr>
+<tr><td>7.42 am</td><td class="r">§12.5 pm</td><td>4.0 pm</td><td>8.0 pm</td></tr>
+<tr><td>8.12 am</td><td>12.12 pm</td><td>4.12 pm</td><td>8.12 pm</td></tr>
+<tr><td>8.24 am</td><td>12.24 pm</td><td>4.24 pm</td><td>8.24 pm</td></tr>
+<tr><td>8.36 am</td><td>12.36 pm</td><td>4.36 pm</td><td>8.36 pm</td></tr>
+<tr><td>8.48 am</td><td>12.48 pm</td><td>4.48 pm</td><td>8.48 pm</td></tr>
+<tr><td>9.0 am</td><td class="r">§1.5 pm</td><td>5.0 pm</td><td>9.0 pm</td></tr>
+<tr><td>9.12 am</td><td>1.12 pm</td><td>5.12 pm</td><td>9.12 pm</td></tr>
+<tr><td>9.24 am</td><td>1.24 pm</td><td>5.24 pm</td><td>9.24 pm</td></tr>
+<tr><td>9.36 am</td><td>1.36 pm</td><td>5.36 pm</td><td>9.36 pm</td></tr>
+<tr><td>9.48 am</td><td>1.48 pm</td><td>5.48 pm</td><td>9.48 pm</td></tr>
+<tr><td>10.0 am</td><td>2.0 pm</td><td>6.5 pm</td><td class="e">*10.0 pm</td></tr>
+<tr><td>10.12 am</td><td>2.12 pm</td><td>6.12 pm</td><td class="e">*10.12 pm</td></tr>
+<tr><td>10.24 am</td><td>2.24 pm</td><td>6.24 pm</td><td class="e">*10.24 pm</td></tr>
+<tr><td>10.36 am</td><td>2.36 pm</td><td>6.36 pm</td><td class="e">*10.36 pm</td></tr>
+<tr><td>10.48 am</td><td>2.48 pm</td><td>6.48 pm</td><td class="e">*10.48 pm</td></tr>
+<tr><td>11.0 am</td><td>3.0 pm</td><td>7.0 pm</td><td class="e">*11.0 pm</td></tr>
+<tr><td>11.12 am</td><td>3.12 pm</td><td>7.12 pm</td><td class="e">*11.11 pm</td></tr>
+<tr><td>11.24 am</td><td>3.24 pm</td><td>7.24 pm</td><td class="e">*11.22 pm</td></tr>
+<tr><td>11.36 am</td><td>3.36 pm</td><td>7.36 pm</td><td></td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="tt-sub" style="margin-top:10px;font-size:10px;">§ 12.5 pm and 1.5 pm trams leave 12.3 pm and 1.3 pm Fridays only.</div>
+                            </div>
+                            <div class="tt-legend"><b>§</b> Railway. <b>*</b> subject to entertainments.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Lake Weeroona to City</div>
+                                <div class="tt-day">Monday to Thursday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave Lake Weeroona:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave L.W.</th><th>Leave L.W.</th><th>Leave L.W.</th><th>Leave L.W.</th></tr></thead>
+                                    <tbody>
+<tr><td>7.19 am</td><td>11.31 am</td><td>3.31 pm</td><td>7.19 pm</td></tr>
+<tr><td>7.43 am</td><td>11.43 am</td><td>3.43 pm</td><td>7.31 pm</td></tr>
+<tr><td>7.55 am</td><td>11.55 am</td><td>3.55 pm</td><td>7.43 pm</td></tr>
+<tr><td>8.7 am</td><td class="r">§12.10 pm</td><td>4.7 pm</td><td>7.55 pm</td></tr>
+<tr><td>8.19 am</td><td>12.19 pm</td><td>4.19 pm</td><td>8.7 pm</td></tr>
+<tr><td>8.31 am</td><td>12.31 pm</td><td>4.31 pm</td><td>8.19 pm</td></tr>
+<tr><td>8.43 am</td><td>12.43 pm</td><td>4.43 pm</td><td>8.31 pm</td></tr>
+<tr><td>8.55 am</td><td>12.55 pm</td><td>4.55 pm</td><td>8.43 pm</td></tr>
+<tr><td>9.7 am</td><td class="r">§1.10 pm</td><td>5.7 pm</td><td>8.55 pm</td></tr>
+<tr><td>9.19 am</td><td>1.19 pm</td><td>5.19 pm</td><td>9.7 pm</td></tr>
+<tr><td>9.31 am</td><td>1.31 pm</td><td>5.31 pm</td><td>9.19 pm</td></tr>
+<tr><td>9.43 am</td><td>1.43 pm</td><td>5.43 pm</td><td>9.31 pm</td></tr>
+<tr><td>9.55 am</td><td>1.55 pm</td><td>5.55 pm</td><td>9.43 pm</td></tr>
+<tr><td>10.7 am</td><td>2.7 pm</td><td>6.10 pm</td><td>9.55 pm</td></tr>
+<tr><td>10.19 am</td><td>2.19 pm</td><td>6.19 pm</td><td class="e">*10.7 pm</td></tr>
+<tr><td>10.31 am</td><td>2.31 pm</td><td>6.31 pm</td><td class="e">*10.19 pm</td></tr>
+<tr><td>10.43 am</td><td>2.43 pm</td><td>6.43 pm</td><td class="e">*10.31 pm</td></tr>
+<tr><td>10.55 am</td><td>2.55 pm</td><td>6.55 pm</td><td class="e">*10.43 pm</td></tr>
+<tr><td>11.7 am</td><td>3.7 pm</td><td>7.7 pm</td><td class="e">*10.55 pm</td></tr>
+<tr><td>11.19 am</td><td>3.19 pm</td><td></td><td></td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="tt-sub" style="margin-top:10px;font-size:10px;">§ 12.10 pm and 1.10 pm trams leave 12.8 pm and 1.8 pm Fridays only.</div>
+                            </div>
+                            <div class="tt-legend"><b>§</b> Railway. <b>*</b> subject to entertainments.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FRIDAY -->
+                <div class="day-content fri">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Lake Weeroona</div>
+                                <div class="tt-day">Friday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #1e3a5f; font-size:11px; font-style:italic;">
+                                    <b>Note:</b> Trams run as Monday-Thursday until 3.0 pm, then this extended Friday schedule begins. Switch to Mon-Thu tab for morning times.
+                                </div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td>3.12 pm</td><td>5.24 pm</td><td>7.21 pm</td><td>9.18 pm</td></tr>
+<tr><td>3.28 pm</td><td>5.33 pm</td><td>7.30 pm</td><td>9.27 pm</td></tr>
+<tr><td>3.36 pm</td><td>5.42 pm</td><td>7.39 pm</td><td>9.36 pm</td></tr>
+<tr><td>3.45 pm</td><td>5.51 pm</td><td>7.48 pm</td><td>9.45 pm</td></tr>
+<tr><td>3.54 pm</td><td>6.0 pm</td><td>7.57 pm</td><td>9.54 pm</td></tr>
+<tr><td>4.3 pm</td><td>6.9 pm</td><td>8.6 pm</td><td>10.0 pm</td></tr>
+<tr><td>4.12 pm</td><td>6.18 pm</td><td>8.15 pm</td><td>10.12 pm</td></tr>
+<tr><td>4.21 pm</td><td>6.27 pm</td><td>8.24 pm</td><td>10.24 pm</td></tr>
+<tr><td>4.30 pm</td><td>6.36 pm</td><td>8.33 pm</td><td>10.36 pm</td></tr>
+<tr><td>4.39 pm</td><td>6.45 pm</td><td>8.42 pm</td><td class="e">*10.48 pm</td></tr>
+<tr><td>4.48 pm</td><td>6.54 pm</td><td>8.51 pm</td><td class="e">*11.0 pm</td></tr>
+<tr><td>4.57 pm</td><td>7.3 pm</td><td>9.0 pm</td><td class="e">*11.11 pm</td></tr>
+<tr><td>5.6 pm</td><td>7.12 pm</td><td>9.9 pm</td><td class="e">*11.22 pm</td></tr>
+<tr><td>5.15 pm</td><td></td><td></td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>†</b> to Depot. <b>*</b> subject to entertainments.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Lake Weeroona to City</div>
+                                <div class="tt-day">Friday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave L.W.</th><th>Leave L.W.</th><th>Leave L.W.</th><th>Leave L.W.</th></tr></thead>
+                                    <tbody>
+<tr><td>3.7 pm</td><td>5.4 pm</td><td>7.1 pm</td><td>8.53 pm</td></tr>
+<tr><td class="d">D3.19 pm</td><td>5.13 pm</td><td>7.10 pm</td><td>9.7 pm</td></tr>
+<tr><td>3.25 pm</td><td>5.22 pm</td><td>7.18 pm</td><td>9.16 pm</td></tr>
+<tr><td>3.33 pm</td><td>5.31 pm</td><td>7.28 pm</td><td>9.25 pm</td></tr>
+<tr><td>3.42 pm</td><td>5.40 pm</td><td>7.37 pm</td><td>9.34 pm</td></tr>
+<tr><td>3.52 pm</td><td>5.49 pm</td><td>7.46 pm</td><td>9.43 pm</td></tr>
+<tr><td>4.1 pm</td><td>5.58 pm</td><td>7.55 pm</td><td>9.52 pm</td></tr>
+<tr><td>4.10 pm</td><td>6.7 pm</td><td>8.4 pm</td><td>9.58 pm</td></tr>
+<tr><td>4.19 pm</td><td>6.16 pm</td><td>8.13 pm</td><td>10.7 pm</td></tr>
+<tr><td>4.28 pm</td><td>6.25 pm</td><td>8.22 pm</td><td>10.19 pm</td></tr>
+<tr><td>4.37 pm</td><td>6.34 pm</td><td>8.31 pm</td><td>10.31 pm</td></tr>
+<tr><td>4.46 pm</td><td>6.43 pm</td><td>8.40 pm</td><td class="e">*10.43 pm</td></tr>
+<tr><td>4.55 pm</td><td>6.52 pm</td><td>8.49 pm</td><td class="e">*10.54 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>†</b> to Depot. <b>*</b> subject to entertainments. <b>D</b> from Depot.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SATURDAY -->
+                <div class="day-content sat">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Lake Weeroona</div>
+                                <div class="tt-day">Saturday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td>11.24 am</td><td>2.12 pm</td><td>5.48 pm</td><td>8.42 pm</td></tr>
+<tr><td>11.33 am</td><td>2.24 pm</td><td>6.0 pm</td><td>8.51 pm</td></tr>
+<tr><td>11.43 am</td><td>2.36 pm</td><td>6.12 pm</td><td>9.0 pm</td></tr>
+<tr><td>11.52 am</td><td>2.48 pm</td><td>6.24 pm</td><td>9.9 pm</td></tr>
+<tr><td>12.1 pm</td><td>3.0 pm</td><td>6.36 pm</td><td>9.18 pm</td></tr>
+<tr><td>12.9 pm</td><td>3.12 pm</td><td>6.48 pm</td><td>9.27 pm</td></tr>
+<tr><td>12.18 pm</td><td>3.24 pm</td><td>7.0 pm</td><td>9.36 pm</td></tr>
+<tr><td>12.27 pm</td><td>3.36 pm</td><td>7.12 pm</td><td>9.45 pm</td></tr>
+<tr><td>12.36 pm</td><td>3.48 pm</td><td>7.21 pm</td><td>9.54 pm</td></tr>
+<tr><td>12.43 pm</td><td>4.0 pm</td><td>7.30 pm</td><td>10.3 pm</td></tr>
+<tr><td>12.51 pm</td><td>4.12 pm</td><td>7.39 pm</td><td>10.12 pm</td></tr>
+<tr><td>1.3 pm</td><td>4.24 pm</td><td>7.48 pm</td><td>10.21 pm</td></tr>
+<tr><td>1.12 pm</td><td>4.36 pm</td><td>7.57 pm</td><td>10.30 pm</td></tr>
+<tr><td>1.21 pm</td><td>4.48 pm</td><td>8.6 pm</td><td class="e">*10.39 pm</td></tr>
+<tr><td>1.33 pm</td><td>5.0 pm</td><td>8.15 pm</td><td class="e">*10.48 pm</td></tr>
+<tr><td>1.42 pm</td><td>5.24 pm</td><td>8.24 pm</td><td class="e">*11.0 pm</td></tr>
+<tr><td>1.48 pm</td><td>5.36 pm</td><td>8.33 pm</td><td class="e">*11.6 pm</td></tr>
+<tr><td>2.0 pm</td><td></td><td></td><td></td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="tt-sub" style="margin-top:10px;font-size:10px;">* denotes subject to terminating times of entertainment.</div>
+                                <div class="tt-sub" style="margin-top:5px;font-size:10px;">† to Depot.</div>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments. <b>†</b> to Depot.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Lake Weeroona to City</div>
+                                <div class="tt-day">Saturday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave L.W.</th><th>Leave L.W.</th><th>Leave L.W.</th><th>Leave L.W.</th></tr></thead>
+                                    <tbody>
+<tr><td>10.55 am</td><td>1.43 pm</td><td>5.31 pm</td><td>8.40 pm</td></tr>
+<tr><td class="d">D11.4 am</td><td>1.55 pm</td><td>5.43 pm</td><td>8.49 pm</td></tr>
+<tr><td>11.13 am</td><td>2.7 pm</td><td>5.55 pm</td><td>8.58 pm</td></tr>
+<tr><td>11.22 am</td><td>2.19 pm</td><td>6.7 pm</td><td>9.7 pm</td></tr>
+<tr><td>11.31 am</td><td>2.31 pm</td><td>6.19 pm</td><td>9.16 pm</td></tr>
+<tr><td>11.40 am</td><td>2.43 pm</td><td>6.31 pm</td><td>9.25 pm</td></tr>
+<tr><td>11.49 am</td><td>3.7 pm</td><td>6.43 pm</td><td>9.34 pm</td></tr>
+<tr><td>11.58 am</td><td>3.19 pm</td><td>6.52 pm</td><td>9.43 pm</td></tr>
+<tr><td>12.7 pm</td><td>3.31 pm</td><td>7.1 pm</td><td>9.52 pm</td></tr>
+<tr><td>12.16 pm</td><td>3.43 pm</td><td>7.10 pm</td><td>10.1 pm</td></tr>
+<tr><td>12.24 pm</td><td>3.55 pm</td><td>7.19 pm</td><td>10.10 pm</td></tr>
+<tr><td>12.34 pm</td><td>4.7 pm</td><td>7.28 pm</td><td>10.19 pm</td></tr>
+<tr><td>12.43 pm</td><td>4.19 pm</td><td>7.37 pm</td><td>10.28 pm</td></tr>
+<tr><td>12.52 pm</td><td>4.31 pm</td><td>7.46 pm</td><td class="e">*10.37 pm</td></tr>
+<tr><td>1.1 pm</td><td>4.43 pm</td><td>7.55 pm</td><td class="e">*10.47 pm</td></tr>
+<tr><td>1.10 pm</td><td>4.55 pm</td><td>8.4 pm</td><td class="e">*10.54 pm</td></tr>
+<tr><td>1.19 pm</td><td>5.7 pm</td><td>8.13 pm</td><td class="e">*11.6 pm</td></tr>
+<tr><td class="d">†1.28 pm</td><td>5.19 pm</td><td>8.22 pm</td><td class="e">*11.15 pm</td></tr>
+<tr><td>1.34 pm</td><td></td><td>8.31 pm</td><td class="e">*11.22 pm</td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="tt-sub" style="margin-top:10px;font-size:10px;">* denotes subject to terminating times of entertainment.</div>
+                                <div class="tt-sub" style="margin-top:5px;font-size:10px;">† to Depot.</div>
+                                <div class="tt-sub" style="margin-top:5px;font-size:10px;"><b>D</b> from Depot.</div>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments. <b>†</b> to Depot. <b>D</b> from Depot.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUNDAY -->
+                <div class="day-content sun">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Lake Weeroona</div>
+                                <div class="tt-day">Sunday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave City:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td>2.12 pm</td><td>4.24 pm</td><td>6.36 pm</td><td>8.48 pm</td></tr>
+<tr><td>2.24 pm</td><td>4.36 pm</td><td>6.48 pm</td><td>9.0 pm</td></tr>
+<tr><td>2.36 pm</td><td>4.48 pm</td><td>7.0 pm</td><td>9.12 pm</td></tr>
+<tr><td>2.48 pm</td><td>5.0 pm</td><td>7.12 pm</td><td>9.24 pm</td></tr>
+<tr><td>3.0 pm</td><td>5.12 pm</td><td>7.24 pm</td><td>9.36 pm</td></tr>
+<tr><td>3.12 pm</td><td>5.24 pm</td><td>7.36 pm</td><td>9.48 pm</td></tr>
+<tr><td>3.24 pm</td><td>5.36 pm</td><td>7.48 pm</td><td>10.0 pm</td></tr>
+<tr><td>3.36 pm</td><td>5.48 pm</td><td>8.0 pm</td><td>10.12 pm</td></tr>
+<tr><td>3.48 pm</td><td>6.0 pm</td><td>8.12 pm</td><td>10.30 pm</td></tr>
+<tr><td>4.0 pm</td><td>6.12 pm</td><td>8.24 pm</td><td class="e">*10.35 pm</td></tr>
+<tr><td>4.12 pm</td><td>6.24 pm</td><td>8.36 pm</td><td class="e">*10.52 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Lake Weeroona to City</div>
+                                <div class="tt-day">Sunday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave Lake Weeroona:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave L.W.</th><th>Leave L.W.</th><th>Leave L.W.</th><th>Leave L.W.</th></tr></thead>
+                                    <tbody>
+<tr><td class="d">D1.43 pm</td><td>4.7 pm</td><td>6.19 pm</td><td>8.31 pm</td></tr>
+<tr><td>1.55 pm</td><td>4.19 pm</td><td>6.31 pm</td><td>8.43 pm</td></tr>
+<tr><td class="d">D2.7 pm</td><td>4.31 pm</td><td>6.43 pm</td><td>8.55 pm</td></tr>
+<tr><td>2.31 pm</td><td>4.55 pm</td><td>6.55 pm</td><td>9.7 pm</td></tr>
+<tr><td>2.43 pm</td><td>5.7 pm</td><td>7.7 pm</td><td>9.19 pm</td></tr>
+<tr><td>2.55 pm</td><td>5.19 pm</td><td>7.19 pm</td><td>9.31 pm</td></tr>
+<tr><td>3.7 pm</td><td>5.31 pm</td><td>7.31 pm</td><td>9.43 pm</td></tr>
+<tr><td>3.19 pm</td><td>5.43 pm</td><td>7.43 pm</td><td>9.55 pm</td></tr>
+<tr><td>3.31 pm</td><td>5.55 pm</td><td>7.55 pm</td><td>10.7 pm</td></tr>
+<tr><td>3.43 pm</td><td>6.7 pm</td><td>8.7 pm</td><td>10.23 pm</td></tr>
+<tr><td>3.55 pm</td><td></td><td>8.19 pm</td><td class="e">*10.36 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>D</b> from Depot. <b>†</b> to Depot. <b>*</b> subject to entertainments.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- GOLDEN SQUARE TAB -->
+            <section id="golden" class="tab-content">
+                <div class="section-head">Golden Square Line</div>
+                
+                <div style="font-size:11px; padding:10px 15px; border:1px solid #1a1a18; margin-bottom:15px; background:#f4ead5; line-height:1.7;">
+                    <b style="font-family:'Oswald',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:1px;">Legend —</b>
+                    <span style="color:#1e3a5f; font-weight:600;">Blue text</span>: Depot services (D = from Depot, † = to Depot) · 
+                    <span style="color:#2d4a2d; font-weight:600;">Green text</span>: Railway Station (§ = Railway-related times) · 
+                    <span style="color:#8b2020; font-weight:600;">Red text</span>: Subject to entertainment times (*)
+                </div>
+                
+                <div class="day-sel">
+                    <button class="day-btn active" data-day="mon-thu" data-route="golden">Mon–Thu</button>
+                    <button class="day-btn" data-day="fri" data-route="golden">Friday</button>
+                    <button class="day-btn" data-day="sat" data-route="golden">Saturday</button>
+                    <button class="day-btn" data-day="sun" data-route="golden">Sunday</button>
+                </div>
+                
+                <!-- MON-THU -->
+                <div class="day-content mon-thu active">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Golden Square</div>
+                                <div class="tt-day">Monday to Thursday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave City:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td class="d">D6.50 am</td><td>11.25 am</td><td>3.25 pm</td><td>7.25 pm</td></tr>
+<tr><td>7.25 am</td><td>11.37 am</td><td>3.37 pm</td><td>7.37 pm</td></tr>
+<tr><td>7.49 am</td><td>11.49 am</td><td>3.49 pm</td><td>7.49 pm</td></tr>
+<tr><td>8.1 am</td><td class="r">§12.5 pm</td><td>4.1 pm</td><td>8.1 pm</td></tr>
+<tr><td>8.13 am</td><td>12.15 pm</td><td>4.13 pm</td><td>8.13 pm</td></tr>
+<tr><td>8.25 am</td><td>12.25 pm</td><td>4.25 pm</td><td>8.25 pm</td></tr>
+<tr><td>8.37 am</td><td>12.37 pm</td><td>4.37 pm</td><td>8.37 pm</td></tr>
+<tr><td>8.49 am</td><td>12.49 pm</td><td>4.49 pm</td><td>8.49 pm</td></tr>
+<tr><td>9.1 am</td><td class="r">§1.5 pm</td><td>5.1 pm</td><td>9.1 pm</td></tr>
+<tr><td>9.13 am</td><td>1.15 pm</td><td>5.13 pm</td><td>9.13 pm</td></tr>
+<tr><td>9.25 am</td><td>1.25 pm</td><td>5.25 pm</td><td>9.25 pm</td></tr>
+<tr><td>9.37 am</td><td>1.37 pm</td><td>5.37 pm</td><td>9.37 pm</td></tr>
+<tr><td>9.49 am</td><td>1.49 pm</td><td>5.49 pm</td><td>9.49 pm</td></tr>
+<tr><td>10.1 am</td><td>2.1 pm</td><td>6.5 pm</td><td>10.1 pm</td></tr>
+<tr><td>10.13 am</td><td>2.13 pm</td><td>6.13 pm</td><td>10.13 pm</td></tr>
+<tr><td>10.25 am</td><td>2.25 pm</td><td>6.25 pm</td><td>10.25 pm</td></tr>
+<tr><td>10.37 am</td><td>2.37 pm</td><td>6.37 pm</td><td>10.37 pm</td></tr>
+<tr><td>10.49 am</td><td>2.49 pm</td><td>6.49 pm</td><td class="e">*10.49 pm</td></tr>
+<tr><td>11.1 am</td><td>3.1 pm</td><td>7.1 pm</td><td class="e">*11.0 pm</td></tr>
+<tr><td>11.13 am</td><td>3.13 pm</td><td>7.13 pm</td><td></td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="tt-sub" style="margin-top:10px;font-size:10px;">§ 12.5 pm and 1.5 pm trams leave 12.3 pm and 1.3 pm Fridays only.</div>
+                            </div>
+                            <div class="tt-legend"><b>D</b> from Depot. <b>§</b> Railway. <b>*</b> subject to entertainments.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Golden Square to City</div>
+                                <div class="tt-day">Monday to Thursday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave Golden Square:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave G.S.</th><th>Leave G.S.</th><th>Leave G.S.</th><th>Leave G.S.</th></tr></thead>
+                                    <tbody>
+<tr><td>7.9 am</td><td>11.37 am</td><td>3.37 pm</td><td>7.37 pm</td></tr>
+<tr><td>7.36 am</td><td>11.49 am</td><td>3.49 pm</td><td>7.49 pm</td></tr>
+<tr><td>8.1 am</td><td>12.1 pm</td><td>4.1 pm</td><td>8.1 pm</td></tr>
+<tr><td>8.13 am</td><td>12.13 pm</td><td>4.13 pm</td><td>8.13 pm</td></tr>
+<tr><td>8.25 am</td><td>12.25 pm</td><td>4.25 pm</td><td>8.25 pm</td></tr>
+<tr><td>8.37 am</td><td>12.37 pm</td><td>4.37 pm</td><td>8.37 pm</td></tr>
+<tr><td>8.49 am</td><td>12.49 pm</td><td>4.49 pm</td><td>8.49 pm</td></tr>
+<tr><td>9.1 am</td><td>1.1 pm</td><td>5.1 pm</td><td>9.1 pm</td></tr>
+<tr><td>9.13 am</td><td>1.13 pm</td><td>5.13 pm</td><td>9.13 pm</td></tr>
+<tr><td>9.25 am</td><td>1.25 pm</td><td>5.25 pm</td><td>9.25 pm</td></tr>
+<tr><td>9.37 am</td><td>1.37 pm</td><td>5.37 pm</td><td>9.37 pm</td></tr>
+<tr><td>9.49 am</td><td>1.49 pm</td><td>5.49 pm</td><td>9.49 pm</td></tr>
+<tr><td>10.1 am</td><td>2.1 pm</td><td>6.1 pm</td><td>10.1 pm</td></tr>
+<tr><td>10.13 am</td><td>2.13 pm</td><td>6.13 pm</td><td>10.13 pm</td></tr>
+<tr><td>10.25 am</td><td>2.25 pm</td><td>6.25 pm</td><td>10.25 pm</td></tr>
+<tr><td>10.37 am</td><td>2.37 pm</td><td>6.37 pm</td><td>10.37 pm</td></tr>
+<tr><td>10.49 am</td><td>2.49 pm</td><td>6.49 pm</td><td class="e">*10.49 pm</td></tr>
+<tr><td>11.1 am</td><td>3.1 pm</td><td>7.1 pm</td><td class="e">*11.1 pm</td></tr>
+<tr><td>11.13 am</td><td>3.13 pm</td><td>7.13 pm</td><td class="e">*11.11 pm</td></tr>
+<tr><td>11.25 am</td><td>3.25 pm</td><td>7.25 pm</td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FRIDAY -->
+                <div class="day-content fri">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Golden Square</div>
+                                <div class="tt-day">Friday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td>3.13 pm</td><td>5.10 pm</td><td>7.7 pm</td><td>9.4 pm</td></tr>
+<tr><td>3.25 pm</td><td>5.19 pm</td><td>7.15 pm</td><td>9.13 pm</td></tr>
+<tr><td>3.37 pm</td><td>5.28 pm</td><td>7.25 pm</td><td>9.22 pm</td></tr>
+<tr><td>3.40 pm</td><td>5.37 pm</td><td>7.34 pm</td><td>9.31 pm</td></tr>
+<tr><td>3.49 pm</td><td>5.46 pm</td><td>7.43 pm</td><td>9.40 pm</td></tr>
+<tr><td>3.58 pm</td><td>5.55 pm</td><td>7.52 pm</td><td>9.49 pm</td></tr>
+<tr><td>4.7 pm</td><td>6.4 pm</td><td>8.1 pm</td><td>10.4 pm</td></tr>
+<tr><td>4.16 pm</td><td>6.13 pm</td><td>8.10 pm</td><td>10.13 pm</td></tr>
+<tr><td>4.25 pm</td><td>6.22 pm</td><td>8.19 pm</td><td>10.25 pm</td></tr>
+<tr><td>4.34 pm</td><td>6.31 pm</td><td>8.28 pm</td><td class="e">*10.37 pm</td></tr>
+<tr><td>4.43 pm</td><td>6.40 pm</td><td>8.37 pm</td><td class="e">*10.49 pm</td></tr>
+<tr><td>4.52 pm</td><td>6.49 pm</td><td>8.46 pm</td><td class="e">*11.0 pm</td></tr>
+<tr><td>5.1 pm</td><td>6.58 pm</td><td>8.55 pm</td><td class="e">*11.11 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Golden Square to City</div>
+                                <div class="tt-day">Friday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave G.S.</th><th>Leave G.S.</th><th>Leave G.S.</th><th>Leave G.S.</th></tr></thead>
+                                    <tbody>
+<tr><td>3.25 pm</td><td>5.22 pm</td><td>7.19 pm</td><td>9.16 pm</td></tr>
+<tr><td>3.34 pm</td><td>5.31 pm</td><td>7.28 pm</td><td>9.25 pm</td></tr>
+<tr><td>3.43 pm</td><td>5.40 pm</td><td>7.37 pm</td><td>9.34 pm</td></tr>
+<tr><td>3.52 pm</td><td>5.49 pm</td><td>7.46 pm</td><td>9.43 pm</td></tr>
+<tr><td>4.1 pm</td><td>5.58 pm</td><td>7.55 pm</td><td>9.50 pm</td></tr>
+<tr><td>4.10 pm</td><td>6.7 pm</td><td>8.4 pm</td><td>10.1 pm</td></tr>
+<tr><td>4.19 pm</td><td>6.16 pm</td><td>8.13 pm</td><td>10.14 pm</td></tr>
+<tr><td>4.28 pm</td><td>6.25 pm</td><td>8.22 pm</td><td>10.25 pm</td></tr>
+<tr><td>4.37 pm</td><td>6.34 pm</td><td>8.31 pm</td><td class="e">*10.37 pm</td></tr>
+<tr><td>4.46 pm</td><td>6.43 pm</td><td>8.40 pm</td><td class="e">*10.48 pm</td></tr>
+<tr><td>4.55 pm</td><td>6.52 pm</td><td>8.49 pm</td><td class="e">*10.59 pm</td></tr>
+<tr><td>5.4 pm</td><td>7.1 pm</td><td>8.58 pm</td><td class="e">*11.11 pm</td></tr>
+<tr><td>5.13 pm</td><td>7.10 pm</td><td>9.7 pm</td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SATURDAY -->
+                <div class="day-content sat">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Golden Square</div>
+                                <div class="tt-day">Saturday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td>11.1 am</td><td>1.49 pm</td><td>5.25 pm</td><td>8.28 pm</td></tr>
+<tr><td>11.10 am</td><td>2.1 pm</td><td>5.37 pm</td><td>8.37 pm</td></tr>
+<tr><td>11.19 am</td><td>2.13 pm</td><td>5.49 pm</td><td>8.49 pm</td></tr>
+<tr><td>11.28 am</td><td>2.25 pm</td><td>6.1 pm</td><td>8.58 pm</td></tr>
+<tr><td>11.37 am</td><td>2.37 pm</td><td>6.10 pm</td><td>9.4 pm</td></tr>
+<tr><td>11.46 am</td><td>2.49 pm</td><td>6.18 pm</td><td>9.13 pm</td></tr>
+<tr><td>11.55 am</td><td>3.1 pm</td><td>6.25 pm</td><td>9.22 pm</td></tr>
+<tr><td>12.3 pm</td><td>3.13 pm</td><td>6.37 pm</td><td>9.31 pm</td></tr>
+<tr><td>12.4 pm</td><td>3.25 pm</td><td>6.49 pm</td><td>9.40 pm</td></tr>
+<tr><td>12.13 pm</td><td>3.37 pm</td><td>7.1 pm</td><td>9.49 pm</td></tr>
+<tr><td>12.22 pm</td><td>3.49 pm</td><td>7.10 pm</td><td>9.58 pm</td></tr>
+<tr><td>12.31 pm</td><td>4.1 pm</td><td class="d">†7.16 pm</td><td>10.7 pm</td></tr>
+<tr><td>12.40 pm</td><td>4.13 pm</td><td>7.25 pm</td><td>10.19 pm</td></tr>
+<tr><td>12.49 pm</td><td>4.25 pm</td><td>7.34 pm</td><td>10.34 pm</td></tr>
+<tr><td>12.58 pm</td><td>4.37 pm</td><td>7.52 pm</td><td class="e">*10.34 pm</td></tr>
+<tr><td>1.7 pm</td><td>4.49 pm</td><td>8.1 pm</td><td class="e">*10.52 pm</td></tr>
+<tr><td>1.16 pm</td><td>5.1 pm</td><td>8.10 pm</td><td class="e">*11.0 pm</td></tr>
+<tr><td>1.25 pm</td><td>5.13 pm</td><td>8.19 pm</td><td class="e">*10.62 pm</td></tr>
+<tr><td>1.40 pm</td><td></td><td></td><td class="e">*11.0 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments. <b>†</b> to Depot.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Golden Square to City</div>
+                                <div class="tt-day">Saturday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave G.S.</th><th>Leave G.S.</th><th>Leave G.S.</th><th>Leave G.S.</th></tr></thead>
+                                    <tbody>
+<tr><td>10.49 am</td><td>1.50 pm</td><td>5.37 pm</td><td>8.40 pm</td></tr>
+<tr><td>11.1 am</td><td>2.1 pm</td><td>5.49 pm</td><td>8.49 pm</td></tr>
+<tr><td>11.13 am</td><td>2.13 pm</td><td>6.1 pm</td><td>8.58 pm</td></tr>
+<tr><td>11.22 am</td><td>2.25 pm</td><td>6.10 pm</td><td>9.7 pm</td></tr>
+<tr><td>11.31 am</td><td>2.37 pm</td><td>6.19 pm</td><td>9.16 pm</td></tr>
+<tr><td>11.31 am</td><td>2.37 pm</td><td>6.25 pm</td><td>9.16 pm</td></tr>
+<tr><td>11.40 am</td><td>2.49 pm</td><td>6.37 pm</td><td>9.25 pm</td></tr>
+<tr><td>11.49 am</td><td>3.1 pm</td><td>6.49 pm</td><td>9.34 pm</td></tr>
+<tr><td>11.58 am</td><td>3.13 pm</td><td>7.1 pm</td><td>9.43 pm</td></tr>
+<tr><td>12.7 pm</td><td>3.25 pm</td><td>7.10 pm</td><td>9.52 pm</td></tr>
+<tr><td>12.16 pm</td><td>3.37 pm</td><td>7.19 pm</td><td>10.1 pm</td></tr>
+<tr><td>12.25 pm</td><td>3.49 pm</td><td>7.28 pm</td><td>10.32 pm</td></tr>
+<tr><td>12.34 pm</td><td>4.1 pm</td><td>7.37 pm</td><td>10.19 pm</td></tr>
+<tr><td>12.43 pm</td><td>4.13 pm</td><td>7.46 pm</td><td>10.28 pm</td></tr>
+<tr><td>12.52 pm</td><td>4.25 pm</td><td>7.55 pm</td><td class="e">*10.37 pm</td></tr>
+<tr><td>1.1 pm</td><td>4.37 pm</td><td>8.1 pm</td><td class="e">*10.46 pm</td></tr>
+<tr><td>1.10 pm</td><td>4.49 pm</td><td>8.13 pm</td><td class="e">*10.58 pm</td></tr>
+<tr><td>1.19 pm</td><td>5.1 pm</td><td>8.22 pm</td><td class="e">*11.4 pm</td></tr>
+<tr><td>1.26 pm</td><td>5.13 pm</td><td>8.31 pm</td><td class="e">*11.11 pm</td></tr>
+<tr><td>1.37 pm</td><td>5.25 pm</td><td></td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUNDAY -->
+                <div class="day-content sun">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Golden Square</div>
+                                <div class="tt-day">Sunday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave City:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td class="d">D1.49 pm</td><td>4.7 am</td><td>6.13 pm</td><td>8.25 pm</td></tr>
+<tr><td>2.1 pm</td><td>4.19 pm</td><td>6.25 pm</td><td>8.37 pm</td></tr>
+<tr><td>2.13 pm</td><td>4.25 pm</td><td>6.37 pm</td><td>8.49 pm</td></tr>
+<tr><td>2.25 pm</td><td>4.37 pm</td><td>6.49 pm</td><td>9.1 pm</td></tr>
+<tr><td>2.37 pm</td><td>4.49 pm</td><td>7.1 pm</td><td>9.13 pm</td></tr>
+<tr><td>2.49 pm</td><td>5.1 pm</td><td>7.13 pm</td><td>9.25 pm</td></tr>
+<tr><td>3.1 pm</td><td>5.13 pm</td><td>7.25 pm</td><td>9.37 pm</td></tr>
+<tr><td>3.13 pm</td><td>5.25 pm</td><td>7.37 pm</td><td>9.49 pm</td></tr>
+<tr><td>3.25 pm</td><td>5.37 pm</td><td>7.49 pm</td><td>10.1 pm</td></tr>
+<tr><td>3.37 pm</td><td>5.49 pm</td><td>8.1 pm</td><td>10.13 pm</td></tr>
+<tr><td>3.49 pm</td><td>6.1 pm</td><td>8.13 pm</td><td>10.24 pm</td></tr>
+<tr><td></td><td></td><td></td><td>10.41 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>D</b> from Depot.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Golden Square to City</div>
+                                <div class="tt-day">Sunday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave Golden Square:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave G.S.</th><th>Leave G.S.</th><th>Leave G.S.</th><th>Leave G.S.</th></tr></thead>
+                                    <tbody>
+<tr><td>2.1 pm</td><td>4.13 pm</td><td>6.25 pm</td><td>8.37 pm</td></tr>
+<tr><td>2.13 pm</td><td>4.25 pm</td><td>6.37 pm</td><td>8.49 pm</td></tr>
+<tr><td>2.25 pm</td><td>4.37 pm</td><td>6.49 pm</td><td>9.1 pm</td></tr>
+<tr><td>2.37 pm</td><td>4.49 pm</td><td>7.1 pm</td><td>9.13 pm</td></tr>
+<tr><td>2.49 pm</td><td>5.1 pm</td><td>7.13 pm</td><td>9.25 pm</td></tr>
+<tr><td>3.1 pm</td><td>5.13 pm</td><td>7.25 pm</td><td>9.37 pm</td></tr>
+<tr><td>3.13 pm</td><td>5.25 pm</td><td>7.37 pm</td><td>9.49 pm</td></tr>
+<tr><td>3.25 pm</td><td>5.37 pm</td><td>7.49 pm</td><td>10.1 pm</td></tr>
+<tr><td>3.37 pm</td><td>5.49 pm</td><td>8.1 pm</td><td>10.13 pm</td></tr>
+<tr><td>3.49 pm</td><td>6.1 pm</td><td>8.13 pm</td><td>10.25 pm</td></tr>
+<tr><td>4.1 pm</td><td>6.13 pm</td><td>8.25 pm</td><td>10.24 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- QUARRY HILL TAB -->
+            <section id="quarry" class="tab-content">
+                <div class="section-head">Quarry Hill Line</div>
+                
+                <div style="font-size:11px; padding:10px 15px; border:1px solid #1a1a18; margin-bottom:15px; background:#f4ead5; line-height:1.7;">
+                    <b style="font-family:'Oswald',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:1px;">Legend —</b>
+                    <span style="color:#1e3a5f; font-weight:600;">Blue text</span>: Depot services (D = from Depot, † = to Depot) · 
+                    <span style="color:#2d4a2d; font-weight:600;">Green text</span>: Railway Station (R = Railway, ‡ = Railway only) · 
+                    <span style="color:#8b2020; font-weight:600;">Red text</span>: Subject to entertainment times (*)
+                </div>
+                
+                <div class="day-sel">
+                    <button class="day-btn active" data-day="mon-thu" data-route="quarry">Mon–Thu</button>
+                    <button class="day-btn" data-day="fri" data-route="quarry">Friday</button>
+                    <button class="day-btn" data-day="sat" data-route="quarry">Saturday</button>
+                    <button class="day-btn" data-day="sun" data-route="quarry">Sunday</button>
+                </div>
+                
+                <!-- MON-THU -->
+                <div class="day-content mon-thu active">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Quarry Hill</div>
+                                <div class="tt-day">Monday to Thursday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave City:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td>6.50 am to R.</td><td>11.0 am</td><td>3.5 pm</td><td>6.50 pm</td></tr>
+<tr><td class="d">D7.6 am</td><td>11.20 am</td><td>3.20 pm</td><td>7.5 pm</td></tr>
+<tr><td>7.20 am</td><td>11.40 am</td><td>3.35 pm</td><td>7.20 pm</td></tr>
+<tr><td class="d">D7.35 am</td><td>12.5 pm</td><td>3.50 pm</td><td>7.35 pm</td></tr>
+<tr><td>7.50 am</td><td>12.35 pm</td><td>4.5 pm</td><td>7.50 pm</td></tr>
+<tr><td>8.5 am</td><td>12.50 pm</td><td>4.20 pm</td><td>8.5 pm</td></tr>
+<tr><td>8.20 am</td><td>1.5 pm</td><td>4.35 pm</td><td>8.20 pm</td></tr>
+<tr><td>8.35 am</td><td>1.20 pm</td><td>4.50 pm</td><td>8.35 pm</td></tr>
+<tr><td>8.50 am</td><td>1.35 pm</td><td>5.5 pm</td><td>8.50 pm</td></tr>
+<tr><td>9.5 am</td><td>1.50 pm</td><td>5.20 pm</td><td>9.5 pm</td></tr>
+<tr><td>9.24 am</td><td>2.5 pm</td><td>5.35 pm</td><td>9.20 pm</td></tr>
+<tr><td>9.50 am</td><td>2.20 pm</td><td>5.50 pm</td><td>9.40 pm</td></tr>
+<tr><td>10.5 am</td><td>2.35 pm</td><td>6.5 pm</td><td>10.0 pm</td></tr>
+<tr><td>10.20 am</td><td>2.50 pm</td><td>6.20 pm</td><td>10.20 pm</td></tr>
+<tr><td>10.40 am</td><td></td><td>6.35 pm</td><td class="e">*11.0 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>R</b> Railway. <b>*</b> subject to entertainments. <b>D</b> from Depot.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Quarry Hill to City</div>
+                                <div class="tt-day">Monday to Thursday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave Quarry Hill:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave Q.H.</th><th>Leave Q.H.</th><th>Leave Q.H.</th><th>Leave Q.H.</th></tr></thead>
+                                    <tbody>
+<tr><td class="r">R6.55 am</td><td>11.16 am</td><td>3.20 pm</td><td>7.5 pm</td></tr>
+<tr><td>7.21 am</td><td>11.35 am</td><td>3.35 pm</td><td>7.20 pm</td></tr>
+<tr><td>7.50 am</td><td>11.51 am</td><td>3.51 pm</td><td>7.35 pm</td></tr>
+<tr><td>8.5 am</td><td>12.19 pm</td><td>4.5 pm</td><td>7.50 pm</td></tr>
+<tr><td>8.20 am</td><td>12.35 pm</td><td>4.20 pm</td><td>8.5 pm</td></tr>
+<tr><td>8.35 am</td><td>12.50 pm</td><td>4.35 pm</td><td>8.20 pm</td></tr>
+<tr><td>8.50 am</td><td>1.5 pm</td><td>4.50 pm</td><td>8.43 pm</td></tr>
+<tr><td>9.5 am</td><td>1.20 pm</td><td>5.5 pm</td><td>9.0 pm</td></tr>
+<tr><td>9.20 am</td><td>1.35 pm</td><td>5.20 pm</td><td>9.20 pm</td></tr>
+<tr><td>9.40 am</td><td>1.50 pm</td><td>5.35 pm</td><td>9.35 pm</td></tr>
+<tr><td>9.43 am</td><td>2.5 pm</td><td>5.50 pm</td><td>9.50 pm</td></tr>
+<tr><td>10.0 am</td><td>2.20 pm</td><td>6.5 pm</td><td>10.5 pm</td></tr>
+<tr><td>10.16 am</td><td>2.35 pm</td><td>6.20 pm</td><td>10.36 pm</td></tr>
+<tr><td>10.36 am</td><td>2.50 pm</td><td>6.35 pm</td><td class="e">*10.50 pm</td></tr>
+<tr><td>10.56 am</td><td>3.5 pm</td><td>6.50 pm</td><td class="e">*11.10 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>R</b> Railway. <b>*</b> subject to entertainments.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FRIDAY -->
+                <div class="day-content fri">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Quarry Hill</div>
+                                <div class="tt-day">Friday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td>11.40 am</td><td>2.50 pm</td><td>5.40 pm</td><td>8.30 pm</td></tr>
+<tr><td>12.3 pm</td><td>3.0 pm</td><td>5.50 pm</td><td>8.40 pm</td></tr>
+<tr><td>12.20 pm</td><td>3.10 pm</td><td>6.0 pm</td><td>8.50 pm</td></tr>
+<tr><td class="d">D12.30 pm</td><td>3.20 pm</td><td>6.10 pm</td><td>9.0 pm</td></tr>
+<tr><td class="d">D12.40 pm</td><td>3.30 pm</td><td>6.20 pm</td><td>9.10 pm</td></tr>
+<tr><td>12.50 pm</td><td>3.40 pm</td><td>6.30 pm</td><td>9.20 pm</td></tr>
+<tr><td>1.1 pm</td><td>3.50 pm</td><td>6.40 pm</td><td>9.30 pm</td></tr>
+<tr><td>1.10 pm</td><td>4.0 pm</td><td>6.50 pm</td><td>9.40 pm</td></tr>
+<tr><td>1.20 pm</td><td>4.10 pm</td><td>7.0 pm</td><td>10.0 pm</td></tr>
+<tr><td>1.30 pm</td><td>4.20 pm</td><td>7.10 pm</td><td>10.20 pm</td></tr>
+<tr><td>1.40 pm</td><td>4.30 pm</td><td>7.20 pm</td><td>10.20 pm</td></tr>
+<tr><td>1.50 pm</td><td>4.40 pm</td><td>7.30 pm</td><td>10.30 pm</td></tr>
+<tr><td>2.0 pm</td><td>5.0 pm</td><td>7.40 pm</td><td class="e">*10.40 pm</td></tr>
+<tr><td>2.10 pm</td><td>5.10 pm</td><td>7.50 pm</td><td class="e">*10.50 pm</td></tr>
+<tr><td>2.20 pm</td><td>5.20 pm</td><td>8.0 pm</td><td class="e">*11.0 pm</td></tr>
+<tr><td>2.30 pm</td><td>5.30 pm</td><td>8.10 pm</td><td class="e">*11.10 pm</td></tr>
+<tr><td>2.40 pm</td><td></td><td>8.20 pm</td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments. <b>D</b> from Depot.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Quarry Hill to City</div>
+                                <div class="tt-day">Friday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave Q.H.</th><th>Leave Q.H.</th><th>Leave Q.H.</th><th>Leave Q.H.</th></tr></thead>
+                                    <tbody>
+<tr><td>11.16 am</td><td>2.50 pm</td><td>5.40 pm</td><td>8.30 pm</td></tr>
+<tr><td>11.36 am</td><td>3.0 pm</td><td>5.50 pm</td><td>8.40 pm</td></tr>
+<tr><td>11.50 am</td><td>3.10 pm</td><td>6.0 pm</td><td>8.50 pm</td></tr>
+<tr><td class="d">D12.16 pm</td><td>3.20 pm</td><td>6.10 pm</td><td>9.0 pm</td></tr>
+<tr><td>12.30 pm</td><td>3.30 pm</td><td>6.20 pm</td><td>9.10 pm</td></tr>
+<tr><td>12.40 pm</td><td>3.40 pm</td><td>6.30 pm</td><td>9.20 pm</td></tr>
+<tr><td>12.50 pm</td><td>3.50 pm</td><td>6.40 pm</td><td>9.30 pm</td></tr>
+<tr><td>1.3 pm</td><td>4.0 pm</td><td>6.50 pm</td><td>9.40 pm</td></tr>
+<tr><td>1.10 pm</td><td>4.10 pm</td><td>7.0 pm</td><td>9.50 pm</td></tr>
+<tr><td>1.20 pm</td><td>4.20 pm</td><td>7.10 pm</td><td>10.0 pm</td></tr>
+<tr><td>1.30 pm</td><td>4.30 pm</td><td>7.20 pm</td><td>10.10 pm</td></tr>
+<tr><td>1.40 pm</td><td>4.40 pm</td><td>7.30 pm</td><td>10.20 pm</td></tr>
+<tr><td>1.50 pm</td><td>4.50 pm</td><td>7.40 pm</td><td>10.30 pm</td></tr>
+<tr><td>2.0 pm</td><td>5.0 pm</td><td>7.50 pm</td><td class="e">*10.40 pm</td></tr>
+<tr><td>2.10 pm</td><td>5.10 pm</td><td>8.0 pm</td><td class="e">*10.50 pm</td></tr>
+<tr><td>2.20 pm</td><td>5.20 pm</td><td>8.10 pm</td><td class="e">*11.0 pm</td></tr>
+<tr><td>2.30 pm</td><td>5.30 pm</td><td>8.20 pm</td><td class="e">*11.10 pm</td></tr>
+<tr><td>2.40 pm</td><td></td><td></td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments. <b>D</b> from Depot.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SATURDAY -->
+                <div class="day-content sat">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Quarry Hill</div>
+                                <div class="tt-day">Saturday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td>9.5 am</td><td>12.30 pm</td><td>4.35 pm</td><td>8.20 pm</td></tr>
+<tr><td>9.20 am</td><td>12.40 pm</td><td>4.50 pm</td><td>8.30 pm</td></tr>
+<tr><td>9.35 am</td><td>12.50 pm</td><td>5.5 pm</td><td>8.40 pm</td></tr>
+<tr><td>9.50 am</td><td>1.0 pm</td><td>5.20 pm</td><td>8.50 pm</td></tr>
+<tr><td>10.5 am</td><td>1.10 pm</td><td>5.35 pm</td><td>9.0 pm</td></tr>
+<tr><td>10.20 am</td><td>1.20 pm</td><td>5.50 pm</td><td>9.10 pm</td></tr>
+<tr><td class="d">D10.30 am</td><td>1.35 pm</td><td>6.5 pm</td><td>9.20 pm</td></tr>
+<tr><td>10.40 am</td><td>1.50 pm</td><td>6.20 pm</td><td>9.30 pm</td></tr>
+<tr><td>10.50 am</td><td>2.5 pm</td><td>6.30 pm</td><td>9.40 pm</td></tr>
+<tr><td>11.0 am</td><td>2.20 pm</td><td>6.35 pm</td><td>9.50 pm</td></tr>
+<tr><td>11.10 am</td><td>2.35 pm</td><td class="d">D7.0 pm</td><td>10.0 pm</td></tr>
+<tr><td>11.20 am</td><td>2.50 pm</td><td>7.10 pm</td><td class="e">*10.10 pm</td></tr>
+<tr><td>11.30 am</td><td>3.5 pm</td><td>7.20 pm</td><td class="e">*10.20 pm</td></tr>
+<tr><td>11.40 am</td><td>3.20 pm</td><td>7.30 pm</td><td class="e">*10.30 pm</td></tr>
+<tr><td>11.50 am</td><td>3.35 pm</td><td>7.40 pm</td><td class="e">*10.40 pm</td></tr>
+<tr><td>12.0 pm</td><td>3.50 pm</td><td>7.50 pm</td><td class="e">*10.50 pm</td></tr>
+<tr><td>12.10 pm</td><td>4.5 pm</td><td>8.0 pm</td><td class="e">*11.0 pm</td></tr>
+<tr><td>12.20 pm</td><td>4.20 pm</td><td>8.10 pm</td><td class="e">*11.10 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments. <b>D</b> from Depot. <b>†</b> to Depot.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Quarry Hill to City</div>
+                                <div class="tt-day">Saturday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div style="background:#e8dcc4; padding:8px 10px; margin-bottom:10px; border-left:4px solid #8b7355; font-size:11px; font-style:italic;"><b>Note:</b> Trams run as Monday-Thursday schedule until afternoon, then this extended schedule begins. Switch to Mon-Thu tab for morning times.</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave Q.H.</th><th>Leave Q.H.</th><th>Leave Q.H.</th><th>Leave Q.H.</th></tr></thead>
+                                    <tbody>
+<tr><td>9.20 am</td><td>12.40 pm</td><td>4.50 pm</td><td>8.30 pm</td></tr>
+<tr><td>9.36 am</td><td>12.50 pm</td><td>5.5 pm</td><td>8.40 pm</td></tr>
+<tr><td>9.50 am</td><td>1.0 pm</td><td>5.20 pm</td><td>8.50 pm</td></tr>
+<tr><td>10.1 am</td><td>1.10 pm</td><td>5.35 pm</td><td>9.0 pm</td></tr>
+<tr><td>10.20 am</td><td>1.20 pm</td><td>5.50 pm</td><td>9.10 pm</td></tr>
+<tr><td>10.30 am</td><td>1.35 pm</td><td>6.5 pm</td><td>9.20 pm</td></tr>
+<tr><td>10.40 am</td><td>1.50 pm</td><td>6.5 pm</td><td>9.30 pm</td></tr>
+<tr><td>10.50 am</td><td>2.5 pm</td><td>6.20 pm</td><td>9.40 pm</td></tr>
+<tr><td>11.0 am</td><td>2.20 pm</td><td>6.30 pm</td><td>9.50 pm</td></tr>
+<tr><td>11.10 am</td><td>2.35 pm</td><td>6.35 pm</td><td>10.0 pm</td></tr>
+<tr><td>11.20 am</td><td>2.50 pm</td><td>7.0 pm</td><td>10.10 pm</td></tr>
+<tr><td>11.30 am</td><td>3.5 pm</td><td>7.10 pm</td><td>10.20 pm</td></tr>
+<tr><td>11.40 am</td><td>3.20 pm</td><td>7.20 pm</td><td>10.30 pm</td></tr>
+<tr><td>11.50 am</td><td>3.35 pm</td><td>7.30 pm</td><td class="e">*10.40 pm</td></tr>
+<tr><td>12.0 pm</td><td>3.50 pm</td><td>7.40 pm</td><td class="e">*10.50 pm</td></tr>
+<tr><td class="d">†12.14 pm</td><td>4.5 pm</td><td>7.50 pm</td><td class="e">*11.0 pm</td></tr>
+<tr><td>12.20 pm</td><td>4.20 pm</td><td>8.0 pm</td><td class="e">*11.10 pm</td></tr>
+<tr><td>12.30 pm</td><td>4.35 pm</td><td>8.20 pm</td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>*</b> subject to entertainments. <b>†</b> to Depot.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUNDAY -->
+                <div class="day-content sun">
+                    <div class="two-col">
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">Out</div>
+                                <div class="tt-route">City to Quarry Hill</div>
+                                <div class="tt-day">Sunday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave City:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave City</th><th>Leave City</th><th>Leave City</th><th>Leave City</th></tr></thead>
+                                    <tbody>
+<tr><td class="r">‡8.25 am</td><td>3.50 pm</td><td>6.20 pm</td><td>8.35 pm</td></tr>
+<tr><td class="d">D§11.37 pm</td><td>4.5 pm</td><td>6.35 pm</td><td>8.50 pm</td></tr>
+<tr><td class="d">§12.35 pm</td><td>4.20 pm</td><td>6.50 pm</td><td>9.5 pm</td></tr>
+<tr><td class="d">D2.5 pm</td><td>4.35 pm</td><td>7.5 pm</td><td>9.20 pm</td></tr>
+<tr><td class="d">D2.20 pm</td><td>4.50 pm</td><td>7.20 pm</td><td>9.35 pm</td></tr>
+<tr><td class="d">D2.40 pm</td><td>5.5 pm</td><td>7.35 pm</td><td>9.50 pm</td></tr>
+<tr><td>2.50 pm</td><td>5.20 pm</td><td>7.50 pm</td><td>10.5 pm</td></tr>
+<tr><td>3.5 pm</td><td>5.35 pm</td><td>8.5 pm</td><td>10.20 pm</td></tr>
+<tr><td>3.20 pm</td><td>5.50 pm</td><td>8.20 pm</td><td>10.35 pm</td></tr>
+<tr><td>3.35 pm</td><td>6.5 pm</td><td></td><td></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>†</b> to Depot. <b>‡</b> Railway only. <b>D</b> from Depot.</div>
+                        </div>
+                        <div class="tt-block">
+                            <div class="tt-header">
+                                <div class="tt-dir">In</div>
+                                <div class="tt-route">Quarry Hill to City</div>
+                                <div class="tt-day">Sunday</div>
+                            </div>
+                            <div class="tt-content">
+                                <div class="tt-sub">Trams leave Quarry Hill:—</div>
+                                <table class="tt">
+                                    <thead><tr><th>Leave Q.H.</th><th>Leave Q.H.</th><th>Leave Q.H.</th><th>Leave Q.H.</th></tr></thead>
+                                    <tbody>
+<tr><td>2.20 pm</td><td>4.35 pm</td><td>6.50 pm</td><td>9.5 pm</td></tr>
+<tr><td>2.35 pm</td><td>4.50 pm</td><td>7.5 pm</td><td>9.20 pm</td></tr>
+<tr><td>2.50 pm</td><td>5.5 pm</td><td>7.20 pm</td><td>9.35 pm</td></tr>
+<tr><td>3.5 pm</td><td>5.20 pm</td><td>7.35 pm</td><td>9.50 pm</td></tr>
+<tr><td>3.20 pm</td><td>5.35 pm</td><td>7.50 pm</td><td>10.5 pm</td></tr>
+<tr><td>3.35 pm</td><td>5.50 pm</td><td>8.5 pm</td><td>10.20 pm</td></tr>
+<tr><td>3.50 pm</td><td>6.5 pm</td><td>8.20 pm</td><td class="e">*10.35 pm</td></tr>
+<tr><td>4.5 pm</td><td>6.20 pm</td><td>8.35 pm</td><td class="e">*10.48 pm</td></tr>
+<tr><td>4.20 pm</td><td>6.35 pm</td><td>8.50 pm</td><td class="d">†10.43 pm</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tt-legend"><b>†</b> to Depot. <b>*</b> subject to entertainments.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
             <section id="fares" class="tab-content">
-                <div class="section-header">Schedule of Fares and Charges</div>
-                
-                <div class="fares-section">
-                    <div class="fares-header">Passenger Fares</div>
-                    <div class="fares-content">
-                        <div class="fare-item">
-                            <span class="fare-description">Minimum Cash Adult Fare</span>
-                            <span class="fare-price">3d. cash</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">Between City and Eaglehawk</span>
-                            <span class="fare-price">4d. cash</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">Between City and Section Destinations Nos. 2, 3</span>
-                            <span class="fare-price">2d. (by ticket only)</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">or between Jackson Street and Eaglehawk Terminus</span>
-                            <span class="fare-price">2d. (by ticket only)</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">Between Charing Cross and Section Destination No. 1</span>
-                            <span class="fare-price">1d. (by ticket only)</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">or between Job's Gully and Eaglehawk Terminus</span>
-                            <span class="fare-price">1d. (by ticket only)</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">Children under 12 years of age</span>
-                            <span class="fare-price">1½d. cash</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">Children under 3 years of age held in arms</span>
-                            <span class="fare-price">Free</span>
-                        </div>
-                        
-                        <div class="fare-subsection">Transfers</div>
-                        <div class="fare-item">
-                            <span class="fare-description">Between Section Destinations 2, 3 on any route and Destination No. 1 on another route</span>
-                            <span class="fare-price">3d. cash</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">Between Eaglehawk and Arnold Street or Honeysuckle Street</span>
-                            <span class="fare-price">4d. cash</span>
-                        </div>
+                <div class="section-head">Schedule of Fares and Charges</div>
+                <div class="tt-block" style="margin-top:20px;">
+                    <div class="tt-header"><div class="tt-route">Adult Fares</div></div>
+                    <div class="tt-content" style="padding:15px 20px;">
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #8b7355;"><span>Minimum Cash Adult Fare</span><b>3d. cash</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #8b7355;"><span>Between City &amp; Eaglehawk</span><b>4d. cash</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #8b7355;"><span>Between City and Section Destinations Nos. 2.3</span><b>2d. (by ticket only)</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #8b7355;"><span>Between Charing Cross and Section Destination No. 1</span><b>1d. (by ticket only)</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #8b7355;"><span>Children under 12 years of age</span><b>1½d. cash</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;"><span>Children under 3 years of age held in arms</span><b>Free</b></div>
                     </div>
                 </div>
-
-                <div class="fares-section">
-                    <div class="fares-header">Luggage or Parcels</div>
-                    <div class="fares-content">
-                        <div class="fare-item">
-                            <span class="fare-description">In charge of passenger — not exceeding 28 lbs. or 18 in. × 18 in.</span>
-                            <span class="fare-price">Free</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">Exceeding above weight or dimensions</span>
-                            <span class="fare-price">3d. minimum</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">In charge of conductor (arrangements made for collection)</span>
-                            <span class="fare-price">3d. cash</span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">Newspaper packages — Books of 50 tickets at Commission's office</span>
-                            <span class="fare-price">8/4</span>
-                        </div>
+                <div class="tt-block">
+                    <div class="tt-header"><div class="tt-route">Transfers</div></div>
+                    <div class="tt-content" style="padding:15px 20px;">
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #8b7355;"><span>Between Section Destinations 2.3 on any route and Destination No. 1 on another</span><b>3d. cash</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;"><span>Between Eaglehawk and Arnold Street or Honeysuckle Street</span><b>4d. cash</b></div>
                     </div>
                 </div>
-
-                <div class="fares-section">
-                    <div class="fares-header">Special Tickets</div>
-                    <div class="fares-content">
-                        <div class="fare-item">
-                            <span class="fare-description">Scholars', Tourist, and Weekly Tickets available at concession rates.</span>
-                            <span class="fare-price"></span>
-                        </div>
-                        <div class="fare-item">
-                            <span class="fare-description">For information apply to conductors or at Commission's office.</span>
-                            <span class="fare-price"></span>
-                        </div>
+                <div class="tt-block">
+                    <div class="tt-header"><div class="tt-route">Luggage or Parcels</div></div>
+                    <div class="tt-content" style="padding:15px 20px;">
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #8b7355;"><span>In charge of passenger—not exceeding 28 lbs. or 18 in. measurement</span><b>Free</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #8b7355;"><span>In charge of passenger, exceeding above</span><b>minimum 3d.</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:5px 0;"><span>In charge of conductor</span><b>3d. cash</b></div>
                     </div>
                 </div>
-
-                <div class="ad-block">
-                    <div class="ad-headline">An Electric Refrigerator</div>
-                    <div class="ad-tagline">Costs only 2d. a day to run</div>
-                    <div class="ad-illustration">[REFRIGERATOR]</div>
-                    <div class="ad-body">
-                        <span class="ad-bullet"></span>TIME after time, the low cost of an Electric Refrigerator is paid for in food saved. And what a tempting variety of summer delicacies you'll be able to serve, quickly and easily.
-                    </div>
-                    <div class="ad-authority">State Electricity Commission of Victoria</div>
-                    <div class="ad-dept">Electricity Supply Department</div>
-                </div>
+                <p style="font-size:12px;margin-top:15px;font-style:italic;">Scholars', Tourist, and Weekly Tickets are available at concession rates. For information apply to conductors or at Commission's office.</p>
             </section>
 
             <!-- REGULATIONS TAB -->
             <section id="regulations" class="tab-content">
-                <div class="section-header">Regulations & Information</div>
-                
-                <div class="official-notice" data-notice-id="Form PT-17/1940">
-                    <p class="notice-text">The Commission accepts no responsibility for any delay which may occur from any cause whatsoever, and reserves to itself the right to alter this time-table without notice.</p>
-                </div>
-
-                <div class="regulations">
-                    <h4>Passengers Would Facilitate Traffic By—</h4>
-                    <ul>
-                        <li>Distinctly hailing tram at stopping place.</li>
-                        <li>Waiting for passengers to alight before boarding tram.</li>
-                        <li>Not standing at entrance to tram.</li>
-                        <li>Having correct fare ready for conductor.</li>
-                        <li>Promptly and clearly notifying conductor of desired destination.</li>
-                        <li>Always keeping check ready for inspection throughout journey.</li>
-                        <li>Destroying check after leaving tram.</li>
-                        <li>Assisting the motorman and conductors in the observance of the by-laws and regulations.</li>
-                        <li>Immediately reporting to the office any complaints against the Commission's servants.</li>
-                    </ul>
-                    <p><em>Issued subject to the By-laws.</em></p>
-
-                    <h4>Lost Property</h4>
-                    <p>All articles found in the tram must be handed to the conductor. Passengers losing any article whilst travelling on trams are requested to make application for the return of same at the Commission's office.</p>
-
-                    <h4>Legend</h4>
-                    <p><strong>D</strong> — denotes from Depot.</p>
-                    <p><strong>†</strong> — denotes to Depot.</p>
-                    <p><strong>R</strong> — denotes Railway Station.</p>
-                    <p><strong>‡</strong> — to Railway Station only.</p>
-                    <p><strong>*</strong> — subject to times of arrival of train, or subject to terminating times of entertainments.</p>
-                </div>
-
-                <div class="ad-block">
-                    <div class="ad-headline">Warm as Toast—</div>
-                    <div class="ad-tagline">in an instant</div>
-                    <div class="ad-illustration">[ELECTRIC FIRE]</div>
-                    <div class="ad-body">
-                        <span class="ad-bullet"></span>Delightful warmth at the snap of a switch with an Electric Fire. Handy — economical — clean — efficient.
+                <div class="section-head">Regulations & Information</div>
+                <div class="tt-block" style="margin-top:20px;">
+                    <div class="tt-header"><div class="tt-route">Passenger Conduct</div></div>
+                    <div class="tt-content" style="padding:15px 20px;font-size:13px;line-height:1.6;">
+                        <p style="margin-bottom:10px;">Passengers would facilitate traffic by distinctly hailing the tram at stopping place, having correct fare ready for conductor, and promptly notifying conductor of desired destination.</p>
+                        <p style="margin-bottom:10px;">Intending passengers must not board or alight from a moving car. Passengers must not interfere with any part of the car equipment.</p>
+                        <p>Smoking is not permitted in enclosed cars. Spitting on cars is strictly prohibited.</p>
                     </div>
-                    <div class="ad-authority">State Electricity Commission of Victoria</div>
-                    <div class="ad-dept">Electricity Supply Department</div>
+                </div>
+                <div class="tt-block">
+                    <div class="tt-header"><div class="tt-route">Lost Property</div></div>
+                    <div class="tt-content" style="padding:15px 20px;font-size:13px;line-height:1.6;">
+                        <p>All articles found in the tram must be handed to the conductor. Passengers losing any article whilst travelling on trams are requested to make application for the return of same at the Commission's office.</p>
+                    </div>
+                </div>
+                <div class="tt-block">
+                    <div class="tt-header"><div class="tt-route">Timetable Legend</div></div>
+                    <div class="tt-content" style="padding:15px 20px;font-size:13px;line-height:1.8;">
+                        <p><b style="color:#1e3a5f;">D</b> — denotes from Depot</p>
+                        <p><b style="color:#1e3a5f;">†</b> — denotes to Depot</p>
+                        <p><b style="color:#2d4a2d;">R</b> — denotes Railway Station</p>
+                        <p><b style="color:#8b2020;">*</b> — subject to terminating times of entertainments</p>
+                        <p><b style="color:#2d4a2d;">‡</b> — to Railway Station only</p>
+                    </div>
                 </div>
             </section>
-            <!-- ENQUIRY TAB -->
-            <section id="enquiry" class="tab-content">
-                <div class="section-header">Enquiry Form</div>
-                
-                <div class="enquiry-form">
-                    <div class="form-header">Request Route Information</div>
-                    <div class="form-row">
-                        <label class="form-label">Origin:</label>
-                        <select class="form-select">
-                            <option value="">— Select Departure —</option>
-                            <option value="city">City (Pall Mall)</option>
-                            <option value="eaglehawk">Eaglehawk Terminus</option>
-                            <option value="quarry">Quarry Hill Terminus</option>
-                            <option value="weeroona">Lake Weeroona Terminus</option>
-                            <option value="golden">Golden Square Terminus</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Destination:</label>
-                        <select class="form-select">
-                            <option value="">— Select Arrival —</option>
-                            <option value="city">City (Pall Mall)</option>
-                            <option value="eaglehawk">Eaglehawk Terminus</option>
-                            <option value="quarry">Quarry Hill Terminus</option>
-                            <option value="weeroona">Lake Weeroona Terminus</option>
-                            <option value="golden">Golden Square Terminus</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Date:</label>
-                        <input type="text" class="form-input" placeholder="e.g. Monday, 17th June">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Time:</label>
-                        <input type="text" class="form-input" placeholder="e.g. 9.30 a.m.">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Name:</label>
-                        <input type="text" class="form-input">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Address:</label>
-                        <input type="text" class="form-input">
-                    </div>
-                    <button type="submit" class="form-submit">Submit Enquiry</button>
-                </div>
 
-                <div class="official-notice" data-notice-id="Notice">
-                    <p class="notice-text">For further information, apply in person or by post to the Tramway Offices, Hargreaves Street, Bendigo. Telephone: Bendigo 234.</p>
-                </div>
-
-                <div class="ad-block">
-                    <div class="ad-headline">Hot Water on Tap!</div>
-                    <div class="ad-tagline">Day or night, any time</div>
-                    <div class="ad-illustration">[HOT WATER TAP]</div>
-                    <div class="ad-body"><span class="ad-bullet"></span>Scalding water at the turn of a tap, for only 1¾d. per person per day. Once installed, its operation is entirely automatic.</div>
-                    <div class="ad-authority">State Electricity Commission of Victoria</div>
-                    <div class="ad-dept">Electricity Supply Department</div>
-                </div>
-            </section>
         </main>
 
-        <!-- Footer -->
-        <footer class="page-footer">
-            <div class="footer-authority">State Electricity Commission of Victoria</div>
-            <div class="footer-address">Tramway Offices · Hargreaves Street · Bendigo</div>
+        <footer class="footer">
+            <div class="footer-auth">State Electricity Commission of Victoria</div>
+            <div class="footer-addr">Tramway Offices · Hargreaves Street · Bendigo</div>
             <div class="footer-stamp">Form PT-17/1940 · Printed by Authority · June 1940</div>
         </footer>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        // Tab navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(this.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Day selector - route-specific
+        document.querySelectorAll('.day-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const route = this.dataset.route;
+                const day = this.dataset.day;
+                
+                // Only update buttons in this route's section
+                const parentSection = this.closest('.tab-content');
+                parentSection.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Only show day-content within this route's section
+                parentSection.querySelectorAll('.day-content').forEach(c => c.classList.remove('active'));
+                parentSection.querySelectorAll('.day-content.' + day).forEach(c => c.classList.add('active'));
+            });
+        });
+    </script>
 </body>
 </html>
