@@ -1,80 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ayi haught leader dot com</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
+<title>ayi haught leeder</title>
 
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, 
-                #1a1a2e 0%, 
-                #16213e 25%, 
-                #0f3460 50%, 
-                #1a1a2e 75%, 
-                #16213e 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
+<style>
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            25% {
-                background-position: 50% 100%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            75% {
-                background-position: 50% 0%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
+/* Full screen background image */
+body {
+  height: 100vh;
+  font-family: Helvetica, Arial, sans-serif;
+  background: url("rocketrally.png") center center / cover no-repeat fixed;
+  overflow: hidden;
+  position: relative;
+  color: white;
+}
 
-        .container {
-            text-align: right;
-            user-select: none;
-            padding-right: 8vw;
-        }
+/* Subtle animated red gradient overlay */
+body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
 
-        h1 {
-            color: white;
-            font-weight: 700;
-            font-size: clamp(3rem, 12vw, 8rem);
-            line-height: 1.1;
-            letter-spacing: -0.02em;
-            text-transform: lowercase;
-        }
+  background: linear-gradient(
+    to top,
+    rgba(180, 0, 0, 0.55) 0%,
+    rgba(180, 0, 0, 0.35) 20%,
+    rgba(180, 0, 0, 0.15) 35%,
+    rgba(0, 0, 0, 0) 60%
+  );
 
-        .line {
-            display: block;
-        }
-    </style>
+  animation: slowDrift 14s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+/* Slow movement so it feels alive but subtle */
+@keyframes slowDrift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-25px);
+  }
+}
+
+/* Optional content container */
+.content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding: 60px;
+}
+
+/* Example title styling */
+h1 {
+  font-size: clamp(28px, 5vw, 64px);
+  letter-spacing: 2px;
+  font-weight: 700;
+  text-transform: lowercase;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>
-            <span class="line">ayi haught-leeder</span>
-            <span class="line">dot com</span>
-        </h1>
-    </div>
+
+<div class="content">
+  <h1>ayi haught leeder dot com</h1>
+</div>
+
 </body>
 </html>
