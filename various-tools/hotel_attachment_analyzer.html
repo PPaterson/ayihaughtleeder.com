@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Attachment Analyzer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        h1 {
+            color: #000;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+        
+        .methodology {
+            background: #fff;
+            border-left: 4px solid #17BE17;
+            padding: 16px 20px;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+        
+        .methodology h3 {
+            margin: 0 0 12px 0;
+            color: #17BE17;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        
+        .methodology p {
+            margin: 0 0 8px 0;
+            line-height: 1.5;
+        }
+        
+        .methodology ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        .methodology li {
+            margin-bottom: 4px;
+        }
+        
+        .methodology code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+        
+        .section {
+            background: #fff;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            color: #000;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #00DE00;
+        }
+        
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area:hover {
+            border-color: #17BE17;
+            background: #f9fff9;
+        }
+        
+        .upload-area.dragover {
+            border-color: #00DE00;
+            background: #f0fff0;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .upload-hint {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        /* Config */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .config-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #505050;
+            font-weight: 500;
+        }
+        
+        .config-group input, .config-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .config-group input:focus, .config-group select:focus {
+            outline: none;
+            border-color: #17BE17;
+        }
+        
+        .destination-inputs {
+            margin-top: 16px;
+        }
+        
+        .destination-inputs label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #505050;
+            font-weight: 500;
+        }
+        
+        .destination-inputs input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .destination-inputs .hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        .btn {
+            background: #00DE00;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: #17BE17;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* Status */
+        .status {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .status.info {
+            background: #e8f4fd;
+            color: #0066cc;
+        }
+        
+        .status.success {
+            background: #e8fde8;
+            color: #17BE17;
+        }
+        
+        .status.error {
+            background: #fde8e8;
+            color: #cc0000;
+        }
+        
+        /* Results */
+        .results {
+            margin-top: 24px;
+        }
+        
+        .results h3 {
+            margin: 24px 0 16px 0;
+            font-size: 16px;
+            color: #17BE17;
+            text-transform: uppercase;
+        }
+        
+        .results h3:first-child {
+            margin-top: 0;
+        }
+        
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        
+        .summary-table th {
+            background: #000;
+            color: #fff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .summary-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .summary-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .summary-table .change-cell {
+            font-weight: 600;
+        }
+        
+        .change-positive { color: #17BE17; }
+        .change-negative { color: #CC0000; }
+        .change-neutral { color: #FF8C00; }
+        
+        .detail {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #17BE17;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hotel Attachment Analyzer</h1>
+    <p class="subtitle">FCM Travel | Quarterly Business Review Analysis Tool</p>
+    
+    <div class="methodology">
+        <h3>Methodology</h3>
+        <p><strong>Hotel Attachment Rate</strong> measures what percentage of air trips have a hotel booking.</p>
+        <p>A trip has hotel attachment when the <strong>same traveller</strong> has a hotel booking with dates that <strong>overlap</strong> the air travel dates.</p>
+        <p>For destination city analysis, the hotel must be booked <strong>in that destination city</strong> during the trip dates.</p>
+        <p><strong>Required columns in your Excel file:</strong></p>
+        <ul>
+            <li><code>Travel Type</code> - AIR or HOTEL</li>
+            <li><code>Transaction</code> - TICKET for air, INVOICE for hotel</li>
+            <li><code>Traveller</code> - Traveller name</li>
+            <li><code>Start Date</code> - Trip/stay start date</li>
+            <li><code>End Date</code> - Trip/stay end date</li>
+            <li><code>Book Country</code> - Booking country (for focus markets)</li>
+            <li><code>End City</code> - Destination city (for air)</li>
+            <li><code>Start City</code> - Hotel city (for hotels)</li>
+            <li><code>Hotel Nights</code> - Number of nights</li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h2>Upload Data</h2>
+        
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click();">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Click to upload or drag and drop</div>
+            <div class="upload-hint">Excel file (.xlsx) with Air & Hotel data</div>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" onchange="handleFile(this.files[0])">
+        
+        <div class="config-grid">
+            <div class="config-group">
+                <label>Period 1 Name</label>
+                <input type="text" id="period1Name" value="Jul-Sep">
+            </div>
+            <div class="config-group">
+                <label>Period 2 Name</label>
+                <input type="text" id="period2Name" value="Oct-Dec">
+            </div>
+            <div class="config-group">
+                <label>Period 1 Months (comma-separated)</label>
+                <input type="text" id="period1Months" value="7,8,9" placeholder="e.g. 7,8,9">
+            </div>
+            <div class="config-group">
+                <label>Period 2 Months (comma-separated)</label>
+                <input type="text" id="period2Months" value="10,11,12" placeholder="e.g. 10,11,12">
+            </div>
+        </div>
+        
+        <div class="config-group">
+            <label>Focus Markets (comma-separated Book Countries)</label>
+            <input type="text" id="focusMarkets" value="UNITED STATES, AUSTRALIA, UNITED KINGDOM, INDIA">
+        </div>
+        
+        <div class="destination-inputs">
+            <label>Destination Cities (comma-separated)</label>
+            <input type="text" id="destinationCities" value="LAS VEGAS, SYDNEY, LONDON, BARCELONA, DELHI">
+            <div class="hint">These are matched against the "End City" column for air tickets and "Start City" for hotels</div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button class="btn" id="analyzeBtn" onclick="runAnalysis()" disabled>Analyze</button>
+        </div>
+        
+        <div id="status" class="status info hidden"></div>
+    </div>
+    
+    <div id="loadingSection" class="section hidden">
+        <div class="loading">
+            <div class="spinner"></div>
+            <div>Analyzing data...</div>
+        </div>
+    </div>
+    
+    <div id="resultsSection" class="section hidden">
+        <h2>Results</h2>
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        let rawData = null;
+        
+        // Drag and drop
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        });
+        
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.classList.remove('hidden');
+        }
+        
+        function handleFile(file) {
+            if (!file) return;
+            
+            showStatus(`Loading ${file.name}...`, 'info');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                    const sheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[sheetName];
+                    rawData = XLSX.utils.sheet_to_json(sheet);
+                    
+                    showStatus(`Loaded ${rawData.length.toLocaleString()} rows from ${file.name}`, 'success');
+                    document.getElementById('analyzeBtn').disabled = false;
+                    document.getElementById('uploadArea').querySelector('.upload-text').textContent = file.name;
+                } catch (err) {
+                    showStatus(`Error loading file: ${err.message}`, 'error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function parseDate(val) {
+            if (!val) return null;
+            if (val instanceof Date) return val;
+            if (typeof val === 'number') {
+                // Excel serial date
+                return new Date((val - 25569) * 86400 * 1000);
+            }
+            return new Date(val);
+        }
+        
+        function getMonth(date) {
+            const d = parseDate(date);
+            return d ? d.getMonth() + 1 : null;
+        }
+        
+        function datesOverlap(start1, end1, start2, end2) {
+            const s1 = parseDate(start1);
+            const e1 = parseDate(end1);
+            const s2 = parseDate(start2);
+            const e2 = parseDate(end2);
+            
+            if (!s1 || !e1 || !s2 || !e2) return false;
+            return s1 <= e2 && e1 >= s2;
+        }
+        
+        function runAnalysis() {
+            if (!rawData) return;
+            
+            document.getElementById('loadingSection').classList.remove('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            
+            // Use setTimeout to allow UI to update
+            setTimeout(() => {
+                try {
+                    const results = analyze();
+                    displayResults(results);
+                } catch (err) {
+                    showStatus(`Error during analysis: ${err.message}`, 'error');
+                }
+                document.getElementById('loadingSection').classList.add('hidden');
+            }, 100);
+        }
+        
+        function analyze() {
+            const p1Name = document.getElementById('period1Name').value;
+            const p2Name = document.getElementById('period2Name').value;
+            const p1Months = document.getElementById('period1Months').value.split(',').map(m => parseInt(m.trim()));
+            const p2Months = document.getElementById('period2Months').value.split(',').map(m => parseInt(m.trim()));
+            const focusMarkets = document.getElementById('focusMarkets').value.split(',').map(m => m.trim().toUpperCase());
+            const destCities = document.getElementById('destinationCities').value.split(',').map(c => c.trim().toUpperCase());
+            
+            // Separate air and hotel
+            const airTickets = rawData.filter(r => 
+                String(r['Travel Type']).toUpperCase() === 'AIR' && 
+                String(r['Transaction']).toUpperCase() === 'TICKET'
+            );
+            
+            const hotelBookings = rawData.filter(r => 
+                String(r['Travel Type']).toUpperCase() === 'HOTEL' && 
+                parseFloat(r['Hotel Nights']) > 0
+            );
+            
+            // Build hotel lookup by traveller
+            const hotelsByTraveller = {};
+            hotelBookings.forEach(h => {
+                const traveller = h['Traveller'];
+                if (!traveller) return;
+                if (!hotelsByTraveller[traveller]) hotelsByTraveller[traveller] = [];
+                hotelsByTraveller[traveller].push({
+                    startDate: h['Start Date'],
+                    endDate: h['End Date'],
+                    city: String(h['Start City'] || '').toUpperCase()
+                });
+            });
+            
+            // Check hotel attachment for each air ticket
+            const airWithAttachment = airTickets.map(air => {
+                const traveller = air['Traveller'];
+                const airStart = air['Start Date'];
+                const airEnd = air['End Date'];
+                const month = getMonth(air['Start Date']);
+                const endCity = String(air['End City'] || '').toUpperCase();
+                const bookCountry = String(air['Book Country'] || '').toUpperCase();
+                const domInt = String(air['Dom | Int'] || '').toUpperCase();
+                
+                let period = null;
+                if (p1Months.includes(month)) period = p1Name;
+                else if (p2Months.includes(month)) period = p2Name;
+                
+                let hasHotel = false;
+                let hasHotelInDest = false;
+                
+                const travHotels = hotelsByTraveller[traveller] || [];
+                for (const hotel of travHotels) {
+                    if (datesOverlap(airStart, airEnd, hotel.startDate, hotel.endDate)) {
+                        hasHotel = true;
+                        if (hotel.city === endCity) {
+                            hasHotelInDest = true;
+                        }
+                    }
+                }
+                
+                return {
+                    ...air,
+                    period,
+                    endCity,
+                    bookCountry,
+                    domInt,
+                    market: domInt === 'DOMESTIC' ? 'Domestic' : 'International',
+                    hasHotel,
+                    hasHotelInDest
+                };
+            }).filter(a => a.period); // Only include records in our periods
+            
+            // Calculate results
+            const results = {
+                p1Name,
+                p2Name,
+                allMarkets: calculateAttachment(airWithAttachment, p1Name, p2Name),
+                byMarketType: {
+                    Domestic: calculateAttachment(airWithAttachment.filter(a => a.market === 'Domestic'), p1Name, p2Name),
+                    International: calculateAttachment(airWithAttachment.filter(a => a.market === 'International'), p1Name, p2Name)
+                },
+                focusMarkets: {},
+                destinations: {}
+            };
+            
+            // Focus markets
+            focusMarkets.forEach(market => {
+                const marketData = airWithAttachment.filter(a => a.bookCountry === market);
+                if (marketData.length > 0) {
+                    results.focusMarkets[market] = {
+                        all: calculateAttachment(marketData, p1Name, p2Name),
+                        Domestic: calculateAttachment(marketData.filter(a => a.market === 'Domestic'), p1Name, p2Name),
+                        International: calculateAttachment(marketData.filter(a => a.market === 'International'), p1Name, p2Name)
+                    };
+                }
+            });
+            
+            // Destination cities
+            destCities.forEach(city => {
+                const cityData = airWithAttachment.filter(a => a.endCity === city);
+                if (cityData.length > 0) {
+                    results.destinations[city] = calculateDestAttachment(cityData, p1Name, p2Name);
+                }
+            });
+            
+            return results;
+        }
+        
+        function calculateAttachment(data, p1Name, p2Name) {
+            const p1 = data.filter(d => d.period === p1Name);
+            const p2 = data.filter(d => d.period === p2Name);
+            
+            const p1Total = p1.length;
+            const p1Hotels = p1.filter(d => d.hasHotel).length;
+            const p1Rate = p1Total > 0 ? (p1Hotels / p1Total * 100) : 0;
+            
+            const p2Total = p2.length;
+            const p2Hotels = p2.filter(d => d.hasHotel).length;
+            const p2Rate = p2Total > 0 ? (p2Hotels / p2Total * 100) : 0;
+            
+            return {
+                p1: { total: p1Total, hotels: p1Hotels, rate: p1Rate },
+                p2: { total: p2Total, hotels: p2Hotels, rate: p2Rate },
+                change: p2Rate - p1Rate
+            };
+        }
+        
+        function calculateDestAttachment(data, p1Name, p2Name) {
+            const p1 = data.filter(d => d.period === p1Name);
+            const p2 = data.filter(d => d.period === p2Name);
+            
+            const p1Total = p1.length;
+            const p1Hotels = p1.filter(d => d.hasHotelInDest).length;
+            const p1Rate = p1Total > 0 ? (p1Hotels / p1Total * 100) : 0;
+            
+            const p2Total = p2.length;
+            const p2Hotels = p2.filter(d => d.hasHotelInDest).length;
+            const p2Rate = p2Total > 0 ? (p2Hotels / p2Total * 100) : 0;
+            
+            return {
+                p1: { total: p1Total, hotels: p1Hotels, rate: p1Rate },
+                p2: { total: p2Total, hotels: p2Hotels, rate: p2Rate },
+                change: p2Rate - p1Rate
+            };
+        }
+        
+        function formatChange(change) {
+            const cls = change > 2 ? 'change-positive' : change < -2 ? 'change-negative' : 'change-neutral';
+            return `<span class="${cls}">${change >= 0 ? '+' : ''}${change.toFixed(1)}pp</span>`;
+        }
+        
+        function formatRate(data) {
+            return `${data.rate.toFixed(1)}% <span class="detail">(${data.hotels}/${data.total})</span>`;
+        }
+        
+        function displayResults(results) {
+            let html = '';
+            
+            // All Markets
+            html += `<h3>All Markets</h3>`;
+            html += `<table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Market</th>
+                        <th>${results.p1Name}</th>
+                        <th>${results.p2Name}</th>
+                        <th>Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ALL MARKETS</strong></td>
+                        <td>${formatRate(results.allMarkets.p1)}</td>
+                        <td>${formatRate(results.allMarkets.p2)}</td>
+                        <td class="change-cell">${formatChange(results.allMarkets.change)}</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;&nbsp;&nbsp;Domestic</td>
+                        <td>${formatRate(results.byMarketType.Domestic.p1)}</td>
+                        <td>${formatRate(results.byMarketType.Domestic.p2)}</td>
+                        <td class="change-cell">${formatChange(results.byMarketType.Domestic.change)}</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;&nbsp;&nbsp;International</td>
+                        <td>${formatRate(results.byMarketType.International.p1)}</td>
+                        <td>${formatRate(results.byMarketType.International.p2)}</td>
+                        <td class="change-cell">${formatChange(results.byMarketType.International.change)}</td>
+                    </tr>
+                </tbody>
+            </table>`;
+            
+            // Focus Markets
+            html += `<h3>Focus Markets (by Book Country)</h3>`;
+            html += `<table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Market</th>
+                        <th>${results.p1Name}</th>
+                        <th>${results.p2Name}</th>
+                        <th>Change</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            for (const [market, data] of Object.entries(results.focusMarkets)) {
+                html += `
+                    <tr>
+                        <td><strong>${market}</strong></td>
+                        <td>${formatRate(data.all.p1)}</td>
+                        <td>${formatRate(data.all.p2)}</td>
+                        <td class="change-cell">${formatChange(data.all.change)}</td>
+                    </tr>`;
+                if (data.Domestic.p1.total > 0 || data.Domestic.p2.total > 0) {
+                    html += `
+                    <tr>
+                        <td>&nbsp;&nbsp;&nbsp;Domestic</td>
+                        <td>${formatRate(data.Domestic.p1)}</td>
+                        <td>${formatRate(data.Domestic.p2)}</td>
+                        <td class="change-cell">${formatChange(data.Domestic.change)}</td>
+                    </tr>`;
+                }
+                if (data.International.p1.total > 0 || data.International.p2.total > 0) {
+                    html += `
+                    <tr>
+                        <td>&nbsp;&nbsp;&nbsp;International</td>
+                        <td>${formatRate(data.International.p1)}</td>
+                        <td>${formatRate(data.International.p2)}</td>
+                        <td class="change-cell">${formatChange(data.International.change)}</td>
+                    </tr>`;
+                }
+            }
+            html += `</tbody></table>`;
+            
+            // Destination Cities
+            html += `<h3>Destination Cities</h3>`;
+            html += `<p style="font-size:13px; color:#666; margin-bottom:12px;">Trips to destination with hotel booked <strong>in that destination</strong></p>`;
+            html += `<table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Destination</th>
+                        <th>${results.p1Name}</th>
+                        <th>${results.p2Name}</th>
+                        <th>Change</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            for (const [city, data] of Object.entries(results.destinations)) {
+                html += `
+                    <tr>
+                        <td><strong>${city}</strong></td>
+                        <td>${formatRate(data.p1)}</td>
+                        <td>${formatRate(data.p2)}</td>
+                        <td class="change-cell">${formatChange(data.change)}</td>
+                    </tr>`;
+            }
+            html += `</tbody></table>`;
+            
+            document.getElementById('results').innerHTML = html;
+            document.getElementById('resultsSection').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
