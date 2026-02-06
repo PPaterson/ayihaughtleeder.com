@@ -10,42 +10,37 @@ html, body {
     margin: 0;
 }
 
-/* --- Full hero image --- */
+/* Full image, untouched */
 body {
     background: url("ChatGPT Image Feb 6, 2026, 11_37_35 PM.png") center / cover no-repeat;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     position: relative;
 }
 
-/* --- Right side vertical type --- */
-.text {
+/* Small right-side label */
+.label {
     position: absolute;
-
-    right: 60px;
+    right: 40px;
     top: 50%;
+    transform: translateY(-50%);
 
-    transform: translateY(-50%) rotate(90deg);
-    transform-origin: right center;
+    font-weight: 700; /* Helvetica Bold feel */
+    font-size: 14px;
+    letter-spacing: 1.5px;
 
-    font-weight: 900;
-    font-size: clamp(36px, 5vw, 80px);
-    letter-spacing: 4px;
+    text-transform: lowercase;
 
-    text-transform: uppercase;
+    color: #f4e8d8; /* cream pulled from poster */
 
-    /* colour pulled from poster paper */
-    color: #f4e8d8;
-
-    /* light contrast only */
-    text-shadow: 0 3px 10px rgba(0,0,0,0.45);
+    opacity: 0.95;
 }
 </style>
 </head>
 
 <body>
 
-<div class="text">
-AYI&nbsp;HAUGHT&nbsp;LEEDER&nbsp;DOT&nbsp;COM
+<div class="label">
+    ayi haught leeder dot com
 </div>
 
 </body>
