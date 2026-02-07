@@ -6,6 +6,7 @@
     <title>Domestic Fare Type Maxx 5000</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/PptxGenJS@3.12.0/dist/pptxgen.bundle.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'IBM Plex Sans', sans-serif; background-color: #F5F5F5; color: #505050; line-height: 1.6; }
@@ -28,6 +29,9 @@
         .footer { text-align: center; margin-top: 64px; padding-top: 32px; border-top: 1px solid #E5E5E5; }
         .footer p { font-weight: 300; color: #AAAAAA; }
         .footer .copyright { font-size: 0.875rem; margin-top: 4px; }
+        .ppt-button { padding: 12px 24px; background-color: #00DE00; color: white; border: none; border-radius: 50px; font-weight: 500; cursor: pointer; float: right; margin-left: 12px; }
+        .ppt-button:hover { background-color: #00C400; }
+        .reset-button { padding: 12px 24px; background-color: #E5E5E5; color: #505050; border: none; border-radius: 50px; font-weight: 500; cursor: pointer; float: right; }
     </style>
 </head>
 <body>
@@ -57,7 +61,11 @@
             <div class="card">
                 <h2 style="font-size: 2rem; font-weight: 300;">Analysis Complete</h2>
                 <p style="color: #AAAAAA;" id="totalFlights">flights analyzed</p>
-                <button onclick="resetApp()" style="padding: 12px 24px; background-color: #E5E5E5; color: #505050; border: none; border-radius: 50px; font-weight: 500; cursor: pointer; float: right;">Upload New File</button>
+                <button onclick="resetApp()" class="reset-button">Upload New File</button>
+                <button onclick="generatePPT()" class="ppt-button">
+                    <svg style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Download PPT
+                </button>
             </div>
             <div>
                 <h2 style="font-size: 2rem; font-weight: 300; margin-bottom: 32px;">Fare Class Breakdown</h2>
@@ -382,6 +390,207 @@ function updateSavingsCalculation() {
     document.getElementById('totalMilesToMove').textContent = totalMilesToMove.toLocaleString() + ' miles';
     document.getElementById('totalSavings').textContent = '$' + totalSavings.toFixed(0);
 }
+
+// ─── PPT GENERATION ─────────────────────────────────────────────────────────
+
+function generatePPT() {
+    if (!analysisData) return;
+
+    const pres = new PptxGenJS();
+    pres.layout = 'LAYOUT_16x9';
+    pres.author = 'FCM Travel';
+    pres.title = 'Domestic Fare Selection';
+
+    const slide = pres.addSlide();
+    slide.background = { color: 'FFFFFF' };
+
+    // Green left border accent
+    slide.addShape(pres.shapes.RECTANGLE, {
+        x: 0, y: 0, w: 0.08, h: 5.625,
+        fill: { color: '00DE00' }
+    });
+
+    // ── Title ──
+    slide.addText('Domestic Fare Selection', {
+        x: 0.4, y: 0.25, w: 9, h: 0.6,
+        fontSize: 28, fontFace: 'Arial', bold: true,
+        color: '333333', margin: 0
+    });
+
+    // ── Three stat cards ──
+    const d = analysisData;
+    const cards = [
+        { label: 'Restricted Economy', bg: '00DE00', pct: d.restrictedEconomy.percentage, count: d.restrictedEconomy.count, cost: d.restrictedEconomy.avgCost, cpm: d.restrictedEconomy.avgCostPerMile },
+        { label: 'Flexible Economy',   bg: '707070', pct: d.flexibleEconomy.percentage, count: d.flexibleEconomy.count, cost: d.flexibleEconomy.avgCost, cpm: d.flexibleEconomy.avgCostPerMile },
+        { label: 'Business Class',     bg: '333333', pct: d.businessClass.percentage, count: d.businessClass.count, cost: d.businessClass.avgCost, cpm: d.businessClass.avgCostPerMile }
+    ];
+
+    const cardW = 3.0;
+    const cardH = 1.65;
+    const cardGap = 0.15;
+    const cardStartX = 0.4;
+    const cardY = 1.05;
+
+    cards.forEach((c, i) => {
+        const cx = cardStartX + i * (cardW + cardGap);
+
+        // Card background
+        slide.addShape(pres.shapes.RECTANGLE, {
+            x: cx, y: cardY, w: cardW, h: cardH,
+            fill: { color: c.bg }, rectRadius: 0.06
+        });
+
+        // Card title
+        slide.addText(c.label, {
+            x: cx + 0.15, y: cardY + 0.08, w: cardW - 0.3, h: 0.3,
+            fontSize: 12, fontFace: 'Arial', bold: true,
+            color: 'FFFFFF', margin: 0
+        });
+
+        // "Flights" label
+        slide.addText('Flights', {
+            x: cx + 0.15, y: cardY + 0.35, w: 1.2, h: 0.2,
+            fontSize: 9, fontFace: 'Arial', color: 'FFFFFF', margin: 0
+        });
+
+        // "Avg Cost" label
+        slide.addText('Avg Cost', {
+            x: cx + 1.6, y: cardY + 0.35, w: 1.2, h: 0.2,
+            fontSize: 9, fontFace: 'Arial', color: 'FFFFFF', align: 'right', margin: 0
+        });
+
+        // Big percentage
+        slide.addText(c.pct + '%', {
+            x: cx + 0.15, y: cardY + 0.5, w: 1.6, h: 0.55,
+            fontSize: 36, fontFace: 'Arial', bold: true,
+            color: 'FFFFFF', margin: 0
+        });
+
+        // Avg cost value
+        slide.addText('$' + c.cost, {
+            x: cx + 1.6, y: cardY + 0.5, w: 1.2, h: 0.3,
+            fontSize: 16, fontFace: 'Arial', bold: true,
+            color: 'FFFFFF', align: 'right', margin: 0
+        });
+
+        // "Cost per Mile" label
+        slide.addText('Cost per Mile', {
+            x: cx + 1.6, y: cardY + 0.78, w: 1.2, h: 0.2,
+            fontSize: 9, fontFace: 'Arial', color: 'FFFFFF', align: 'right', margin: 0
+        });
+
+        // Cost per mile value
+        slide.addText('$' + c.cpm, {
+            x: cx + 1.6, y: cardY + 0.95, w: 1.2, h: 0.3,
+            fontSize: 16, fontFace: 'Arial', bold: true,
+            color: 'FFFFFF', align: 'right', margin: 0
+        });
+
+        // Flight count
+        slide.addText(c.count + ' flights', {
+            x: cx + 0.15, y: cardY + 1.15, w: 1.6, h: 0.25,
+            fontSize: 9, fontFace: 'Arial', color: 'FFFFFF', margin: 0
+        });
+    });
+
+    // ── Breakdown by Airline section ──
+    const brkY = 2.95;
+    slide.addText('Breakdown by Airline', {
+        x: 0.4, y: brkY, w: 5, h: 0.4,
+        fontSize: 18, fontFace: 'Arial', color: '333333', margin: 0
+    });
+
+    // Column headers
+    const colLeftX = 0.4;
+    const colRightX = 5.1;
+    const headerY = brkY + 0.45;
+
+    slide.addText('Restricted Economy', {
+        x: colLeftX, y: headerY, w: 4, h: 0.3,
+        fontSize: 11, fontFace: 'Arial', bold: true, color: '333333', margin: 0
+    });
+    slide.addText('Flexible Economy', {
+        x: colRightX, y: headerY, w: 4, h: 0.3,
+        fontSize: 11, fontFace: 'Arial', bold: true, color: '333333', margin: 0
+    });
+
+    // Airline rows
+    const airlineOrder = ['QANTAS AIRWAYS LIMITED', 'VIRGIN AUSTRALIA', 'REGIONAL EXPRESS'];
+    const airlineShort = {
+        'QANTAS AIRWAYS LIMITED': 'QANTAS',
+        'VIRGIN AUSTRALIA': 'VIRGIN AUSTRALIA',
+        'REGIONAL EXPRESS': 'REGIONAL EXPRESS'
+    };
+
+    function getSortedAirlines(breakdown) {
+        return Object.keys(breakdown).sort((a, b) => {
+            const iA = airlineOrder.indexOf(a);
+            const iB = airlineOrder.indexOf(b);
+            if (iA !== -1 && iB !== -1) return iA - iB;
+            if (iA !== -1) return -1;
+            if (iB !== -1) return 1;
+            return a.localeCompare(b);
+        });
+    }
+
+    function drawAirlineRows(breakdown, startX, startY, accentColor) {
+        const sorted = getSortedAirlines(breakdown);
+        const rowH = 0.48;
+        const rowW = 4.4;
+        sorted.forEach((airline, idx) => {
+            const stats = breakdown[airline];
+            const ry = startY + idx * (rowH + 0.08);
+            const shortName = airlineShort[airline] || airline;
+
+            // Row background
+            slide.addShape(pres.shapes.RECTANGLE, {
+                x: startX, y: ry, w: rowW, h: rowH,
+                fill: { color: 'F5F5F5' }
+            });
+
+            // Left accent bar
+            slide.addShape(pres.shapes.RECTANGLE, {
+                x: startX, y: ry, w: 0.05, h: rowH,
+                fill: { color: accentColor }
+            });
+
+            // Airline name (bold)
+            slide.addText(shortName, {
+                x: startX + 0.15, y: ry + 0.02, w: 2.5, h: 0.22,
+                fontSize: 10, fontFace: 'Arial', bold: true, color: '333333', margin: 0
+            });
+
+            // Flight count
+            slide.addText(stats.count + ' flights (' + stats.percentage + '%)', {
+                x: startX + 0.15, y: ry + 0.24, w: 2.5, h: 0.2,
+                fontSize: 8, fontFace: 'Arial', color: '999999', margin: 0
+            });
+
+            // Avg cost (right side, bold)
+            slide.addText('$' + stats.avgCost, {
+                x: startX + 2.8, y: ry + 0.02, w: 1.4, h: 0.22,
+                fontSize: 13, fontFace: 'Arial', bold: true, color: '333333',
+                align: 'right', margin: 0
+            });
+
+            // Cost per mile (right side)
+            slide.addText('$' + stats.avgCostPerMile + '/mi', {
+                x: startX + 2.8, y: ry + 0.24, w: 1.4, h: 0.2,
+                fontSize: 8, fontFace: 'Arial', color: '999999',
+                align: 'right', margin: 0
+            });
+        });
+    }
+
+    const rowStartY = headerY + 0.35;
+    drawAirlineRows(d.airlineBreakdown.restricted, colLeftX, rowStartY, '00DE00');
+    drawAirlineRows(d.airlineBreakdown.flexible, colRightX, rowStartY, '707070');
+
+    // Save
+    pres.writeFile({ fileName: 'Domestic_Fare_Selection.pptx' });
+}
+
+// ─── UTILITY ────────────────────────────────────────────────────────────────
 
 function showLoading(loading) {
     const uploadTitle = document.getElementById('uploadTitle');
