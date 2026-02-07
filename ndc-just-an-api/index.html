@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NDC: JUST AN API™</title>
+<style>
+  :root {
+    --red: #FF3B30;
+    --blue: #007AFF;
+    --yellow: #FFCC00;
+    --green: #34C759;
+    --orange: #FF9500;
+    --white: #FFFFFF;
+    --off-white: #F5F5F7;
+    --light-grey: #E8E8ED;
+    --mid-grey: #86868B;
+    --dark-grey: #1D1D1F;
+    --black: #000000;
+    --font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+    --transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font); background: var(--off-white);
+    color: var(--dark-grey); min-height: 100vh;
+    overflow-x: hidden; -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── SPLASH ── */
+  #splash {
+    position: fixed; inset: 0; z-index: 10000;
+    background: var(--black);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer; transition: opacity 0.6s ease;
+  }
+  #splash.hidden { opacity: 0; pointer-events: none; }
+  #splash h1 {
+    font-size: 3.2rem; font-weight: 700; color: var(--white);
+    letter-spacing: -1.5px; margin-bottom: 4px;
+  }
+  #splash h1 span {
+    font-size: 1rem; font-weight: 400; vertical-align: super;
+    color: var(--mid-grey); letter-spacing: 0;
+  }
+  #splash .subtitle {
+    font-size: 1.05rem; color: var(--mid-grey); font-weight: 300;
+    margin-bottom: 6px; letter-spacing: 0.5px;
+  }
+  #splash .author {
+    font-size: 0.85rem; color: #555; font-weight: 400;
+    margin-bottom: 48px; font-style: italic;
+  }
+  #splash .tagline {
+    font-size: 1.15rem; color: var(--red); font-weight: 500;
+    margin-bottom: 64px; letter-spacing: -0.2px;
+  }
+  #splash .start-hint {
+    font-size: 1rem; color: var(--white); font-weight: 500;
+    letter-spacing: 0.5px; padding: 14px 36px;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 28px; animation: pulse 2s ease-in-out infinite;
+    transition: var(--transition);
+  }
+  #splash .start-hint:hover {
+    border-color: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.05);
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ── APP SHELL ── */
+  #app { display: none; min-height: 100vh; }
+  #app.active { display: flex; flex-direction: column; }
+
+  /* ── TOP BAR ── */
+  .top-bar {
+    background: var(--white); border-bottom: 1px solid var(--light-grey);
+    padding: 16px 24px 12px; position: sticky; top: 0; z-index: 100;
+  }
+  .top-bar-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .top-bar-title {
+    font-size: 1.1rem; font-weight: 700; letter-spacing: -0.5px;
+  }
+  .top-bar-title span {
+    font-size: 0.6rem; vertical-align: super; font-weight: 400; color: var(--mid-grey);
+  }
+  .top-bar-credit {
+    font-size: 0.7rem; color: var(--mid-grey); font-weight: 400; margin-top: 2px;
+  }
+  .top-bar-buttons button {
+    font-family: var(--font); font-size: 0.75rem; font-weight: 500;
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--light-grey);
+    background: var(--white); color: var(--mid-grey); cursor: pointer;
+    transition: var(--transition);
+  }
+  .top-bar-buttons button:hover {
+    background: var(--dark-grey); color: var(--white); border-color: var(--dark-grey);
+  }
+
+  /* ── METERS ── */
+  .meters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 16px; }
+  .meter { display: flex; align-items: center; gap: 8px; }
+  .meter-label {
+    font-size: 0.7rem; font-weight: 600; color: var(--mid-grey);
+    min-width: 90px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .meter-bar-wrap {
+    flex: 1; height: 6px; background: var(--light-grey);
+    border-radius: 3px; overflow: hidden;
+  }
+  .meter-bar {
+    height: 100%; border-radius: 3px;
+    transition: width 0.6s cubic-bezier(0.25,0.1,0.25,1), background 0.3s ease;
+  }
+  .meter-bar.stress { background: var(--red); }
+  .meter-bar.ops { background: var(--orange); }
+  .meter-bar.margin { background: var(--green); }
+  .meter-bar.patience { background: var(--blue); }
+  .meter-bar.airline { background: var(--yellow); }
+  .meter-bar.exec { background: var(--blue); }
+  .meter-value {
+    font-size: 0.65rem; font-weight: 600; color: var(--dark-grey);
+    min-width: 28px; text-align: right;
+  }
+
+  /* ── CANVAS ── */
+  .canvas-wrap {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 32px 24px; position: relative; min-height: 520px;
+  }
+  .canvas { width: 100%; max-width: 900px; position: relative; }
+
+  .canvas-wrap.dark { background: var(--dark-grey); }
+  .canvas-wrap.dark .level-tag, .canvas-wrap.dark .level-sub { color: var(--mid-grey); }
+  .canvas-wrap.dark .level-name { color: var(--white); }
+  .canvas-wrap.chaos {
+    background: #FAFAFA;
+    background-image:
+      repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(0,0,0,0.02) 40px,rgba(0,0,0,0.02) 41px),
+      repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(0,0,0,0.02) 40px,rgba(0,0,0,0.02) 41px);
+  }
+  .canvas-wrap.grey { background: #F0F0F0; }
+
+  /* ── LEVEL HEADER ── */
+  .level-header { text-align: center; margin-bottom: 32px; animation: fadeInDown 0.6s ease; }
+  .level-tag {
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--mid-grey); margin-bottom: 6px;
+  }
+  .level-name {
+    font-size: 1.8rem; font-weight: 700; letter-spacing: -1px;
+    color: var(--dark-grey); margin-bottom: 4px;
+  }
+  .level-sub {
+    font-size: 0.9rem; font-weight: 400; color: var(--mid-grey); font-style: italic;
+  }
+
+  /* ── DRAG BOXES ── */
+  .drag-area {
+    display: flex; align-items: center; justify-content: center;
+    gap: 60px; padding: 40px 0;
+  }
+  .drag-box {
+    width: 200px; padding: 28px 20px; background: var(--white);
+    border: 2px solid var(--light-grey); border-radius: var(--radius);
+    text-align: center; font-size: 0.85rem; font-weight: 600;
+    transition: var(--transition); cursor: grab; user-select: none;
+    box-shadow: var(--shadow);
+  }
+  .drag-box:active { cursor: grabbing; }
+  .drag-box.source { border-color: var(--blue); }
+  .drag-box.source:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), 0 0 0 4px rgba(0,122,255,0.1);
+  }
+  .drag-box.target {
+    border: 2px dashed var(--mid-grey); background: var(--off-white); cursor: default;
+  }
+  .drag-box.target.hover { border-color: var(--blue); background: rgba(0,122,255,0.04); }
+  .drag-box.target.complete {
+    border: 2px solid var(--green); background: rgba(52,199,89,0.06);
+    animation: successPulse 0.5s ease;
+  }
+  .drag-box .icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .drag-box .label { font-size: 0.75rem; color: var(--mid-grey); font-weight: 400; margin-top: 4px; }
+  .drag-arrow {
+    font-size: 1.5rem; color: var(--light-grey); font-weight: 300;
+    animation: arrowPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes arrowPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  @keyframes successPulse { 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
+
+  /* ── PIPELINE ── */
+  .pipeline { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .pipe-node {
+    width: 280px; padding: 16px 20px; background: var(--white);
+    border: 2px solid var(--light-grey); border-radius: var(--radius-sm);
+    text-align: center; font-size: 0.82rem; font-weight: 600;
+    cursor: pointer; transition: var(--transition); position: relative;
+    box-shadow: var(--shadow);
+  }
+  .pipe-node .legacy-tag {
+    font-size: 0.6rem; font-weight: 400; color: var(--mid-grey);
+    display: block; margin-top: 2px; font-style: italic;
+  }
+  .pipe-node.locked { opacity: 0.4; cursor: not-allowed; }
+  .pipe-node.active {
+    border-color: var(--blue);
+    box-shadow: var(--shadow), 0 0 0 4px rgba(0,122,255,0.1);
+    animation: nodePulse 1.5s ease-in-out infinite;
+  }
+  @keyframes nodePulse {
+    0%,100% { box-shadow: var(--shadow), 0 0 0 4px rgba(0,122,255,0.08); }
+    50% { box-shadow: var(--shadow), 0 0 0 6px rgba(0,122,255,0.15); }
+  }
+  .pipe-node.pass { border-color: var(--green); background: rgba(52,199,89,0.04); }
+  .pipe-node.warn { border-color: var(--orange); background: rgba(255,149,0,0.04); }
+  .pipe-node.fail { border-color: var(--red); background: rgba(255,59,48,0.04); }
+  .pipe-connector { width: 2px; height: 16px; background: var(--light-grey); }
+  .pipe-connector.done { background: var(--green); }
+
+  /* ── DECISION PANEL ── */
+  .commercial-layout { display: flex; gap: 40px; align-items: flex-start; }
+  .airline-tower { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .airline-avatar {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: var(--dark-grey); display: flex; align-items: center;
+    justify-content: center; font-size: 2.5rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .airline-speech {
+    background: var(--dark-grey); color: var(--white);
+    padding: 14px 20px; border-radius: var(--radius);
+    font-size: 0.85rem; font-weight: 500; text-align: center;
+    max-width: 280px; position: relative;
+  }
+  .airline-speech::after {
+    content: ''; position: absolute; top: -8px; left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent; border-right: 8px solid transparent;
+    border-bottom: 8px solid var(--dark-grey);
+  }
+  .decision-panel { flex: 1; max-width: 380px; }
+  .decision-card {
+    background: var(--white); border-radius: var(--radius);
+    padding: 28px 24px; box-shadow: var(--shadow-lg);
+    border: 1px solid var(--light-grey);
+  }
+  .decision-card h3 {
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--red); margin-bottom: 12px;
+  }
+  .decision-card p {
+    font-size: 0.9rem; font-weight: 500; color: var(--dark-grey);
+    margin-bottom: 20px; line-height: 1.5;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: var(--font); font-size: 0.82rem; font-weight: 600;
+    padding: 12px 24px; border-radius: var(--radius-sm);
+    border: none; cursor: pointer; transition: var(--transition);
+    display: block; width: 100%; margin-bottom: 8px; text-align: left;
+  }
+  .btn:last-child { margin-bottom: 0; }
+  .btn-primary { background: var(--blue); color: var(--white); }
+  .btn-primary:hover { background: #0066DD; transform: translateX(2px); }
+  .btn-secondary { background: var(--off-white); color: var(--dark-grey); border: 1px solid var(--light-grey); }
+  .btn-secondary:hover { background: var(--light-grey); transform: translateX(2px); }
+  .btn-danger { background: rgba(255,59,48,0.08); color: var(--red); border: 1px solid rgba(255,59,48,0.2); }
+  .btn-danger:hover { background: rgba(255,59,48,0.15); transform: translateX(2px); }
+  .btn-cta {
+    background: var(--dark-grey); color: var(--white);
+    text-align: center; border-radius: 24px; padding: 14px 32px;
+    display: inline-block; width: auto;
+  }
+  .btn-cta:hover { background: var(--black); transform: translateY(-1px); }
+  .consequence { font-size: 0.72rem; color: var(--mid-grey); margin-top: 4px; font-style: italic; }
+
+  /* ── BUBBLES ── */
+  .bubble-field { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding: 20px 0; }
+  .bubble {
+    background: var(--white); border: 1.5px solid var(--light-grey);
+    border-radius: 20px; padding: 14px 20px;
+    font-size: 0.82rem; font-weight: 500; cursor: pointer;
+    transition: var(--transition); max-width: 280px;
+    box-shadow: var(--shadow); position: relative;
+  }
+  .bubble::before { content: '💬'; position: absolute; top: -8px; left: 12px; font-size: 0.7rem; }
+  .bubble:hover:not(.answered):not(.escalated) {
+    border-color: var(--blue); transform: translateY(-2px); box-shadow: var(--shadow-lg);
+  }
+  .bubble.escalated {
+    border-color: var(--red); background: rgba(255,59,48,0.04);
+    animation: shake 0.5s ease; font-weight: 700;
+  }
+  .bubble.answered { opacity: 0.4; border-color: var(--green); cursor: default; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+  /* ── TICKETS ── */
+  .ticket-board {
+    display: flex; flex-direction: column; gap: 8px;
+    max-height: 400px; overflow-y: auto; padding: 4px;
+  }
+  .ticket {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--white); border: 1px solid var(--light-grey);
+    border-radius: var(--radius-sm); padding: 14px 18px;
+    cursor: pointer; transition: var(--transition); box-shadow: var(--shadow);
+  }
+  .ticket:hover { border-color: var(--blue); transform: translateX(2px); }
+  .ticket .dept {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; padding: 3px 8px; border-radius: 4px;
+    min-width: 70px; text-align: center;
+  }
+  .ticket .dept.product { background: #E8F0FE; color: var(--blue); }
+  .ticket .dept.ops { background: #FFF3E0; color: var(--orange); }
+  .ticket .dept.sales { background: #E8F5E9; color: var(--green); }
+  .ticket .dept.data { background: #F3E5F5; color: #9C27B0; }
+  .ticket .dept.region { background: #FCE4EC; color: var(--red); }
+  .ticket .dept.legal { background: #EFEBE9; color: #795548; }
+  .ticket .dept.marketing { background: #FFF8E1; color: #F57F17; }
+  .ticket .dept.gds { background: #E0F7FA; color: #00838F; }
+  .ticket-text {
+    font-size: 0.82rem; font-weight: 500; flex: 1;
+  }
+  .ticket-text .jira-id {
+    font-size: 0.65rem; color: var(--mid-grey); font-weight: 400; margin-left: 8px;
+  }
+  .ticket-board::-webkit-scrollbar { width: 4px; }
+  .ticket-board::-webkit-scrollbar-track { background: transparent; }
+  .ticket-board::-webkit-scrollbar-thumb { background: var(--light-grey); border-radius: 2px; }
+
+  /* ── TOASTS ── */
+  .toast-container {
+    position: fixed; bottom: 24px; right: 24px;
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 500; pointer-events: none;
+  }
+  .toast {
+    background: var(--white); border: 1px solid var(--light-grey);
+    border-radius: var(--radius-sm); padding: 12px 18px;
+    font-size: 0.78rem; font-weight: 500; box-shadow: var(--shadow-lg);
+    max-width: 360px; animation: toastIn 0.4s ease, toastOut 0.4s ease 4.6s forwards;
+    pointer-events: auto;
+  }
+  .toast .toast-icon { margin-right: 8px; }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(20px); } }
+  @keyframes toastOut { to { opacity: 0; transform: translateY(-10px); } }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; animation: fadeIn 0.3s ease; padding: 24px;
+  }
+  .modal {
+    background: var(--white); border-radius: 16px;
+    padding: 32px 28px; max-width: 460px; width: 100%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+    animation: modalIn 0.4s cubic-bezier(0.25,0.1,0.25,1);
+  }
+  .modal h3 {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--mid-grey); margin-bottom: 12px;
+  }
+  .modal h2 {
+    font-size: 1.2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 8px;
+  }
+  .modal p {
+    font-size: 0.85rem; color: var(--mid-grey); margin-bottom: 20px; line-height: 1.6;
+  }
+  .modal .fine-print {
+    font-size: 0.7rem; color: var(--mid-grey); font-style: italic;
+    margin-top: 12px; text-align: center;
+  }
+  @keyframes fadeIn { from { opacity: 0; } }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } }
+  @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } }
+
+  /* ── NARRATION ── */
+  .narration { text-align: center; padding: 24px 0; animation: fadeIn 0.8s ease; }
+  .narration p {
+    font-size: 1rem; font-weight: 500; font-style: italic;
+    line-height: 1.6; max-width: 520px; margin: 0 auto 20px;
+  }
+
+  /* ── BOTTOM BANNER ── */
+  .bottom-banner {
+    background: var(--dark-grey); color: var(--mid-grey);
+    text-align: center; padding: 10px 24px;
+    font-size: 0.7rem; font-weight: 400; letter-spacing: 0.3px;
+    position: sticky; bottom: 0; z-index: 100;
+  }
+
+  /* ── BADGE ── */
+  .badge-popup {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    background: var(--white); border-radius: 16px;
+    padding: 32px 40px; text-align: center;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+    z-index: 2000; animation: badgeIn 0.5s cubic-bezier(0.25,0.1,0.25,1);
+  }
+  .badge-popup .badge-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .badge-popup .badge-title {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--mid-grey); margin-bottom: 6px;
+  }
+  .badge-popup .badge-text { font-size: 1rem; font-weight: 600; }
+  @keyframes badgeIn { from { opacity: 0; transform: translate(-50%,-50%) scale(0.8); } }
+
+  /* ── EVENT CARD ── */
+  .event-card {
+    background: var(--white); border-left: 4px solid var(--red);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 14px 18px; margin-top: 12px;
+    font-size: 0.82rem; font-weight: 500; box-shadow: var(--shadow);
+    animation: slideInLeft 0.4s ease; max-width: 440px;
+    margin-left: auto; margin-right: auto;
+  }
+  .event-card .event-label {
+    font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--red); margin-bottom: 4px;
+  }
+  .event-card.blue { border-left-color: var(--blue); }
+  .event-card.blue .event-label { color: var(--blue); }
+  @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } }
+
+  /* ── LEVEL DOTS ── */
+  .level-dots { display: flex; gap: 6px; align-items: center; }
+  .level-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--light-grey); transition: var(--transition);
+  }
+  .level-dot.complete { background: var(--green); }
+  .level-dot.current { background: var(--blue); width: 18px; border-radius: 3px; }
+
+  /* ── END SCREEN ── */
+  .end-screen {
+    min-height: 100vh; background: var(--black);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 48px 24px; text-align: center;
+  }
+  .end-screen .stat { margin-bottom: 24px; }
+  .end-screen .stat-label {
+    font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--mid-grey); margin-bottom: 4px;
+  }
+  .end-screen .stat-value {
+    font-size: 2rem; font-weight: 700; color: var(--white); letter-spacing: -1px;
+  }
+  .end-screen .stat-value.red { color: var(--red); }
+  .end-screen .stat-value.green { color: var(--green); }
+  .end-screen .stat-value.yellow { color: var(--yellow); }
+  .end-screen .final-narration {
+    font-size: 1.05rem; font-weight: 400; color: var(--mid-grey);
+    line-height: 1.8; max-width: 460px; margin: 40px auto 48px;
+    font-style: italic;
+  }
+  .end-screen .conference-btn {
+    font-family: var(--font); font-size: 0.9rem; font-weight: 600;
+    padding: 16px 40px; border-radius: 28px;
+    background: var(--white); color: var(--black);
+    border: none; cursor: pointer; transition: var(--transition);
+    margin-bottom: 12px;
+  }
+  .end-screen .conference-btn:hover {
+    transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,255,255,0.2);
+  }
+  .end-screen .conference-sub {
+    font-size: 0.72rem; color: #555; font-style: italic;
+  }
+
+  /* ── TOOLTIP ── */
+  .tooltip {
+    position: fixed; background: var(--dark-grey); color: var(--white);
+    padding: 8px 14px; border-radius: var(--radius-sm);
+    font-size: 0.75rem; font-weight: 500; z-index: 600;
+    pointer-events: none; max-width: 280px; animation: fadeIn 0.2s ease;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash" onclick="startGame()">
+  <h1>NDC: JUST AN API<span>™</span></h1>
+  <div class="subtitle">A Corporate Travel Horror Simulator</div>
+  <div class="author">by Ayi Haught-Leeder</div>
+  <div class="tagline">"If it's so simple, why are you sweating?"</div>
+  <div class="start-hint">Click anywhere to begin</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="top-bar">
+    <div class="top-bar-header">
+      <div>
+        <div class="top-bar-title">NDC: JUST AN API<span>™</span></div>
+        <div class="top-bar-credit">Ayi Haught-Leeder — Unauthorised Build</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="level-dots" id="levelDots"></div>
+        <div class="top-bar-buttons"><button onclick="resetGame()">Reset</button></div>
+      </div>
+    </div>
+    <div class="meters" id="meters"></div>
+  </div>
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="canvas" id="canvas"></div>
+  </div>
+  <div class="bottom-banner" id="bottomBanner">Reminder: this is still meant to be "just content."</div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+const S = () => ({
+  level: -1,
+  stress: 5, opsLoad: 0, margin: 80, patience: 90, airlineMood: 55, execAttention: 95,
+  badges: [], decisions: {}, announcedNDC: false,
+  l2Idx: 0, l4Answered: [], l5Clicks: 0,
+});
+let state = S();
+let toastTimer = null, tooltip = null, modalCb = null;
+
+// ════════════════════════════════════════
+// TOASTS
+// ════════════════════════════════════════
+const TOASTS = [
+  { i:'📊', t:'Someone from Finance has joined the call.' },
+  { i:'💼', t:'Client saw something on LinkedIn about NDC.' },
+  { i:'✈️', t:'Airline "temporarily" changed API behaviour.' },
+  { i:'📧', t:'Procurement wants the savings report by EOD.' },
+  { i:'🔥', t:'OBT vendor released an update. Nothing works.' },
+  { i:'📱', t:'CEO just booked direct on airline.com.' },
+  { i:'🤝', t:'Airline account manager wants a "quick sync."' },
+  { i:'📋', t:'Audit flagged a PNR with mismatched fare data.' },
+  { i:'💬', t:'Someone tagged you in a 47-message Teams thread.' },
+  { i:'📉', t:'Monthly adoption report is due.' },
+  { i:'🗓️', t:'Airline moved the NDC incentive deadline. Again.' },
+  { i:'📞', t:'Client escalation: "Why is my fare $40 more?"' },
+  { i:'🧾', t:'Invoice reconciliation broke on an NDC booking.' },
+  { i:'🎙️', t:'Trent Synergy just dropped a podcast: "NDC — Are We There Yet?" (No.)' },
+  { i:'✈️', t:'The rep from South African Airways says raaaaaaarrrrgggghhhhttttt.' },
+  { i:'🏢', t:'Fiddletown International Airport wants to discuss their NDC readiness.' },
+  { i:'🙏', t:'Offshore team asks you to "kindly do the needful" on 47 open tickets.' },
+  { i:'💡', t:'Someone published "Thought Leadership" about NDC. It contains no thoughts and no leadership.' },
+  { i:'👔', t:'Vendor rep arrived. Four buttons undone on the business shirt. Confidence is high.' },
+  { i:'✝️', t:'NDC Jesus appeared on LinkedIn. "The industry just needs faith." 47 likes from airline sales teams.' },
+  { i:'🤝', t:'Amex GBT and Concur announced their partnership is "Complete." Nobody can explain what that means.' },
+  { i:'📐', t:'Exec requests "alignment" on NDC strategy. 6 meetings scheduled about the alignment.' },
+  { i:'🚀', t:'Spotnana rep says they "built from the ground up." Must be nice not having clients yet.' },
+  { i:'☁️', t:'Spotnana pitch deck says "cloud-native, microservices, open APIs." Your procurement team is intrigued.' },
+  { i:'🏗️', t:'GDS account manager called: "We can aggregate all your NDC content. For a fee. Obviously."' },
+  { i:'⚠️', t:'Carrier updated NDC API version. Migration deadline: 60 days. Testing window: "adequate."' },
+  { i:'🔄', t:'Two airlines, same route, same "NDC" — completely different data structures.' },
+  { i:'😂', t:'Concur Travel still can\'t return NDC and GDS content on the same domestic return. In 2026. Let that sink in.' },
+  { i:'🛫', t:'Fiddletown International (FIA) lodged a formal complaint about NDC content gaps. Population: 200. Flights: 0.' },
+  { i:'🛬', t:'Fiddletown International Airport has requested a QBR. They don\'t have an airline. They want one.' },
+];
+function showToast(m) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span class="toast-icon">${m.i}</span>${m.t}`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 5000);
+}
+function scheduleToasts() {
+  if (state.level < 1) return;
+  toastTimer = setTimeout(() => {
+    if (state.level >= 1) {
+      showToast(TOASTS[Math.floor(Math.random() * TOASTS.length)]);
+      if (Math.random() > 0.6) adj('stress', 2);
+    }
+    scheduleToasts();
+  }, 7000 + Math.random() * 12000);
+}
+
+// ════════════════════════════════════════
+// BADGES
+// ════════════════════════════════════════
+const BADGES = {
+  'displayed-offer': { i:'🏆', t:'Displayed an NDC Offer' },
+  'survived-exchange': { i:'🏆', t:'Survived One Exchange' },
+  'explained-order': { i:'🏆', t:"Explained 'Order' to Finance" },
+  'blamed-airline': { i:'🏆', t:'Blamed the Airline' },
+  'blamed-obt': { i:'🏆', t:'Blamed the OBT' },
+  'blamed-self': { i:'🏆', t:'Blamed Yourself' },
+  'muted-teams': { i:'🏆', t:'Muted a Teams Chat' },
+  'announced-linkedin': { i:'📢', t:"Announced 'NDC Ready' on LinkedIn" },
+  'hybrid-strategist': { i:'🧩', t:'Chose the Hybrid Strategy' },
+  'burnout': { i:'🔥', t:'Burnout Unlocked' },
+  'peace-briefly': { i:'☮️', t:'Peace, Briefly' },
+  'yelled-both': { i:'😤', t:'Yelled at by Airline AND Client in Same Hour' },
+  'platform-company': { i:'🏢', t:'You Are Now a Platform Company' },
+  'thought-leader': { i:'💡', t:'Published Thought Leadership (Contains Neither)' },
+  'did-the-needful': { i:'🙏', t:'Did the Needful' },
+  'fiddletown': { i:'🛫', t:'Served Fiddletown International Airport' },
+  'trent-pod': { i:'🎙️', t:'Featured on the Trent Synergy Podcast' },
+  'ground-up': { i:'🏗️', t:'Wished You Could Build From the Ground Up' },
+  'gds-trap': { i:'🕸️', t:'Let the GDS Back In Through the Side Door' },
+};
+function badge(id) {
+  if (state.badges.includes(id)) return;
+  state.badges.push(id);
+  const b = BADGES[id]; if (!b) return;
+  const el = document.createElement('div');
+  el.className = 'badge-popup';
+  el.innerHTML = `<div class="badge-icon">${b.i}</div><div class="badge-title">Achievement Unlocked</div><div class="badge-text">${b.t}</div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2400);
+}
+
+// ════════════════════════════════════════
+// METERS
+// ════════════════════════════════════════
+function renderMeters() {
+  const el = document.getElementById('meters'); if (!el) return;
+  const ms = [
+    { k:'stress', l:'Stress', c:'stress' },
+    { k:'opsLoad', l:'Ops Load', c:'ops' },
+    { k:'margin', l:'Margin', c:'margin' },
+    { k:'patience', l:'Client Patience', c:'patience' },
+    { k:'airlineMood', l:'Airline Mood', c:'airline' },
+    { k:'execAttention', l:'Exec Attention', c:'exec' },
+  ];
+  el.innerHTML = ms.map(m => `<div class="meter"><div class="meter-label">${m.l}</div><div class="meter-bar-wrap"><div class="meter-bar ${m.c}" style="width:${Math.max(0,Math.min(100,state[m.k]))}%"></div></div><div class="meter-value">${Math.round(state[m.k])}%</div></div>`).join('');
+}
+function adj(k, d) { state[k] = Math.max(0, Math.min(100, state[k] + d)); renderMeters(); }
+function renderDots() {
+  const d = document.getElementById('levelDots'); if (!d) return;
+  let h = '';
+  for (let i = -1; i <= 5; i++) h += `<div class="level-dot ${i < state.level ? 'complete' : i === state.level ? 'current' : ''}"></div>`;
+  d.innerHTML = h;
+}
+
+// ════════════════════════════════════════
+// MODALS
+// ════════════════════════════════════════
+function showModal(cfg) {
+  const o = document.createElement('div');
+  o.className = 'modal-overlay';
+  o.innerHTML = `<div class="modal">
+    ${cfg.tag ? `<h3>${cfg.tag}</h3>` : ''}
+    <h2>${cfg.title}</h2>
+    ${cfg.body ? `<p>${cfg.body}</p>` : ''}
+    ${cfg.options.map((op, i) => {
+      const c = i === 0 ? 'btn btn-primary' : i === cfg.options.length - 1 && cfg.options.length > 2 ? 'btn btn-danger' : 'btn btn-secondary';
+      return `<button class="${c}" onclick="modalPick(${i})">${op.label}${op.hint ? `<div class="consequence">${op.hint}</div>` : ''}</button>`;
+    }).join('')}
+    ${cfg.fine ? `<div class="fine-print">${cfg.fine}</div>` : ''}
+  </div>`;
+  document.body.appendChild(o);
+}
+function closeModal() { const m = document.querySelector('.modal-overlay'); if (m) m.remove(); }
+function modalPick(i) { closeModal(); if (modalCb) modalCb(i); }
+
+// ════════════════════════════════════════
+// GAME FLOW
+// ════════════════════════════════════════
+function startGame() {
+  document.getElementById('splash').classList.add('hidden');
+  setTimeout(() => {
+    document.getElementById('splash').style.display = 'none';
+    document.getElementById('app').classList.add('active');
+    renderMeters(); renderDots(); loadLevel(-1); scheduleToasts();
+  }, 600);
+}
+function resetGame() {
+  state = S();
+  if (toastTimer) clearTimeout(toastTimer);
+  document.getElementById('toastContainer').innerHTML = '';
+  const cw = document.getElementById('canvasWrap'); cw.className = 'canvas-wrap';
+  document.getElementById('bottomBanner').textContent = 'Reminder: this is still meant to be "just content."';
+  const app = document.getElementById('app');
+  app.style.display = ''; app.classList.add('active');
+  const es = document.querySelector('.end-screen'); if (es) es.remove();
+  renderMeters(); renderDots(); loadLevel(-1); scheduleToasts();
+}
+function loadLevel(n) {
+  state.level = n; renderDots();
+  const c = document.getElementById('canvas');
+  const w = document.getElementById('canvasWrap');
+  w.className = 'canvas-wrap'; c.innerHTML = '';
+  ({[-1]: lvlTutorial, 1: lvl1, 2: lvl2, 3: lvl3, 4: lvl4, 5: lvl5, 6: endScreen})[n]?.();
+}
+
+// ════════════════════════════════════════
+// TUTORIAL: The Conference Slide
+// ════════════════════════════════════════
+function lvlTutorial() {
+  const c = document.getElementById('canvas');
+  c.innerHTML = `<div class="level-header"><div class="level-tag">Tutorial</div><div class="level-name">The Conference Slide</div><div class="level-sub">Everything works in PowerPoint.</div></div><div id="tutSlides" style="text-align:center;"></div>`;
+  const slides = [
+    { h: 'Richer Content', s: 'Branded fares. Ancillaries. Bundles. The traveller sees what the airline wants to sell.' },
+    { h: 'More Choice', s: 'Access offers that don\'t exist in traditional EDIFACT channels. Dynamic pricing. Continuous pricing. Allegedly.' },
+    { h: 'Direct Connection', s: 'Airline-to-agent. Real-time offers. No GDS in the middle. (The GDS would like a word about that.)' },
+    { h: 'Modern Retailing', s: 'Airlines become retailers. TMCs become platforms. Everyone wins. Especially the airline.' },
+    { h: 'One Small Detail', s: 'Every airline\'s NDC implementation is different. Schema versions, data structures, servicing capabilities, commercial terms — all different. It\'s "a standard" in the same way every family is "normal."' },
+  ];
+  let idx = 0;
+  function show() {
+    const el = document.getElementById('tutSlides'); if (!el) return;
+    if (idx < slides.length) {
+      el.innerHTML = `<div style="animation:fadeIn 0.5s ease;padding:40px 0;"><div style="font-size:2rem;font-weight:700;letter-spacing:-1px;margin-bottom:8px;">${slides[idx].h}</div><div style="font-size:0.9rem;color:var(--mid-grey);max-width:440px;margin:0 auto 32px;line-height:1.6;">${slides[idx].s}</div><button class="btn-cta" onclick="tutNext()">Next →</button></div>`;
+    } else {
+      el.innerHTML = `<div style="animation:fadeIn 0.5s ease;padding:40px 0;"><div style="font-size:1.3rem;font-weight:600;margin-bottom:8px;">Amazing.</div><div style="font-size:1rem;color:var(--mid-grey);max-width:440px;margin:0 auto 8px;line-height:1.6;">In this universe, NDC works perfectly.</div><div style="font-size:1rem;color:var(--red);font-weight:500;margin:0 auto 32px;">Unfortunately, you do not live here.</div><button class="btn-cta" onclick="loadLevel(1)">Enter Reality →</button></div>`;
+    }
+  }
+  window.tutNext = () => { idx++; show(); };
+  show();
+}
+
+// ════════════════════════════════════════
+// LEVEL 1: Connect NDC Content
+// ════════════════════════════════════════
+function lvl1() {
+  const c = document.getElementById('canvas');
+  c.innerHTML = `
+    <div class="level-header"><div class="level-tag">Level 1</div><div class="level-name">Bring in NDC Content</div><div class="level-sub">It's just an API. How hard can it be?</div></div>
+    <div class="drag-area">
+      <div class="drag-box source" id="ndcSrc" draggable="true" onmouseenter="showTip(event,'It\\'s just XML. Or JSON. Or vibes.')" onmouseleave="hideTip()">
+        <div class="icon">✈️</div>Airline NDC API<div class="label">Version varies by carrier</div>
+      </div>
+      <div class="drag-arrow">→</div>
+      <div class="drag-box target" id="ndcTgt"><div class="icon">📥</div>Content Ingestion Layer<div class="label">Drop API here</div></div>
+    </div>
+    <div id="l1Events" style="text-align:center;"></div>
+    <div id="l1Bottom" style="text-align:center;"></div>`;
+  const src = document.getElementById('ndcSrc'), tgt = document.getElementById('ndcTgt');
+  src.addEventListener('dragstart', e => { e.dataTransfer.setData('text','ndc'); src.style.opacity='0.5'; });
+  src.addEventListener('dragend', () => { src.style.opacity='1'; });
+  tgt.addEventListener('dragover', e => { e.preventDefault(); tgt.classList.add('hover'); });
+  tgt.addEventListener('dragleave', () => tgt.classList.remove('hover'));
+  tgt.addEventListener('drop', e => { e.preventDefault(); tgt.classList.remove('hover'); doL1Drop(); });
+  src.addEventListener('click', doL1Drop);
+}
+function doL1Drop() {
+  const tgt = document.getElementById('ndcTgt'), src = document.getElementById('ndcSrc');
+  if (!tgt || tgt.classList.contains('complete')) return;
+  tgt.classList.add('complete');
+  tgt.innerHTML = '<div class="icon">✅</div>Content Ingestion Layer<div class="label">Connected</div>';
+  src.style.opacity = '0.4'; src.style.pointerEvents = 'none';
+  adj('stress', 5); adj('execAttention', -3);
+  const evts = document.getElementById('l1Events');
+  const seq = [
+    { d:600, icon:'✅', t:'Offers returned. Fares, branded bundles, ancillaries. It works.', fx:null },
+    { d:2000, icon:'⚠️', t:'Carrier A returns fare basis codes and PNR. Carrier B returns... different fields. Same "standard."', fx:()=>adj('stress',3) },
+    { d:3600, icon:'⚠️', t:'Carrier C\'s ancillary catalogue uses a completely different structure to A and B.', fx:()=>adj('stress',4) },
+    { d:5200, icon:'⚠️', t:'Automated exchange works on Qantas QDP. Doesn\'t exist on Carrier D. Same API label, different planet.', fx:()=>adj('stress',3) },
+  ];
+  seq.forEach(ev => {
+    setTimeout(() => {
+      if (!evts) return;
+      const card = document.createElement('div');
+      card.className = 'event-card' + (ev.icon === '✅' ? ' blue' : '');
+      card.innerHTML = `<div class="event-label">${ev.icon === '✅' ? 'Success' : 'Inconsistency'}</div>${ev.t}`;
+      evts.appendChild(card); if (ev.fx) ev.fx();
+    }, ev.d);
+  });
+  setTimeout(() => {
+    badge('displayed-offer');
+    const b = document.getElementById('l1Bottom'); if (!b) return;
+    b.innerHTML = `<div class="narration"><p>The content is there. It\'s real. It works.<br>But every airline did it differently, and your platform has to absorb all of them.</p>
+      <button class="btn-cta" onclick="doL1Announce()" style="margin-bottom:12px;">Announce "NDC Ready" on LinkedIn</button><br>
+      <button class="btn-cta" style="background:var(--off-white);color:var(--dark-grey);" onclick="doL1Quiet()">Celebrate internally</button></div>`;
+  }, 7000);
+}
+function doL1Announce() {
+  state.announcedNDC = true; adj('stress', 8); badge('announced-linkedin');
+  showToast({ i:'📢', t:'Post published. 47 airline reps just screenshot it.' });
+  setTimeout(() => loadLevel(2), 1500);
+}
+function doL1Quiet() { adj('stress', 2); setTimeout(() => loadLevel(2), 800); }
+
+// ════════════════════════════════════════
+// LEVEL 2: Platform Integration
+// ════════════════════════════════════════
+const L2NODES = [
+  { name:'Profile', leg:'Works — it\'s still PNRs and tickets underneath',
+    modal:{ tag:'Profile Engine', title:'Traveller profile: map it through.',
+      body:'NDC content is still ticket-based — PNRs, fare basis codes, BSP settlement. Your profile engine recognises the data. But: loyalty tier handling varies by carrier. Some return FF status in the offer, some don\'t. Seat preferences map differently. It works, but "works" means something different for every airline.',
+      options:[
+        { label:'Map per carrier and maintain', hint:'Stress +5. Ongoing maintenance forever.', fx:{stress:5} },
+        { label:'Generic mapping — close enough', hint:'Traveller gets wrong seat type occasionally.', fx:{patience:-5,stress:3} },
+      ]}},
+  { name:'Policy', leg:'Fare basis exists — policy engine can read it',
+    modal:{ tag:'Policy Engine', title:'Is this the lowest logical fare?',
+      body:'The fare basis code is there — it\'s a ticket. Your policy engine can technically evaluate it. But: branded fare structures don\'t map consistently across carriers. One airline\'s "Economy Flex" is another\'s "Y-FLEX-AU." The policy rule that worked for Carrier A fails on Carrier B. And when Carrier E starts dynamic/continuous pricing? No published fare to benchmark against at all.',
+      options:[
+        { label:'Build carrier-specific policy mapping', hint:'Accurate. Expensive. N carriers × M rules.', fx:{stress:6,margin:-3} },
+        { label:'Apply best-effort generic rules', hint:'Something will fall through. Client will notice.', fx:{stress:4,patience:-8} },
+      ],
+      fine:'Every carrier is a special snowflake. Your policy engine was not built for snowflakes.'}},
+  { name:'Approval', leg:'Approver sees unfamiliar fare structure',
+    modal:{ tag:'Approval Workflow', title:'This booking looks... different.',
+      body:'The data is all there but the approver is used to seeing "Y class, $X, [Airline] Economy." Now they see branded fare names that vary by carrier, ancillary bundles they don\'t recognise, and price points that seem to change between searches. The booking is fine. The approver doesn\'t know that.',
+      options:[
+        { label:'Auto-approve NDC under threshold', hint:'Fast. Policy team will ask questions later.', fx:{execAttention:-8,stress:4} },
+        { label:'Route through standard approval', hint:'6-hour SLA. Fare may reprice.', fx:{stress:6,opsLoad:5,patience:-8} },
+      ]}},
+  { name:'Payment', leg:'BSP settlement — for now',
+    modal:{ tag:'Payment Gateway', title:'Process payment.',
+      body:'It\'s still a ticket. It still settles through BSP. Your back-office works. But: some carriers are starting to talk about merchant model — airline charges the card directly. Nobody\'s there yet at scale, but the direction is clear. You\'re building on infrastructure that the airlines intend to replace. Enjoy the calm.',
+      options:[
+        { label:'Process via BSP — business as usual', hint:'Works today. That\'s all you can ask for.', fx:{stress:2} },
+        { label:'Start scoping merchant model readiness', hint:'Margin −5. Preparing for something that\'s years away.', fx:{margin:-5,stress:3} },
+      ],
+      fine:'The O&O future is coming. God knows when.'}},
+  { name:'Servicing', leg:'Varies wildly by carrier',
+    modal:{ tag:'Servicing Layer', title:'Traveller wants to change their flight.',
+      body:'This is where the inconsistency really bites. Qantas QDP? Automated reissue works in Australia — proper exchange, no drama. Carrier B? Exchanges go offline. Carrier C? Partial automation, but only for voluntary changes. Carrier D? "Exchange functionality coming Q3." It came Q1 of the following year. Every airline is at a different stage and your ops team needs to know which is which.',
+      options:[
+        { label:'Route by carrier capability matrix', hint:'Correct. Requires maintaining the matrix. Ops +5, Stress +4.', fx:{opsLoad:5,stress:4} },
+        { label:'Default offline for safety', hint:'Ops Load +15. Agent handles everything. Expensive but predictable.', fx:{opsLoad:15,margin:-5} },
+      ]}},
+  { name:'Mid/Back Office', leg:'PNR + ticket number = primary key',
+    modal:{ tag:'Mid/Back Office', title:'Reconciliation time.',
+      body:'The primary keys are there — PNR locator, ticket number, fare basis. Your back office can process these. But: NDC data flows differ from GDS transactions. Some ancillaries don\'t generate EMDs. Timing of data arrival varies. The reconciliation "works" but drifts in ways your finance team will find three weeks later.',
+      options:[
+        { label:'Patch the gaps and monitor', hint:'Stress +4, Margin −3. Manageable. For now.', fx:{stress:4,margin:-3} },
+        { label:'Manual reconciliation on exceptions', hint:'Ops Load +10. Someone checks every anomaly.', fx:{opsLoad:10,margin:-5} },
+      ]}},
+  { name:'Reporting', leg:'Data exists but looks different from GDS data',
+    modal:{ tag:'Reporting Pipeline', title:'NDC bookings hit the data warehouse.',
+      body:'Fare basis is there. Ticket data is there. But booking source attribution varies, data arrives at different speeds from different carriers, and your savings methodology — built on comparing to published fares via the GDS — starts showing odd results when the NDC fare is lower for the same itinerary. Spotnana built an entire "Content Source Savings Report" to show NDC value. Your client saw the demo.',
+      options:[
+        { label:'Report with caveats explaining source differences', hint:'Client reads caveat. Client ignores caveat. Client calls.', fx:{stress:5,patience:-8} },
+        { label:'Split reporting by content source', hint:'Accurate. Reveals that NDC fares are sometimes cheaper. Client asks why you didn\'t switch sooner.', fx:{stress:6,opsLoad:5,patience:-5} },
+      ]}},
+  { name:'Duty of Care', leg:'PNR sync to risk platform',
+    modal:{ tag:'Duty of Care', title:'Can you locate this traveller?',
+      body:'Your duty of care platform ingests PNR data. NDC bookings create PNRs — it\'s still a ticket. But: the PNR may be a passive segment with limited data depending on the carrier. Some DoC platforms handle NDC PNRs fine. Some don\'t recognise the format. The traveller is in transit. Legal would like to know if you can see them.',
+      options:[
+        { label:'Validate DoC sync per carrier', hint:'Stress +5, Margin −3. Necessary.', fx:{stress:5,margin:-3} },
+        { label:'Accept the risk and hope', hint:'Patience −5 when someone finds out.', fx:{stress:3,patience:-5} },
+      ]}},
+];
+const L2EVENTS = [
+  'Exchange works on Carrier A (auto reissue). Fails on Carrier B (offline only). Same "NDC."',
+  'Ancillary seat purchased but EMD not generated. Carrier\'s NDC implementation doesn\'t support it.',
+  'OBT displays NDC fare but agent tooling can\'t service it. Two systems, one booking, zero alignment.',
+  'Fare repriced between search and ticketing. Dynamic pricing in action. Traveller sees a different amount.',
+  'Client asks: "Why does this booking look different from last time?" (Different carrier, different NDC implementation.)',
+  'Automated reissue worked on QDP. Same logic fails on another carrier. Ops escalates.',
+  'PNR segment dequeued by GDS robot. NDC booking still exists in airline system. Back office confused.',
+  'Two bookings, same airline: one via GDS, one via NDC. Same fare, different data fields. Report won\'t reconcile.',
+  'Fiddletown International Airport reports NDC connectivity issues. You didn\'t know you served Fiddletown.',
+  'The Inventor of OBTs has been quoted saying servicing "should just work." Ops team is in tears.',
+  'Trent Synergy dedicated 45 minutes of podcast to your implementation. Half of it was wrong.',
+  'Vendor arrives for platform review. Four buttons undone on the shirt. Slides say "alignment" 19 times.',
+  'Concur Travel can\'t blend NDC and GDS results on a domestic return. The year is 2026. Nobody is surprised.',
+  'Fiddletown International Airport (IATA code pending) has raised a P1 support ticket about NDC readiness. They have no flights.',
+];
+
+function lvl2() {
+  state.l2Idx = 0;
+  document.getElementById('canvas').innerHTML = `
+    <div class="level-header"><div class="level-tag">Level 2</div><div class="level-name">Platform Integration</div><div class="level-sub">Content works. Now survive the enterprise stack.</div></div>
+    <div class="pipeline" id="pipeline"></div>
+    <div id="l2Events" style="margin-top:16px;"></div>
+    <div id="l2Bottom" style="text-align:center;margin-top:16px;"></div>`;
+  renderPipe(); activateNode();
+}
+function renderPipe() {
+  const p = document.getElementById('pipeline'); if (!p) return;
+  let h = `<div class="pipe-node pass" style="border-color:var(--blue);background:rgba(0,122,255,0.04);cursor:default;">NDC Offer<span class="legacy-tag">Entering the gauntlet</span></div>`;
+  L2NODES.forEach((n, i) => {
+    const cc = i < state.l2Idx ? 'done' : '';
+    h += `<div class="pipe-connector ${cc}"></div>`;
+    let cls = 'pipe-node';
+    if (i < state.l2Idx) cls += (Math.random() > 0.4 ? ' warn' : ' pass');
+    else if (i === state.l2Idx) cls += ' active';
+    else cls += ' locked';
+    h += `<div class="${cls}" id="pn-${i}" ${i === state.l2Idx ? `onclick="doL2Node(${i})"` : ''}>${n.name}<span class="legacy-tag">${n.leg}</span></div>`;
+  });
+  p.innerHTML = h;
+}
+function activateNode() {
+  if (state.l2Idx >= L2NODES.length) { finishL2(); return; }
+  renderPipe();
+  if (state.l2Idx > 0 && state.l2Idx % 2 === 0) {
+    const ev = document.getElementById('l2Events');
+    if (ev) {
+      ev.innerHTML = `<div class="event-card"><div class="event-label">Incident</div>${L2EVENTS[Math.floor(Math.random()*L2EVENTS.length)]}</div>`;
+      adj('stress',3); adj('opsLoad',2);
+    }
+  }
+}
+function doL2Node(i) {
+  const n = L2NODES[i];
+  modalCb = (idx) => {
+    const fx = n.modal.options[idx].fx;
+    Object.entries(fx).forEach(([k,v]) => adj(k,v));
+    if (n.name === 'Servicing') badge('survived-exchange');
+    if (n.name === 'Reporting') badge('explained-order');
+    state.l2Idx++; activateNode();
+  };
+  showModal(n.modal);
+}
+function finishL2() {
+  if (state.announcedNDC) {
+    adj('stress', 8);
+    showToast({ i:'📱', t:'Your LinkedIn post is being quote-tweeted by angry ops managers.' });
+    setTimeout(() => badge('yelled-both'), 1500);
+  }
+  const b = document.getElementById('l2Bottom');
+  if (b) b.innerHTML = `<div class="narration"><p>Every box worked. No two worked the same way.<br>This is the part where "just an API" turns into<br>"just 14 different APIs wearing a trenchcoat."</p><button class="btn-cta" style="margin-top:12px;" onclick="loadLevel(3)">Enter the Commercial Layer →</button></div>`;
+}
+
+// ════════════════════════════════════════
+// LEVEL 3: Commercial Model
+// ════════════════════════════════════════
+const L3 = [
+  { speech:'"We are reimagining distribution."',
+    tag:'Commercial Decision', title:'GDS surcharge incoming.',
+    body:'The airline is introducing (or has introduced) a surcharge on GDS bookings. They want you to shift volume to NDC. Your GDS contract has volume commitments. Your client\'s programme is built on GDS data flows. The airline doesn\'t care about any of that. Move the volume or pay the tax.',
+    options:[
+      { label:'Accept — shift volume to NDC', hint:'Margin −10. Airline happy. GDS contract in jeopardy. Ops now handling two booking paths.', fx:{margin:-10,airlineMood:15,opsLoad:8,stress:5} },
+      { label:'Resist — maintain GDS position', hint:'Surcharge eats margin. Client sees higher fares. Airline mood drops.', fx:{margin:-15,airlineMood:-15,patience:-8} },
+      { label:'Hybrid — blend channels per route', hint:'Technically correct. Operationally insane. Two servicing models, two data flows, one team.', fx:{stress:15,opsLoad:12,margin:-8}, badge:'hybrid-strategist' },
+    ]},
+  { speech:'"We note you\'re using a GDS to aggregate our NDC content."',
+    tag:'Distribution Chess', title:'The GDS wants back in.',
+    body:'The GDS is now offering NDC content aggregation — they\'ll normalise multiple airlines\' NDC feeds into a single pipe. Convenient. Familiar. But: the airline specifically built NDC to disintermediate the GDS. If you route their NDC content through the GDS, the airline may reclassify you as "indirect" and revoke incentives. The GDS knows this. They\'re betting you\'ll choose convenience.',
+    options:[
+      { label:'Use GDS aggregation — it\'s easier', hint:'Ops simplified. But airline sees GDS in the chain. Incentives at risk.', fx:{opsLoad:-8,airlineMood:-15,margin:-5}, badge:'gds-trap' },
+      { label:'Maintain direct connections per carrier', hint:'Harder. More expensive. But airline relationship stays clean.', fx:{stress:8,margin:-5,airlineMood:10} },
+      { label:'Direct for top 5, GDS for the tail', hint:'Pragmatic. Messy. Nobody\'s fully happy.', fx:{stress:10,opsLoad:5,airlineMood:-5} },
+    ]},
+  { speech:'"Your savings report doesn\'t match our expectations."',
+    tag:'Reporting Integrity', title:'Client: "Where are my NDC savings?"',
+    body:'NDC bookings avoid the GDS surcharge — so they should be cheaper, right? Sometimes yes. Sometimes the NDC fare is the same. Sometimes it\'s more. It depends on the airline\'s distribution strategy, not a universal truth. Spotnana built a Content Source Savings Report to prove NDC value — your client saw the demo and wants the same thing. Your data infrastructure wasn\'t built for that comparison. (At least you can show NDC and GDS results on the same page. Concur Travel still can\'t do that on a domestic return.)',
+    options:[
+      { label:'Build the comparison reporting', hint:'Margin −8. Takes 3 months. Reveals uncomfortable truths about some carriers.', fx:{margin:-8,stress:8} },
+      { label:'Explain that savings vary by carrier', hint:'Patience −12. Accurate but unsatisfying.', fx:{patience:-12,stress:5} },
+      { label:'Redirect to total programme value', hint:'Exec Attention −5. Broader conversation. Buys time.', fx:{execAttention:-5,stress:-3}, badge:'peace-briefly' },
+    ]},
+  { speech:'"Invest in servicing automation or keep absorbing the cost?"',
+    tag:'Investment Decision', title:'Build proper servicing tooling?',
+    body:'Today: exchanges on mature NDC carriers (Qantas QDP, etc.) are automated. Everything else goes offline. Your ops team is absorbing the cost of manual servicing for the carriers that aren\'t there yet. You can invest in building better automation — carrier-specific logic, fallback handling, training. Or keep absorbing. The volume is only going one direction.',
+    options:[
+      { label:'Invest in automation ($$$)', hint:'Margin −15 now. Ops load improves over 6+ months. If airlines don\'t change their APIs.', fx:{margin:-15,opsLoad:-8,stress:5} },
+      { label:'Don\'t — absorb in ops', hint:'Ops Load +20. Permanent. Staff turnover incoming.', fx:{opsLoad:20,stress:8}, badge:'burnout' },
+    ]},
+];
+let l3Idx = 0;
+
+function lvl3() {
+  l3Idx = 0;
+  document.getElementById('canvasWrap').classList.add('dark');
+  document.getElementById('bottomBanner').textContent = 'The airlines changed the economics. The industry hasn\'t finished adapting. And Offers & Orders hasn\'t even arrived yet.';
+  renderL3();
+}
+function renderL3() {
+  const c = document.getElementById('canvas');
+  if (l3Idx >= L3.length) {
+    c.innerHTML = `<div class="level-header"><div class="level-tag" style="color:var(--red);">Unavoidable Event</div><div class="level-name" style="color:var(--white);">Airline Updates NDC API Overnight</div><div class="level-sub">Nobody told you.</div></div>
+      <div style="text-align:center;padding:40px 0;animation:fadeIn 0.8s ease;">
+        <div style="font-size:4rem;margin-bottom:16px;">💥</div>
+        <div style="color:var(--mid-grey);font-size:0.9rem;margin-bottom:32px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.6;">API endpoint deprecated. Offer response structure changed. Branded fare mapping you spent three weeks building? Invalid. Release notes posted to a portal you didn\'t know existed. Three days after go-live.</div>
+        <button class="btn-cta" onclick="finishL3()">Absorb the chaos →</button></div>`;
+    adj('stress', 12); adj('opsLoad', 8);
+    return;
+  }
+  const d = L3[l3Idx];
+  c.innerHTML = `<div class="level-header"><div class="level-tag">Level 3</div><div class="level-name" style="color:var(--white);">Commercial Reality</div><div class="level-sub">Decision ${l3Idx+1} of ${L3.length}</div></div>
+    <div class="commercial-layout">
+      <div class="airline-tower"><div class="airline-avatar">✈️</div><div class="airline-speech">${d.speech}</div></div>
+      <div class="decision-panel"><div class="decision-card"><h3>${d.tag}</h3><p>${d.body}</p>
+        ${d.options.map((o,i) => {
+          const cls = i===0?'btn btn-primary':i===d.options.length-1&&d.options.length>2?'btn btn-danger':'btn btn-secondary';
+          return `<button class="${cls}" onclick="doL3(${i})">${o.label}<div class="consequence">${o.hint}</div></button>`;
+        }).join('')}
+      </div></div></div>`;
+}
+function doL3(i) {
+  const d = L3[l3Idx], o = d.options[i];
+  Object.entries(o.fx).forEach(([k,v]) => adj(k,v));
+  if (o.badge) badge(o.badge);
+  l3Idx++; renderL3();
+}
+function finishL3() {
+  badge('blamed-airline'); badge('platform-company');
+  document.getElementById('canvas').innerHTML = `<div style="text-align:center;padding:40px 0;animation:fadeIn 0.8s ease;">
+    <div class="narration"><p style="color:var(--white);font-size:1.1rem;">The airline changed the economics before the industry finished adapting.</p><p style="color:var(--mid-grey);font-size:0.85rem;">And somewhere on the horizon, Offers & Orders waits patiently to make everything worse.</p></div>
+    <button class="btn-cta" style="margin-top:16px;" onclick="loadLevel(4)">Face the Clients →</button></div>`;
+}
+
+// ════════════════════════════════════════
+// LEVEL 4: Client Layer
+// ════════════════════════════════════════
+const BUBBLES = [
+  { t:'"Why can\'t I change this booking online?"', src:'Travel Manager', fx:{patience:-5,opsLoad:5,stress:4}, r:'This carrier\'s NDC doesn\'t support automated exchanges. Qantas QDP does. This one doesn\'t. Different airline, different capability.' },
+  { t:'"BTN says NDC is production-ready now."', src:'Procurement', fx:{patience:-8,stress:6,execAttention:-5}, r:'BTN wrote a headline. You\'re living the implementation. There\'s a difference.' },
+  { t:'"Why is this fare different from last time?"', src:'Traveller', fx:{patience:-6,stress:5}, r:'Different carrier, different NDC implementation, different fare structure. The "standard" is a direction, not a destination.' },
+  { t:'"My expense report doesn\'t match the invoice."', src:'Finance', fx:{patience:-10,opsLoad:8,stress:6}, r:'NDC data arrives at different speeds from different carriers. The amounts match. The timing doesn\'t. Finance doesn\'t care about the distinction.' },
+  { t:'"Google Flights shows this $200 cheaper."', src:'CEO', fx:{patience:-8,execAttention:-10,stress:8}, r:'Google shows retail pricing without programme policy, duty of care, or negotiated rates. Different universe.' },
+  { t:'"We need content parity or we\'re going to market."', src:'Procurement', fx:{patience:-12,stress:10,airlineMood:-5}, r:'Content parity requires every carrier\'s NDC to be at the same maturity. They\'re not. ETA: varies.' },
+  { t:'"Trent Synergy said your competitors have solved this."', src:'Procurement', fx:{patience:-10,stress:8,execAttention:-8}, r:'Trent interviewed their marketing team. Anyone can solve anything in 45 minutes if nobody asks follow-up questions.' },
+  { t:'"NDC Jesus on LinkedIn says we should just trust the standard."', src:'Travel Manager', fx:{stress:5,patience:-5}, r:'NDC Jesus has never reconciled an invoice or maintained a carrier capability matrix.' },
+  { t:'"The Inventor of OBTs said this should be seamless."', src:'CEO', fx:{patience:-8,execAttention:-10,stress:6}, r:'He invented the OBT 20 years ago. He hasn\'t touched a GDS queue since.' },
+  { t:'"I read Thought Leadership saying TMCs who don\'t adopt NDC will die."', src:'Procurement', fx:{patience:-6,stress:5}, r:'The thought leadership was written by an airline. The airline hasn\'t finished building their own API.' },
+  { t:'"Amex GBT and Concur say their partnership is Complete."', src:'Procurement', fx:{patience:-8,stress:8,execAttention:-5}, r:'Nobody knows what "Complete" means. Including, we suspect, Amex GBT and Concur.' },
+  { t:'"Spotnana says they built from the ground up with no legacy."', src:'CTO', fx:{patience:-8,stress:8,execAttention:-8}, r:'They also don\'t have your 200 client implementations, 15 years of mid-office customisations, and 47 markets of operational reality. Starting fresh is easy when you haven\'t started.' },
+  { t:'"We trialled Concur Travel. It can\'t show NDC and GDS fares together on a domestic return."', src:'Travel Manager', fx:{patience:-5,stress:3}, r:'It\'s 2026 and one of the largest OBTs on earth can\'t blend content sources on a simple domestic return. You feel slightly better about your own problems.' },
+  { t:'"Fiddletown International wants to know our NDC readiness timeline."', src:'Airport Relations (???)', fx:{stress:4,patience:-3}, r:'You don\'t have an airport relations team. Fiddletown doesn\'t have flights. Yet here we are.' },
+  { t:'"Can we get carbon data for NDC bookings?"', src:'Sustainability', fx:{stress:5,opsLoad:3}, r:'ICAO methodology applies but data fields aren\'t consistently populated across carriers. Consistent theme.' },
+];
+let l4Turn = 0, l4Active = [];
+
+function lvl4() {
+  document.getElementById('canvasWrap').className = 'canvas-wrap chaos';
+  l4Turn = 0;
+  document.getElementById('bottomBanner').textContent = 'You can only answer one per turn. Others escalate.';
+  l4Active = [...BUBBLES].sort(() => Math.random()-0.5).slice(0,6).map((b,i) => ({...b, id:i, esc:false, ans:false}));
+  renderL4();
+}
+function renderL4() {
+  const c = document.getElementById('canvas');
+  if (l4Active.every(b=>b.ans) || l4Turn >= 6) {
+    c.innerHTML = `<div class="level-header"><div class="level-tag">Level 4</div><div class="level-name">The Client Layer</div><div class="level-sub">Round complete.</div></div><div class="narration"><p>You cannot satisfy everyone.<br>You chose. They noticed.</p><button class="btn-cta" style="margin-top:12px;" onclick="loadLevel(5)">Face Internal Alignment →</button></div>`;
+    badge('blamed-obt'); return;
+  }
+  c.innerHTML = `<div class="level-header"><div class="level-tag">Level 4</div><div class="level-name">The Client Layer</div><div class="level-sub">Turn ${l4Turn+1} — Choose one to address.</div></div><div class="bubble-field" id="bf"></div><div id="l4Resp" style="text-align:center;margin-top:12px;"></div>`;
+  const f = document.getElementById('bf');
+  l4Active.forEach(b => {
+    if (b.ans) return;
+    const el = document.createElement('div');
+    el.className = `bubble ${b.esc ? 'escalated' : ''}`;
+    el.innerHTML = `<div style="font-size:0.65rem;color:var(--mid-grey);margin-bottom:4px;font-weight:600;">${b.src}</div>${b.t}`;
+    el.onclick = () => answerBubble(b.id);
+    f.appendChild(el);
+  });
+}
+function answerBubble(id) {
+  const b = l4Active.find(x=>x.id===id); if (!b||b.ans) return;
+  b.ans = true;
+  Object.entries(b.fx).forEach(([k,v]) => adj(k,v));
+  l4Active.forEach(x => { if (!x.ans && x.id !== id) { x.esc = true; adj('patience',-2); adj('stress',2); }});
+  l4Turn++;
+  const r = document.getElementById('l4Resp');
+  if (r) { r.innerHTML = `<div class="event-card blue"><div class="event-label" style="color:var(--blue);">Your Response</div>${b.r}</div>`; setTimeout(renderL4, 2200); }
+}
+
+// ════════════════════════════════════════
+// LEVEL 5: Internal Alignment
+// ════════════════════════════════════════
+const TICKETS = [
+  { d:'product', dn:'Product', t:'"Just one more requirement before NDC go-live"' },
+  { d:'ops', dn:'Ops', t:'"We can\'t service that carrier\'s NDC bookings — no automation"' },
+  { d:'sales', dn:'Sales', t:'"Client was promised full NDC parity by Q2"' },
+  { d:'data', dn:'Data', t:'"Savings methodology needs reworking for NDC content sources"' },
+  { d:'region', dn:'Region X', t:'"We implemented NDC differently. It works for us."' },
+  { d:'legal', dn:'Legal', t:'"Duty of care obligations vary per carrier\'s NDC implementation"' },
+  { d:'marketing', dn:'Marketing', t:'"Can we announce NDC capability at the conference?"' },
+  { d:'ops', dn:'Ops', t:'"Manual servicing queue is 3x normal since NDC ramp-up"' },
+  { d:'product', dn:'Product', t:'"GDS and NDC content deduplication keeps breaking"' },
+  { d:'sales', dn:'Sales', t:'"Prospect wants our NDC adoption percentage by Friday"' },
+  { d:'data', dn:'Data', t:'"Carbon calculation returns different fields per carrier"' },
+  { d:'region', dn:'Region Y', t:'"Our airline mix is 80% surcharging carriers — we have no choice"' },
+  { d:'gds', dn:'GDS', t:'"We can aggregate all your NDC content. Shall we talk terms?"' },
+  { d:'ops', dn:'Ops', t:'"Agent training per carrier\'s NDC is 2 weeks each. We have 15 carriers."' },
+  { d:'marketing', dn:'Marketing', t:'"Need Thought Leadership piece for conference. 800 words. Friday."' },
+  { d:'sales', dn:'Sales', t:'"Trent Synergy wants us on his podcast to discuss our NDC journey"' },
+  { d:'region', dn:'Fiddletown', t:'"Fiddletown International needs NDC content from all carriers by next month"' },
+  { d:'ops', dn:'Ops', t:'"Offshore team requests you to kindly do the needful on 47 open tickets"' },
+  { d:'sales', dn:'Sales', t:'"Prospect saw Spotnana demo. Wants to know why our OBT doesn\'t look like that."' },
+  { d:'product', dn:'Product', t:'"Need alignment on alignment. Scheduling alignment meeting."' },
+  { d:'marketing', dn:'Marketing', t:'"Can we call our head of NDC \'NDC Jesus\' in the press release?"' },
+  { d:'region', dn:'Region Z', t:'"The rep from South African Airways says raaaaaaarrrrgggghhhhttttt"' },
+  { d:'ops', dn:'Ops', t:'"Spotnana says no PNR comments, no scripting, no manual QC. Must be nice."' },
+  { d:'gds', dn:'GDS', t:'"We notice you\'re building direct. We have an aggregation product that could simplify—" (margin −5)' },
+  { d:'product', dn:'Product', t:'"Carrier updated API. Branded fare mapping broken. Again."' },
+  { d:'ops', dn:'Ops', t:'"Client tested Concur Travel. Can\'t return NDC and GDS on a domestic return. They\'re coming back to us. Hooray?"' },
+  { d:'region', dn:'Fiddletown', t:'"Fiddletown International Airport demanding dedicated account manager for NDC rollout"' },
+  { d:'marketing', dn:'Marketing', t:'"Fiddletown International wants logo placement on our NDC partners page"' },
+];
+let l5Vis = [], jiraC = 1000;
+
+function lvl5() {
+  document.getElementById('canvasWrap').className = 'canvas-wrap grey';
+  state.l5Clicks = 0;
+  document.getElementById('bottomBanner').textContent = 'Every request resolved creates two more. Click to experience.';
+  l5Vis = [...TICKETS].sort(()=>Math.random()-0.5).slice(0,5).map(t=>({...t, jira:`NDC-${jiraC++}`}));
+  renderL5();
+}
+function renderL5() {
+  const c = document.getElementById('canvas');
+  if (state.l5Clicks >= 8) {
+    c.innerHTML = `<div class="level-header"><div class="level-tag">Level 5</div><div class="level-name">Internal Alignment</div><div class="level-sub">You stopped. The tickets didn\'t.</div></div><div class="narration"><p>Every "quickly" created two more asks.<br>Alignment was never achieved.<br>You shipped anyway.</p><button class="btn-cta" style="margin-top:12px;" onclick="loadLevel(6)">See Results →</button></div>`;
+    badge('muted-teams'); badge('blamed-self'); return;
+  }
+  c.innerHTML = `<div class="level-header"><div class="level-tag">Level 5</div><div class="level-name">Internal Alignment</div><div class="level-sub">${l5Vis.length} open requests. Each click creates more.</div></div><div class="ticket-board" id="tb"></div><div style="text-align:center;margin-top:16px;"><button class="btn-cta" style="background:var(--red);" onclick="state.l5Clicks=8;renderL5();">Give up and ship it</button></div>`;
+  const b = document.getElementById('tb');
+  l5Vis.forEach((t,i) => {
+    const el = document.createElement('div');
+    el.className = 'ticket';
+    el.innerHTML = `<div class="dept ${t.d}">${t.dn}</div><div class="ticket-text">${t.t}<span class="jira-id">${t.jira}</span></div>`;
+    el.onclick = () => doL5(i);
+    b.appendChild(el);
+  });
+}
+function doL5(i) {
+  state.l5Clicks++; adj('stress',5); adj('opsLoad',3); adj('execAttention',-3);
+  const tk = l5Vis[i];
+  if (tk && tk.t.includes('Thought Leadership')) badge('thought-leader');
+  if (tk && tk.t.includes('needful')) badge('did-the-needful');
+  if (tk && tk.t.includes('Fiddletown')) badge('fiddletown');
+  if (tk && tk.t.includes('Trent Synergy')) badge('trent-pod');
+  if (tk && tk.t.includes('Spotnana')) badge('ground-up');
+  if (tk && tk.d === 'gds') badge('gds-trap');
+  l5Vis.splice(i,1);
+  const pool = TICKETS.filter(t => !l5Vis.some(v=>v.t===t.t));
+  const add = pool.sort(()=>Math.random()-0.5).slice(0,2);
+  add.forEach(a => l5Vis.push({...a, jira:`NDC-${jiraC++}`}));
+  showToast({ i:'🎫', t:'Resolved 1 ticket. Created 2 more. Net: +1.' });
+  renderL5();
+}
+
+// ════════════════════════════════════════
+// END SCREEN
+// ════════════════════════════════════════
+function endScreen() {
+  const app = document.getElementById('app');
+  app.classList.remove('active'); app.style.display = 'none';
+  const adoption = Math.max(20, Math.min(65, 55 - Math.floor(state.stress/6) + Math.floor(state.margin/5)));
+  const opsInc = Math.max(30, Math.min(120, state.opsLoad + 15 + Math.floor(Math.random()*20)));
+  const marginChg = Math.min(0, state.margin - 80 - 3);
+  const el = document.createElement('div');
+  el.className = 'end-screen';
+  el.innerHTML = `<div style="animation:fadeIn 1s ease;">
+    <div style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--mid-grey);margin-bottom:48px;">Final Report</div>
+    <div class="stat"><div class="stat-label">NDC Adoption</div><div class="stat-value yellow">${adoption}%</div></div>
+    <div class="stat"><div class="stat-label">Ops Tickets</div><div class="stat-value red">+${opsInc}%</div></div>
+    <div class="stat"><div class="stat-label">Margin</div><div class="stat-value red">${marginChg}%</div></div>
+    <div class="stat"><div class="stat-label">Client Satisfaction</div><div class="stat-value" style="color:var(--mid-grey);font-size:1.4rem;">"depends who you ask"</div></div>
+    <div class="stat"><div class="stat-label">Airline Relationships</div><div class="stat-value" style="color:var(--mid-grey);font-size:1.4rem;">"carrier-by-carrier"</div></div>
+    <div class="stat"><div class="stat-label">GDS Dependency</div><div class="stat-value" style="color:var(--mid-grey);font-size:1.4rem;">"it's complicated"</div></div>
+    <div class="stat"><div class="stat-label">Your Mood</div><div class="stat-value" style="color:var(--mid-grey);font-size:1.4rem;">"tired"</div></div>
+    <div class="final-narration">
+      NDC was never "too technical."<br>
+      It was 30 airlines doing 30 different things,<br>
+      wrapped in one acronym,<br>
+      while the GDS offered to make it simple again (for a fee),<br>
+      and the airlines charged you for not using it enough.<br><br>
+      Offers & Orders is on the horizon.<br>
+      God knows when.
+    </div>
+    <button class="conference-btn" onclick="showToast({i:'😏',t:'&quot;And that\\'s why we\\'re excited about NDC.&quot; *applause*'})">Present at Conference Fireside Chat</button>
+    <div class="conference-sub">"Abstract the pain. Monetise the slide."</div>
+    <div style="margin-top:40px;"><div style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--mid-grey);margin-bottom:16px;">Achievements</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:500px;margin:0 auto;">
+        ${state.badges.map(id => { const b = BADGES[id]; return b ? `<div style="background:rgba(255,255,255,0.08);border-radius:20px;padding:6px 14px;font-size:0.75rem;color:var(--mid-grey);">${b.i} ${b.t}</div>` : ''; }).join('')}
+      </div>
+    </div>
+    <div style="margin-top:40px;"><button class="conference-btn" style="background:transparent;border:1px solid var(--mid-grey);color:var(--mid-grey);font-size:0.8rem;padding:12px 28px;" onclick="resetGame()">Play Again</button></div>
+  </div>`;
+  document.body.appendChild(el);
+}
+
+// ════════════════════════════════════════
+// TOOLTIPS
+// ════════════════════════════════════════
+function showTip(e, text) {
+  hideTip();
+  const t = document.createElement('div');
+  t.className = 'tooltip'; t.textContent = text;
+  t.style.left = (e.clientX+12)+'px'; t.style.top = (e.clientY-40)+'px';
+  document.body.appendChild(t); tooltip = t;
+}
+function hideTip() { if (tooltip) { tooltip.remove(); tooltip = null; } }
+</script>
+</body>
+</html>
