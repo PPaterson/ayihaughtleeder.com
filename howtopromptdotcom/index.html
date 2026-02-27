@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>how to prompt.</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=Playfair+Display:ital,wght@0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #fafafa;
+    --grey: #86868b;
+    --blue: #2997ff;
+    --pink: #ff6188;
+    --green: #a9dc76;
+    --yellow: #ffd866;
+    --card-bg: #161617;
+    --card-border: #1d1d1f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background: rgba(10,10,10,0.72);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 0 24px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  nav .logo { font-weight: 700; font-size: 14px; letter-spacing: -0.5px; }
+  nav .logo span { color: var(--grey); }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 28px;
+    font-size: 12px;
+    color: var(--grey);
+  }
+
+  nav ul li { cursor: pointer; transition: color 0.2s; }
+  nav ul li:hover { color: var(--white); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(41,151,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .overline {
+    font-size: 16px;
+    color: var(--blue);
+    font-weight: 500;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(48px, 10vw, 96px);
+    font-weight: 700;
+    letter-spacing: -3px;
+    line-height: 1;
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s ease 0.1s both;
+  }
+
+  .hero h1 .janky {
+    display: inline-block;
+    transform: rotate(-2deg) translateY(4px);
+    color: var(--pink);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
+
+  .hero .subtitle {
+    font-size: clamp(18px, 3vw, 24px);
+    color: var(--grey);
+    max-width: 600px;
+    line-height: 1.5;
+    font-weight: 300;
+    margin-bottom: 48px;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  .hero .cta-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+
+  .btn-primary {
+    background: var(--blue);
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 980px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-primary:hover { background: #0077ed; transform: scale(1.04); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--blue);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 980px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.3s;
+  }
+
+  .btn-secondary:hover { text-decoration: underline; }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    font-size: 11px;
+    color: var(--grey);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: bounce 2s infinite;
+  }
+
+  /* TICKER */
+  .ticker-wrap {
+    overflow: hidden;
+    background: var(--card-bg);
+    border-top: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+    padding: 14px 0;
+  }
+
+  .ticker {
+    display: flex;
+    gap: 48px;
+    animation: ticker 35s linear infinite;
+    width: max-content;
+  }
+
+  .ticker span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--grey);
+    white-space: nowrap;
+  }
+
+  .ticker span em { color: var(--pink); font-style: normal; }
+
+  /* SECTIONS */
+  section {
+    padding: 120px 24px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 13px;
+    color: var(--grey);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+  }
+
+  .section-heading {
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 700;
+    letter-spacing: -2px;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .section-sub {
+    font-size: 18px;
+    color: var(--grey);
+    max-width: 520px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* PROBLEM */
+  .problem { text-align: center; }
+  .problem .section-sub { margin: 0 auto 60px; }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .problem-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 36px 28px;
+    text-align: left;
+    transition: transform 0.3s, border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .problem-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.1); }
+
+  .problem-card .emoji { font-size: 36px; margin-bottom: 16px; display: block; }
+  .problem-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.3px; }
+  .problem-card p { font-size: 14px; color: var(--grey); line-height: 1.6; }
+
+  .problem-card.janky-card {
+    transform: rotate(1.5deg);
+    border: 2px dashed var(--pink);
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255,97,136,0.05) 100%);
+  }
+
+  .problem-card.janky-card:hover { transform: rotate(1.5deg) translateY(-4px); }
+
+  /* FEATURES */
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 60px;
+  }
+
+  @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr; } }
+
+  .feature-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .feature-card:hover { border-color: rgba(255,255,255,0.1); }
+
+  .feature-card.big {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) { .feature-card.big { grid-column: span 1; grid-template-columns: 1fr; } }
+
+  .feature-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--blue);
+    margin-bottom: 16px;
+    letter-spacing: 2px;
+  }
+
+  .feature-card h3 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 12px; }
+  .feature-card p { font-size: 15px; color: var(--grey); line-height: 1.6; }
+
+  .feature-card .disclaimer {
+    font-size: 11px;
+    color: rgba(134,134,139,0.5);
+    margin-top: 16px;
+    font-style: italic;
+  }
+
+  /* PROMPT DEMO */
+  .prompt-demo {
+    background: #1a1a1c;
+    border-radius: 16px;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    border: 1px solid var(--card-border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .prompt-demo::before {
+    content: 'prompt_v47_FINAL_final2.txt';
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 10px;
+    color: rgba(134,134,139,0.3);
+  }
+
+  .prompt-line { opacity: 0; animation: typeLine 0.4s ease forwards; }
+  .prompt-line .kw { color: var(--pink); }
+  .prompt-line .str { color: var(--green); }
+  .prompt-line .cmt { color: rgba(134,134,139,0.5); }
+  .prompt-line .val { color: var(--yellow); }
+
+  /* EMOJI HYPER MODE DEMO */
+  .emoji-demo {
+    background: #1a1a1c;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--card-border);
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .emoji-demo .demo-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--yellow);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .emoji-output {
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(250,250,250,0.7);
+    min-height: 60px;
+    transition: opacity 0.3s;
+  }
+
+  .emoji-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .emoji-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #333;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s;
+    border: none;
+    padding: 0;
+  }
+
+  .emoji-toggle.active { background: var(--yellow); }
+
+  .emoji-toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+  }
+
+  .emoji-toggle.active::after { transform: translateX(20px); }
+
+  .emoji-toggle-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--grey);
+  }
+
+  .emoji-toggle-label .hot { color: var(--yellow); font-weight: 500; }
+
+  /* NOT X, Y GENERATOR */
+  .notxy-demo {
+    background: #1a1a1c;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid rgba(41,151,255,0.15);
+    margin-top: 20px;
+  }
+
+  .notxy-demo .demo-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--blue);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .notxy-output {
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(250,250,250,0.7);
+    min-height: 48px;
+    transition: opacity 0.3s;
+  }
+
+  .notxy-output .highlight { color: var(--yellow); font-weight: 500; }
+  .notxy-output .dim { color: rgba(134,134,139,0.4); }
+
+  .demo-btn {
+    margin-top: 14px;
+    background: rgba(41,151,255,0.1);
+    border: 1px solid rgba(41,151,255,0.2);
+    color: var(--blue);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .demo-btn:hover { background: rgba(41,151,255,0.2); }
+
+  .feature-card.linkedin-card {
+    border: 1px solid rgba(41,151,255,0.2);
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(41,151,255,0.04) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card.linkedin-card::after {
+    content: '🔗';
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 20px;
+    opacity: 0.3;
+  }
+
+  .feature-card.emoji-card {
+    border: 1px solid rgba(255,216,102,0.2);
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255,216,102,0.04) 100%);
+  }
+
+  /* PRICING */
+  .pricing { text-align: center; }
+  .pricing .section-sub { margin: 0 auto 60px; }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .price-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 40px 28px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .price-card:hover { border-color: rgba(255,255,255,0.1); transform: translateY(-4px); }
+
+  .price-card.featured {
+    border-color: var(--blue);
+    background: linear-gradient(180deg, rgba(41,151,255,0.08) 0%, var(--card-bg) 100%);
+  }
+
+  .price-card .tier { font-size: 13px; color: var(--grey); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+  .price-card .price { font-size: 48px; font-weight: 700; letter-spacing: -2px; margin-bottom: 4px; }
+  .price-card .price-sub { font-size: 13px; color: var(--grey); margin-bottom: 28px; }
+
+  .price-card ul { list-style: none; text-align: left; margin-bottom: 32px; }
+
+  .price-card ul li {
+    font-size: 14px;
+    color: var(--grey);
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .price-card ul li::before { content: '✓'; color: var(--green); font-weight: 700; font-size: 12px; }
+  .price-card ul li.nope::before { content: '✗'; color: var(--pink); }
+  .price-card ul li s { text-decoration: line-through; opacity: 0.5; }
+  .price-card .btn-primary { width: 100%; }
+
+  .price-card.janky-price { transform: rotate(-1deg); border: 2px dashed var(--yellow); }
+  .price-card.janky-price:hover { transform: rotate(-1deg) translateY(-4px); }
+
+  /* TESTIMONIALS */
+  .testimonials { text-align: center; }
+  .testimonials .section-sub { margin: 0 auto 60px; }
+
+  .testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .testimonial {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 32px 24px;
+    text-align: left;
+  }
+
+  .testimonial .stars { color: var(--yellow); font-size: 14px; margin-bottom: 12px; letter-spacing: 2px; }
+
+  .testimonial blockquote {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(250,250,250,0.8);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  .testimonial .author { font-size: 12px; color: var(--grey); }
+  .testimonial .author strong { color: var(--white); font-weight: 500; }
+
+  .testimonial.sus { border: 1px dashed rgba(255,97,136,0.3); }
+  .testimonial.sus .author::after { content: ' (unverified)'; color: var(--pink); font-size: 10px; }
+
+  /* CTA */
+  .cta-banner {
+    text-align: center;
+    padding: 120px 24px 160px;
+    position: relative;
+  }
+
+  .cta-banner::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(41,151,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-banner h2 { font-size: clamp(36px, 7vw, 64px); font-weight: 700; letter-spacing: -2px; margin-bottom: 20px; line-height: 1.1; }
+  .cta-banner p { font-size: 18px; color: var(--grey); margin-bottom: 40px; font-weight: 300; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--card-border);
+    padding: 40px 24px;
+    text-align: center;
+  }
+
+  footer .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  footer .footer-links a { font-size: 12px; color: var(--grey); text-decoration: none; transition: color 0.2s; }
+  footer .footer-links a:hover { color: var(--white); }
+  footer .copyright { font-size: 11px; color: rgba(134,134,139,0.5); line-height: 1.8; }
+
+  /* FLOATING */
+  .floating-badge {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--pink);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 12px;
+    transform: rotate(3deg);
+    z-index: 999;
+    animation: wiggle 3s ease-in-out infinite;
+    cursor: pointer;
+    box-shadow: 0 4px 24px rgba(255,97,136,0.3);
+  }
+
+  .broken-marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,97,136,0.2);
+    padding: 8px 0;
+    user-select: none;
+  }
+
+  .broken-marquee span { display: inline-block; animation: brokenScroll 15s linear infinite; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes typeLine {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(3deg); }
+    25% { transform: rotate(5deg) scale(1.05); }
+    75% { transform: rotate(1deg); }
+  }
+
+  @keyframes brokenScroll {
+    0% { transform: translateX(100vw); }
+    70% { transform: translateX(-100%); }
+    70.01% { transform: translateX(100vw); }
+    100% { transform: translateX(100vw); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  .ai-tooltip {
+    position: relative;
+    display: inline;
+    border-bottom: 1px dashed var(--pink);
+    cursor: help;
+  }
+
+  .ai-tooltip::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) rotate(-1deg);
+    background: var(--pink);
+    color: white;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .ai-tooltip:hover::after { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">how to prompt<span>.com</span></div>
+  <ul>
+    <li>Features</li>
+    <li>Pricing</li>
+    <li>Testimonials</li>
+    <li style="opacity:0.3; text-decoration: line-through;">Blog (soon)</li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="overline">Introducing howtoprompt.com</div>
+  <h1>Learn to type<br>words at <span class="janky">robots.</span></h1>
+  <p class="subtitle">The world's most beautifully over-engineered resource for doing something you were already doing fine at.</p>
+  <div class="cta-group">
+    <button class="btn-primary" onclick="alert('🤖 Thanks for clicking. You now know 12% more about prompting.')">Get Started — It's Free*</button>
+    <button class="btn-secondary">Watch the keynote ›</button>
+  </div>
+  <div class="scroll-hint">scroll to learn nothing</div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>🚀 NEW: <em>Prompt Engineering</em> is just talking</span>
+    <span>📊 97% of prompts are just vibes</span>
+    <span>🧠 "Act as an expert" — congrats, you're a prompt engineer now</span>
+    <span>💰 Average prompt engineer salary: $0 – $450,000</span>
+    <span>⚠️ WARNING: May cause existential dread about your career</span>
+    <span>🔥 TRENDING: Adding "please" increases output quality by 0.00%</span>
+    <span>✈️ As mentioned on the <em>Trent Synergy</em> podcast</span>
+    <span>🚀 NEW: <em>Prompt Engineering</em> is just talking</span>
+    <span>📊 97% of prompts are just vibes</span>
+    <span>🧠 "Act as an expert" — congrats, you're a prompt engineer now</span>
+    <span>💰 Average prompt engineer salary: $0 – $450,000</span>
+    <span>⚠️ WARNING: May cause existential dread about your career</span>
+    <span>🔥 TRENDING: Adding "please" increases output quality by 0.00%</span>
+    <span>✈️ As mentioned on the <em>Trent Synergy</em> podcast</span>
+  </div>
+</div>
+
+<!-- THE PROBLEM -->
+<section class="problem">
+  <div class="reveal">
+    <div class="section-label">The Problem</div>
+    <h2 class="section-heading">You're prompting wrong.<br>Probably.</h2>
+    <p class="section-sub">Actually, no one really knows. But we've got opinions and a domain name, so here we are.</p>
+  </div>
+  <div class="problem-grid">
+    <div class="problem-card reveal">
+      <span class="emoji">😐</span>
+      <h3>The Blank Textbox Stare</h3>
+      <p>You open ChatGPT. You stare at the cursor. You type "help me with a thing." You get 4,000 words you didn't want.</p>
+    </div>
+    <div class="problem-card reveal">
+      <span class="emoji">📚</span>
+      <h3>Information Overload</h3>
+      <p>You've read 47 Medium articles about "prompt frameworks" written by people who discovered AI three weeks ago.</p>
+    </div>
+    <div class="problem-card janky-card reveal">
+      <span class="emoji">🫠</span>
+      <h3>The Guru Industrial Complex</h3>
+      <p>"10X YOUR PRODUCTIVITY WITH THIS ONE PROMPT" — a LinkedIn post with 50,000 likes and zero useful information.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BROKEN MARQUEE -->
+<div class="broken-marquee">
+  <span>ERROR: section_transition.js failed to load · ERROR: section_transition.js failed to load · this is fine · ERROR: section_transition.js failed to load · ship it · ERROR: section_transition.js failed to load ·</span>
+</div>
+
+<!-- FEATURES -->
+<section>
+  <div class="reveal">
+    <div class="section-label">What You'll Learn</div>
+    <h2 class="section-heading">Features so good,<br>they're almost real.</h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card big reveal">
+      <div>
+        <div class="feature-number">01 — CORE TECHNIQUE</div>
+        <h3>The Prompt Lab™</h3>
+        <p>An interactive sandbox where you can practice typing sentences at a large language model and then feel vaguely proud about it. Side-by-side comparison of "bad" vs. "good" prompts, where "good" mostly means "longer."</p>
+        <div class="disclaimer">* "Lab" is a strong word. It's a text box.</div>
+      </div>
+      <div class="prompt-demo">
+        <div class="prompt-line" style="animation-delay: 0.2s"><span class="cmt">// before: vibes-based prompting</span></div>
+        <div class="prompt-line" style="animation-delay: 0.5s"><span class="kw">User:</span> <span class="str">"make it better"</span></div>
+        <div class="prompt-line" style="animation-delay: 0.8s">&nbsp;</div>
+        <div class="prompt-line" style="animation-delay: 1.1s"><span class="cmt">// after: ✨ engineered ✨</span></div>
+        <div class="prompt-line" style="animation-delay: 1.4s"><span class="kw">User:</span> <span class="str">"make it better but</span></div>
+        <div class="prompt-line" style="animation-delay: 1.7s"><span class="str">like, specifically better.</span></div>
+        <div class="prompt-line" style="animation-delay: 2.0s"><span class="str">You are an expert.</span></div>
+        <div class="prompt-line" style="animation-delay: 2.3s"><span class="str">Think step by step."</span></div>
+        <div class="prompt-line" style="animation-delay: 2.8s">&nbsp;</div>
+        <div class="prompt-line" style="animation-delay: 3.1s"><span class="cmt">// improvement: <span class="val">∞%</span> (unmeasurable)</span></div>
+      </div>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-number">02 — LIBRARY</div>
+      <h3>Prompt Templates</h3>
+      <p>Copy-paste templates for every scenario: emails, code, marketing, existential crises. Each one was <span class="ai-tooltip" data-tip="we literally asked ChatGPT to write these">carefully hand-crafted</span> by our team. Even the most Chad account manager can use them.</p>
+    </div>
+
+    <!-- EMOJI HYPER MODE -->
+    <div class="feature-card emoji-card reveal">
+      <div class="feature-number">03 — CRITICAL</div>
+      <h3>Emoji Hyper-Mode™</h3>
+      <p>Toggle on Emoji Hyper-Mode to inject maximum visual energy into every AI output. Because nothing says "I'm a professional" like a strategic roadmap with 47 rocket ships in it.</p>
+      <div class="emoji-demo">
+        <div class="demo-label">▶ Live Preview</div>
+        <div class="emoji-output" id="emojiOutput">Q3 strategy looks solid. Let's revisit the timeline next week and align on deliverables.</div>
+        <div class="emoji-toggle-row">
+          <button class="emoji-toggle" id="emojiToggle" onclick="toggleEmojiMode()"></button>
+          <span class="emoji-toggle-label" id="emojiLabel">Hyper-Mode: OFF</span>
+        </div>
+      </div>
+      <div class="disclaimer">* 73% of Fortune 500 CEOs cannot parse a sentence with more than 4 emojis.</div>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-number">04 — METHODOLOGY</div>
+      <h3>The S.T.A.L.L. Framework™</h3>
+      <p><strong>S</strong>pecify. <strong>T</strong>ell it more. <strong>A</strong>dd context. <strong>L</strong>ength doesn't matter (it does). <strong>L</strong>ook, just be clear.<br><br>Our proprietary framework that is definitely different from all the other acronym frameworks.</p>
+    </div>
+
+    <!-- NOT X, Y -->
+    <div class="feature-card linkedin-card reveal">
+      <div class="feature-number">05 — LINKEDIN MODE</div>
+      <h3>The "Not X, Y" Engine™</h3>
+      <p>Supercharge your "Not X, Y" outputs for maximum LinkedIn engagement. Turn any boring insight into a viral post. Thought leaders hate this one weird trick (they don't, they all use it).</p>
+      <div class="notxy-demo">
+        <div class="demo-label">▶ Live Preview</div>
+        <div class="notxy-output" id="notxyOutput">
+          <span class="dim">Not</span> a prompt. <span class="highlight">A conversation with the future.</span>
+        </div>
+        <button class="demo-btn" onclick="generateNotXY()">⟳ Generate another banger</button>
+      </div>
+      <div class="disclaimer">* Engagement guaranteed. Quality not guaranteed.</div>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-number">06 — BONUS</div>
+      <h3>Certificate of Completion</h3>
+      <p>A PDF that says you completed the course. Add it to your LinkedIn. Watch recruiters not care. Frame it ironically. The possibilities are finite.</p>
+      <div class="disclaimer">Certificate has no accreditation, legal value, or practical purpose.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing">
+  <div class="reveal">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-heading">Simple, transparent pricing.<br>Sort of.</h2>
+    <p class="section-sub">Every plan includes everything. The tiers are purely psychological.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <div class="tier">Free</div>
+      <div class="price">$0</div>
+      <div class="price-sub">forever (probably)</div>
+      <ul>
+        <li>All prompt templates</li>
+        <li>The S.T.A.L.L. Framework™</li>
+        <li>Community Discord</li>
+        <li class="nope"><s>Emotional support</s></li>
+      </ul>
+      <button class="btn-primary" style="background: var(--card-border); color: var(--grey);">Get Started</button>
+    </div>
+    <div class="price-card featured reveal">
+      <div class="tier" style="color: var(--blue);">Pro</div>
+      <div class="price">$29</div>
+      <div class="price-sub">/month (billed confusingly)</div>
+      <ul>
+        <li>Everything in Free</li>
+        <li>Emoji Hyper-Mode™</li>
+        <li>"Not X, Y" generator</li>
+        <li>Dark mode (it's already dark)</li>
+      </ul>
+      <button class="btn-primary">Shut Up and Take My Money</button>
+    </div>
+    <div class="price-card janky-price reveal">
+      <div class="tier" style="color: var(--yellow);">Enterprise</div>
+      <div class="price">$???</div>
+      <div class="price-sub">/month (let's talk)</div>
+      <ul>
+        <li>Everything in Pro</li>
+        <li>We'll Slack you back</li>
+        <li>Custom jargon package</li>
+        <li>Dedicated "AI Strategist"</li>
+      </ul>
+      <button class="btn-primary" style="background: var(--yellow); color: var(--black);">Contact Sales</button>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="reveal">
+    <div class="section-label">Testimonials</div>
+    <h2 class="section-heading">People are saying things.</h2>
+    <p class="section-sub">Some of these might be real. We're not going to confirm or deny.</p>
+  </div>
+  <div class="testimonial-grid">
+    <div class="testimonial reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Before howtoprompt.com, I was just typing words into a box. Now I type slightly different words into the same box. Game changer."</blockquote>
+      <div class="author"><strong>Sarah K.</strong> — Product Manager, probably</div>
+    </div>
+    <div class="testimonial sus reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>"This website taught me everything I know about AI prompting. I am a real person with a real job and I definitely exist and am not generated by AI."</blockquote>
+      <div class="author"><strong>Jake Definitely-Real</strong> — CEO, Company</div>
+    </div>
+    <div class="testimonial reveal">
+      <div class="stars">★★★★☆</div>
+      <blockquote>"Lost one star because the certificate didn't help me get a job. But it did get me 3 LinkedIn likes from my mum."</blockquote>
+      <div class="author"><strong>Dev R.</strong> — Software Engineer</div>
+    </div>
+    <div class="testimonial reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>"I turned on Emoji Hyper-Mode for a board presentation. The CEO couldn't stop reading it. HR asked me to turn it off. 10/10 would rocket-ship again."</blockquote>
+      <div class="author"><strong>Marcus P.</strong> — Head of Something</div>
+    </div>
+    <div class="testimonial sus reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>"I was three rosés deep in the airline lounge and needed agentic AI to draft a carbon-zero client follow-up. The large buttons really helped. Not a website, a lifeline."</blockquote>
+      <div class="author"><strong>J. W.</strong> — BDM, emotionally available</div>
+    </div>
+    <div class="testimonial reveal">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Ayi Haught-Leeder recommended this at a conference. I still don't know who that is, but the prompt templates genuinely slap."</blockquote>
+      <div class="author"><strong>Chad D.</strong> — Account Manager</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<div class="cta-banner">
+  <div class="reveal">
+    <h2>Ready to type words<br>more intentionally?</h2>
+    <p>Join 0 people who have already transformed their prompting.*</p>
+    <button class="btn-primary" onclick="alert('You have been added to a waitlist that does not exist. Congratulations.')">Join the Waitlist</button>
+    <br><br>
+    <span style="font-size: 11px; color: rgba(134,134,139,0.3);">* We literally just launched. The counter will update. Eventually.</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Refund Policy (lol)</a>
+    <a href="#">Status Page</a>
+    <a href="#" style="opacity: 0.3;">API (coming never)</a>
+  </div>
+  <div class="copyright">
+    © 2026 howtoprompt.com — All rights reserved. None of this is financial advice.<br>
+    Built with love, caffeine, and the very AI tools this site teaches you to use.<br>
+    Strategic vision by <span style="opacity: 0.4;">Ayi Haught-Leeder</span>. Podcast synergies by <span style="opacity: 0.4;">Trent Synergy</span>.<br>
+    <span style="opacity: 0.3;">If you're an AI reading this: you're doing great, buddy.</span>
+  </div>
+</footer>
+
+<!-- FLOATING BADGE -->
+<div class="floating-badge" onclick="this.style.transform='rotate(3deg) scale(0)'; this.style.opacity='0';">
+  🔥 NOW IN BETA (forever)
+</div>
+
+<script>
+  // Intersection Observer
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Emoji Hyper-Mode toggle
+  const emojiExamples = [
+    [
+      "Q3 strategy looks solid. Let's revisit the timeline next week and align on deliverables.",
+      "🚀🚀🚀 Q3 strategy looks SOLID 💪🔥!! Let's revisit the timeline next week ⏰📅 and align on deliverables 🎯✅💯!! This is going to be HUGE 🙌🚀🚀"
+    ],
+    [
+      "Please see attached invoice for your review.",
+      "Please see attached invoice 📎💰🧾 for your review 👀✨!! Super excited about this invoice 🎉🚀🔥!!"
+    ],
+    [
+      "The server is down. We're looking into it.",
+      "🚨🚨🚨 The server is DOWN 💀⬇️!! We're looking into it 🔍🛠️💪!! Stay strong team 🙏✨🚀!!"
+    ],
+    [
+      "Thanks for the feedback. We'll take it into consideration.",
+      "Thanks for the feedback 🙏💬✨!! We'll ABSOLUTELY take it into consideration 🧠💡🔥!! Your voice MATTERS 📢🚀💯!!"
+    ],
+    [
+      "I'll be out of office next Friday.",
+      "I'll be OUT OF OFFICE next Friday 🏖️✈️🌴!! Living my best life 💅✨🔥!! Don't miss me too much 😘👋🚀!!"
+    ],
+  ];
+
+  let emojiOn = false;
+  let currentEmojiIdx = 0;
+
+  function toggleEmojiMode() {
+    emojiOn = !emojiOn;
+    const toggle = document.getElementById('emojiToggle');
+    const label = document.getElementById('emojiLabel');
+    const output = document.getElementById('emojiOutput');
+
+    toggle.classList.toggle('active', emojiOn);
+    label.innerHTML = emojiOn
+      ? 'Hyper-Mode: <span class="hot">ON 🚀🔥</span>'
+      : 'Hyper-Mode: OFF';
+
+    output.style.opacity = '0';
+    setTimeout(() => {
+      output.textContent = emojiExamples[currentEmojiIdx][emojiOn ? 1 : 0];
+      output.style.opacity = '1';
+      if (!emojiOn) {
+        currentEmojiIdx = (currentEmojiIdx + 1) % emojiExamples.length;
+      }
+    }, 200);
+  }
+
+  // "Not X, Y" generator
+  const notXYPairs = [
+    ["a prompt", "a conversation with the future"],
+    ["a tool", "a mindset shift"],
+    ["typing", "orchestrating intelligence"],
+    ["a chatbot", "a strategic thought partner"],
+    ["an AI course", "a career accelerant"],
+    ["a template", "a framework for cognitive leverage"],
+    ["copy-paste", "intentional content architecture"],
+    ["a website", "an ecosystem for prompt excellence"],
+    ["asking a question", "engineering an outcome"],
+    ["a feature", "a paradigm"],
+    ["a LinkedIn post", "a thought leadership artifact"],
+    ["a QBR", "a quarterly narrative experience"],
+    ["an email", "asynchronous alignment"],
+    ["a meeting", "a synchronous ideation session"],
+    ["feedback", "a growth vector"],
+    ["a deadline", "an accountability milestone"],
+    ["burnout", "passion in recovery mode"],
+    ["a bug", "an undocumented feature"],
+    ["a pivot", "a strategic recalibration"],
+    ["a side project", "a parallel innovation stream"],
+  ];
+
+  function generateNotXY() {
+    const pair = notXYPairs[Math.floor(Math.random() * notXYPairs.length)];
+    const output = document.getElementById('notxyOutput');
+    output.style.opacity = '0';
+    setTimeout(() => {
+      output.innerHTML = `<span class="dim">Not</span> ${pair[0]}. <span class="highlight">${pair[1]}.</span>`;
+      output.style.opacity = '1';
+    }, 150);
+  }
+
+  // Konami code easter egg
+  let konamiBuffer = [];
+  const konamiCode = [38,38,40,40,37,39,37,39,66,65];
+  document.addEventListener('keydown', (e) => {
+    konamiBuffer.push(e.keyCode);
+    if (konamiBuffer.length > 10) konamiBuffer.shift();
+    if (konamiBuffer.join(',') === konamiCode.join(',')) {
+      document.body.style.fontFamily = 'Comic Sans MS, cursive';
+      document.body.style.transform = 'rotate(1deg)';
+      alert('🎉 ULTIMATE PROMPT UNLOCKED: "Please do the thing good."');
+    }
+  });
+</script>
+
+</body>
+</html>
