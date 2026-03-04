@@ -30,14 +30,14 @@ ul{list-style:none;padding:0}ul li{padding:.3em 0}ul li::before{content:"→ ";c
 .tc p{font-size:clamp(12px,1.1vw,17px);color:var(--lg);line-height:1.4}
 .pr{position:fixed;bottom:0;left:0;height:3px;background:var(--gn);transition:width .4s ease;z-index:100}
 .sc{position:fixed;bottom:16px;right:24px;font-size:14px;color:var(--dm);font-weight:400;letter-spacing:.1em;z-index:100}
-.ip{background:#111;border:2px dashed #444;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--gy);font-size:14px;min-height:200px;text-align:center;padding:1em}
 .qt{border-left:4px solid var(--gn);padding-left:1.5em;font-style:italic}
 .qt p{font-size:clamp(18px,2.2vw,34px);color:var(--wh);font-weight:400;line-height:1.4}
 .qt .at{font-size:clamp(12px,1vw,16px);color:var(--gy);font-style:normal;margin-top:.5em;text-transform:uppercase;letter-spacing:.1em}
 .pb{background:#0d0d0d;border:1px solid #2a2a2a;border-radius:8px;padding:1em 1.5em;font-family:'Courier New',monospace;font-size:clamp(13px,1.2vw,19px);color:var(--gn);line-height:1.5;margin:.6em 0}
 .sm{font-size:clamp(11px,.9vw,14px);color:var(--gy)}
-.hero-img{width:100%;max-height:55vh;object-fit:cover;border-radius:8px;margin-top:1em}
+.hero-img{max-height:50vh;object-fit:contain;border-radius:8px}
 .beta{background:var(--yl);color:var(--bk);font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle;text-transform:uppercase;letter-spacing:.05em}
+.screenshot{width:100%;border-radius:8px;border:1px solid #2a2a2a}
 @media(max-width:768px){.g2,.g3{grid-template-columns:1fr}.cs{width:30px}}
 </style>
 </head>
@@ -51,7 +51,7 @@ ul{list-style:none;padding:0}ul li{padding:.3em 0}ul li::before{content:"→ ";c
 <div class="sub">FCM Travel · 5 March 2026 · 12:30 PM</div>
 <h1>AI for<br>Account<br>Managers</h1>
 <div class="sp"></div>
-<p style="color:var(--gy);font-weight:400">Phil Paterson<br><span class="dm">Your AI speaker today</span></p>
+<p style="color:var(--gy);font-weight:400">Phil Paterson<br><span class="dm">Assistant Head of Account Management NSW</span></p>
 <div class="sps"></div>
 <p class="sm">Use arrow keys to navigate · F11 for full screen</p>
 </div>
@@ -62,7 +62,7 @@ ul{list-style:none;padding:0}ul li{padding:.3em 0}ul li::before{content:"→ ";c
 <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column">
 <h2 style="margin-bottom:.3em">Kia ora, <span class="ac">Aotearoa</span></h2>
 <p style="font-size:clamp(16px,1.6vw,26px);margin-bottom:.8em">The robots have arrived. The sheep are not impressed.</p>
-<div class="ip" style="min-height:300px;max-width:70vw;width:100%">[ ELECTRIC SHEEP IMAGE ]<br><br><span style="font-size:12px">Replace this div with:<br>&lt;img src="nzaibrochoice.png" class="hero-img" style="max-width:70vw"&gt;</span></div>
+<img src="https://ayihaughtleeder.com/AI-For-AM-NZ-05MAR26/nzaibrochoice.png" class="hero-img" style="max-width:70vw" alt="AI sheep with glowing red eyes in New Zealand">
 <p class="sm" style="margin-top:.6em">Image: 100% AI-generated. 0% animal welfare violations. Probably.</p>
 </div>
 </div>
@@ -119,12 +119,12 @@ ul{list-style:none;padding:0}ul li{padding:.3em 0}ul li::before{content:"→ ";c
 <p style="color:var(--pk)">Basically like a few people we all know.</p>
 </div>
 
-<!-- SLIDE 6: FCTGPT -->
+<!-- SLIDE 6: FCGPT -->
 <div class="slide" data-n="5">
 <div class="bt" style="background:var(--yl)"></div>
 <div class="cs"><div style="background:var(--yl)"></div><div style="background:var(--yl);opacity:.6"></div><div style="background:var(--yl);opacity:.3"></div><div style="background:var(--bk)"></div><div style="background:var(--bk)"></div><div style="background:var(--bk)"></div></div>
 <div class="sub">Our Tool</div>
-<h2>FCTGPT</h2>
+<h2>FCGPT</h2>
 <div class="sp"></div>
 <div class="g2">
 <div>
@@ -141,10 +141,7 @@ ul{list-style:none;padding:0}ul li{padding:.3em 0}ul li::before{content:"→ ";c
 </div>
 </div>
 <div>
-<div class="ip" style="min-height:320px;flex-direction:column;gap:8px">
-<div style="font-size:16px;color:var(--gy)">FCTGPT Screenshot</div>
-<div style="font-size:13px;color:var(--dm);max-width:280px">Host your screenshot image, then replace this div with:<br><code style="color:var(--gn);background:#111;padding:2px 6px;border-radius:4px;font-size:12px">&lt;img src="YOUR_URL" style="width:100%;border-radius:8px"&gt;</code></div>
-</div>
+<img src="https://ayihaughtleeder.com/AI-For-AM-NZ-05MAR26/FCTGPT.png" class="screenshot" alt="FCGPT interface screenshot">
 </div>
 </div>
 </div>
@@ -204,7 +201,7 @@ ul{list-style:none;padding:0}ul li{padding:.3em 0}ul li::before{content:"→ ";c
 <div class="sp"></div>
 <p style="font-size:clamp(18px,2vw,30px);color:var(--wh);font-weight:300">Experiment. Break things. Ask dumb questions.<br>The AI doesn't judge you.<br><span style="color:#666">(Unlike most of your colleagues.)</span></p>
 <div class="sp"></div>
-<p style="color:var(--lg)">Use FCTGPT. Use ChatGPT. Use Gemini. Use whatever.<br>The tool doesn't matter. The habit does.</p>
+<p style="color:var(--lg)">Use FCGPT. Use ChatGPT. Use Gemini. Use whatever.<br>The tool doesn't matter. The habit does.</p>
 </div>
 </div>
 </div>
@@ -300,7 +297,7 @@ ul{list-style:none;padding:0}ul li{padding:.3em 0}ul li::before{content:"→ ";c
 <div>
 <h1 style="font-size:clamp(40px,7vw,120px)">Now go<br><span class="ac">break</span><br>things.</h1>
 <div class="sp"></div>
-<p style="color:var(--lg);font-size:clamp(16px,1.4vw,22px)">Open FCTGPT. Ask it something stupid. Then ask it something useful.<br>Then ask it to write a haiku about your least favourite airline.<br><span style="color:#666">Then ask it to explain what a haiku is because you forgot.</span></p>
+<p style="color:var(--lg);font-size:clamp(16px,1.4vw,22px)">Open FCGPT. Ask it something stupid. Then ask it something useful.<br>Then ask it to write a haiku about your least favourite airline.<br><span style="color:#666">Then ask it to explain what a haiku is because you forgot.</span></p>
 <div class="sp"></div>
 <p style="color:var(--gy)">Phil Paterson · FCM Travel</p>
 <p class="sm" style="margin-top:.5em">This presentation was also vibe coded. Obviously.</p>
