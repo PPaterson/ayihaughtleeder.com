@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FCM × Aristocrat — Partnership Extension</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:      #00DE50;
+      --deep-green: #00B840;
+      --black:      #000000;
+      --charcoal:   #505050;
+      --grey1:      #F5F5F5;
+      --grey2:      #E5E5E5;
+      --grey3:      #D9D9D9;
+      --white:      #FFFFFF;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', Arial, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── LOGO BAR ── */
+    .logo-bar {
+      background: var(--white);
+      padding: 28px 40px;
+      border-bottom: 1px solid var(--grey2);
+    }
+    .logo-bar-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .logo-divider { width: 1px; height: 32px; background: var(--grey2); flex-shrink: 0; }
+    /* Crop FCM viewBox to actual content (y: 54.8–149.4) so it aligns with Aristocrat */
+    .fcm-logo { height: 32px; width: auto; }
+    .aristocrat-logo { height: 32px; width: auto; }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--black);
+      color: var(--white);
+      padding: 72px 40px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    .hero h1 {
+      font-size: clamp(40px, 5.5vw, 64px);
+      font-weight: 600;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      max-width: 720px;
+      color: var(--white);
+    }
+    .hero h1 span { color: var(--green); }
+    .hero-sub {
+      margin-top: 24px;
+      font-size: 17px;
+      color: #888;
+      max-width: 500px;
+      line-height: 1.65;
+    }
+    .hero-meta {
+      margin-top: 40px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #444;
+    }
+
+    /* ── COMMITTED VALUE STRIP ── */
+    .committed-strip {
+      background: var(--green);
+      padding: 36px 40px;
+    }
+    .committed-strip-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      flex-wrap: wrap;
+    }
+    .cs-number {
+      font-size: clamp(48px, 7vw, 72px);
+      font-weight: 700;
+      color: var(--black);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .cs-sep { width: 1px; height: 48px; background: rgba(0,0,0,0.15); flex-shrink: 0; }
+    .cs-text { font-size: 17px; font-weight: 600; color: var(--black); }
+    .cs-sub { font-size: 13px; color: rgba(0,0,0,0.5); margin-top: 3px; }
+
+    /* ── SECTION ── */
+    .section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 80px 40px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--deep-green);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: clamp(26px, 3.5vw, 36px);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+    .section-intro {
+      font-size: 15px;
+      color: var(--charcoal);
+      max-width: 580px;
+      margin-bottom: 40px;
+      line-height: 1.7;
+    }
+
+    /* ── DIVIDER ── */
+    .full-divider { border: none; border-top: 1px solid var(--grey2); }
+
+    /* ── OFFER CARDS ── */
+    .offer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .offer-card {
+      background: var(--grey1);
+      padding: 36px 32px 32px;
+      border-top: 3px solid var(--green);
+    }
+    .offer-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .offer-icon svg { width: 17px; height: 17px; fill: var(--green); }
+    .offer-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 12px; line-height: 1.3; }
+    .offer-card .body-text {
+      font-size: 14px;
+      color: var(--charcoal);
+      line-height: 1.7;
+    }
+    .offer-card .scope-note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--charcoal);
+      background: var(--white);
+      border-left: 3px solid var(--green);
+      padding: 10px 14px;
+      line-height: 1.55;
+    }
+    .card-value-block {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--grey3);
+    }
+    .cv-amount {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1;
+    }
+    .cv-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--charcoal);
+      margin-top: 5px;
+    }
+
+    /* ── SAVINGS CALLOUT ── */
+    .savings-callout {
+      background: var(--black);
+      color: var(--white);
+      padding: 36px 40px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .savings-callout .sc-amount {
+      font-size: clamp(36px, 4.5vw, 52px);
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .savings-callout .sc-sep {
+      width: 1px;
+      height: 48px;
+      background: #333;
+      flex-shrink: 0;
+    }
+    .savings-callout .sc-text {
+      font-size: 15px;
+      color: #aaa;
+      max-width: 500px;
+      line-height: 1.65;
+    }
+
+    /* ── STATS BAND ── */
+    .stats-band {
+      background: var(--grey1);
+      color: var(--black);
+      padding: 80px 40px;
+    }
+    .stats-band-inner { max-width: 960px; margin: 0 auto; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      background: var(--grey2);
+      border: 1px solid var(--grey2);
+      margin-top: 40px;
+    }
+    @media (max-width: 700px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat-cell {
+      background: var(--white);
+      padding: 32px 20px;
+      text-align: center;
+    }
+    .stat-cell .sn {
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--black);
+    }
+    .stat-cell .sn.green { color: var(--deep-green); }
+    .stat-cell .sl {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--charcoal);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .dest-block { margin-top: 32px; }
+    .dest-block-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--charcoal);
+      margin-bottom: 12px;
+    }
+    .dest-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dest-tag {
+      background: var(--white);
+      border: 1px solid var(--grey2);
+      border-radius: 3px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--charcoal);
+    }
+    .dest-tag.top {
+      background: var(--black);
+      color: var(--white);
+      border-color: var(--black);
+      font-weight: 600;
+    }
+
+    /* ── ACHIEVEMENTS ── */
+    .ach-section {
+      padding: 80px 40px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .ach-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 40px;
+    }
+    @media (max-width: 620px) { .ach-grid { grid-template-columns: 1fr; } }
+    .ach-card {
+      background: var(--grey1);
+      padding: 28px 26px;
+      border-left: 3px solid transparent;
+    }
+    .ach-card:nth-child(odd) { border-left-color: var(--green); }
+    .ach-card:nth-child(even) { border-left-color: var(--grey3); }
+    .ach-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--black); }
+    .ach-card p { font-size: 13px; color: var(--charcoal); line-height: 1.7; }
+
+    /* ── QUOTES BAND ── */
+    .quotes-band {
+      background: var(--white);
+      padding: 64px 40px;
+      border-top: 1px solid var(--grey2);
+    }
+    .quotes-band-inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .quotes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 32px;
+    }
+    .quote-card {
+      background: var(--grey1);
+      padding: 28px 24px 24px;
+      border-top: 3px solid var(--green);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .quote-text {
+      font-size: 14px;
+      color: var(--black);
+      line-height: 1.7;
+      font-style: italic;
+      flex: 1;
+    }
+    .quote-text::before { content: '\201C'; }
+    .quote-text::after  { content: '\201D'; }
+    .quote-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .quote-score {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--green);
+      color: var(--black);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .quote-source {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--charcoal);
+      letter-spacing: 0.02em;
+    }
+    @media (max-width: 700px) {
+      .quotes-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── COMING BAND ── */
+    .coming-band {
+      background: var(--grey1);
+      padding: 80px 40px;
+    }
+    .coming-band-inner { max-width: 960px; margin: 0 auto; }
+
+    .coming-list {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .coming-item {
+      background: var(--white);
+      padding: 24px 28px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      border-left: 3px solid var(--grey2);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .coming-item:hover {
+      border-left-color: var(--green);
+      background: #fafafa;
+    }
+    .coming-num {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--deep-green);
+      padding-top: 3px;
+      min-width: 24px;
+    }
+    .coming-title { font-size: 15px; font-weight: 600; color: var(--black); }
+    .coming-desc { font-size: 13px; color: var(--charcoal); margin-top: 4px; line-height: 1.65; }
+
+    /* ── SAM BAND ── */
+    .sam-band {
+      background: var(--black);
+      padding: 60px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .sam-band::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(0,222,80,0.025) 1px, transparent 1px),
+        linear-gradient(rgba(0,222,80,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+    .sam-band-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+    .sam-band-head { margin-bottom: 40px; }
+    .sam-band-head .section-label { color: var(--green); margin-bottom: 10px; }
+    .sam-band-head h2 { font-size: 30px; font-weight: 600; color: var(--white); letter-spacing: -0.2px; margin-bottom: 10px; }
+    .sam-band-head p { font-size: 15px; color: rgba(255,255,255,0.5); max-width: 580px; line-height: 1.65; }
+    .sam-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 32px;
+      align-items: start;
+    }
+    .sam-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .sam-c {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-left: 3px solid rgba(0,222,80,0.25);
+      padding: 22px;
+      transition: border-left-color 0.2s, background 0.2s;
+    }
+    .sam-c:hover {
+      border-left-color: var(--green);
+      background: rgba(255,255,255,0.07);
+    }
+    .sam-c-icon { font-size: 20px; margin-bottom: 10px; }
+    .sam-c h4 { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 6px; line-height: 1.4; }
+    .sam-c h4 span { color: var(--green); }
+    .sam-c p { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.65; }
+    .sam-c .sam-eg {
+      margin-top: 10px;
+      padding: 9px 12px;
+      background: rgba(0,0,0,0.3);
+      border-left: 2px solid var(--green);
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      font-style: italic;
+    }
+    .sam-chat {
+      background: var(--white);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    }
+    .sam-chat-top {
+      background: var(--grey1);
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--grey2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sam-chat-top .s-badge { font-size: 15px; font-weight: 700; color: var(--green); }
+    .sam-chat-top .s-name { font-size: 13px; font-weight: 600; color: var(--black); }
+    .sam-chat-body { padding: 14px; }
+    .s-greeting { text-align: center; margin-bottom: 12px; }
+    .s-greeting .s-smiley { font-size: 22px; font-weight: 700; color: var(--green); font-family: 'IBM Plex Sans', monospace; }
+    .s-greeting p { font-size: 12px; font-weight: 600; margin-top: 2px; color: var(--black); }
+    .s-prompt {
+      background: var(--grey1);
+      border: 1px solid var(--grey2);
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      transition: border-color 0.15s;
+    }
+    .s-prompt:hover { border-color: var(--green); }
+    .s-prompt .s-label { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #818181; }
+    .s-prompt .s-text { font-size: 12px; color: var(--black); margin-top: 1px; }
+    .s-input {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--grey1);
+      border-radius: 20px;
+      padding: 8px 14px;
+      border: 1px solid var(--grey2);
+    }
+    .s-input span { font-size: 12px; color: #818181; flex: 1; }
+    .s-send {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--black);
+    }
+    @media (max-width: 760px) {
+      .sam-layout { grid-template-columns: 1fr; }
+      .sam-chat { max-width: 360px; }
+    }
+
+    /* ── FOOTER ── */
+    .proposal-footer {
+      background: var(--black);
+      padding: 28px 40px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .proposal-footer-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .proposal-footer p { font-size: 12px; color: #555; }
+
+    @media (max-width: 620px) {
+      .hero, .logo-bar, .section, .ach-section, .stats-band, .coming-band,
+      .committed-strip, .savings-callout, .proposal-footer, .sam-band { padding-left: 24px; padding-right: 24px; }
+      .committed-strip-inner { flex-direction: column; gap: 16px; }
+      .cs-sep { display: none; }
+      .savings-callout { flex-direction: column; gap: 20px; }
+      .savings-callout .sc-sep { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ LOGO BAR ══ -->
+<div class="logo-bar">
+  <div class="logo-bar-inner">
+    <!-- FCM: viewBox cropped to actual content area (y 54.8–149.4) so it sits flush -->
+    <svg class="fcm-logo" viewBox="0 54.8 283.5 94.6" xmlns="http://www.w3.org/2000/svg">
+      <path d="M75.1,75.5V54.8H47.4C21.3,54.8,0,76,0,102.1v47.3h20.7V119h34V98.2H21.1C23,85.4,34,75.5,47.4,75.5H75.1z"/>
+      <path d="M160.3,75.5V54.8h-32.6c-26.1,0-47.3,21.2-47.3,47.3s21.2,47.3,47.3,47.3h32.6v-20.7h-32.6c-14.6,0-26.6-11.9-26.6-26.6c0-14.6,11.9-26.6,26.6-26.6H160.3z"/>
+      <path d="M200.6,59.6l-2.1-2c-2-1.8-4.7-2.9-7.6-2.9c-6.3,0-11.4,5.1-11.4,11.4v83.2h20.7V87.2c0,0,16,14.6,19.4,17.7s7,5.5,11.8,5.5V87.7L200.6,59.6z"/>
+      <path fill="#00de00" d="M262.4,59.6l2.1-2c2-1.8,4.7-2.9,7.6-2.9c6.3,0,11.4,5.1,11.4,11.4v83.2h-20.7V87.2c0,0-16,14.6-19.4,17.7s-7,5.5-11.8,5.5V87.7L262.4,59.6z"/>
+    </svg>
+    <div class="logo-divider"></div>
+    <!-- Aristocrat: small padding on viewBox so nothing clips -->
+    <svg class="aristocrat-logo" viewBox="-1 -1 145 47" xmlns="http://www.w3.org/2000/svg" style="fill:#072c51;">
+      <path d="m139,43.52v0.18h0.33v0.91h0.22V43.7h0.33v-0.18zm2,0-0.27,0.74-0.28,-0.74h-0.34v1.09h0.22v-0.86 0l0.31,0.86h0.17l0.31,-0.86v0 0.86h0.21v-1.09z"/>
+      <polygon points="47.91,25.85 52.31,25.86 52.31,44.61 55.11,44.61 55.12,25.86 75.12,25.86 75.12,23.05 47.91,23.05"/>
+      <polygon points="129.41,25.86 134.69,25.86 134.69,44.61 137.5,44.61 137.5,25.86 142.78,25.86 142.78,23.05 129.41,23.05"/>
+      <rect x="33.46" y="23.05" width="2.81" height="21.56"/>
+      <rect x="89.89" y="17.18" width="14.78" height="2.81"/>
+      <path d="m99.53,42.16a8.71,8.71 0 1 1 5.14,-15.73v-3.29a11.41,11.41 0 0 0-5.14,-1.21 11.53,11.53 0 1 0 5.14,21.84v-3.29a8.71,8.71 0 0 1-5.14,1.68"/>
+      <path d="M104.67,7.39A7.39,7.39 0 1 1 97.28,0a7.39,7.39 0 0 1 7.39,7.39"/>
+      <path d="m72.22,15.43a14.8,14.8 0 0 0-12.34,6.63h3.56a12,12 0 1 1-2.71,4.78h-2.9A14.77,14.77 0 1 0 87,30.2 14.77,14.77 0 0 0 72.22,15.43"/>
+      <path d="m40.73,36.19c1.05,1 2.94,2.87 2.94,4.34a6.54,6.54 0 0 1-1.86,4.08h3.38a7.79,7.79 0 0 0 1.22,-4.08c0,-2.62-2.25,-4.79-3.76,-6.3a7.49,7.49 0 0 1-2.51,-5.43 2.78,2.78 0 0 1 3.09,-2.94 5.52,5.52 0 0 1 3.77,2v-3.57a7,7 0 0 0-3.77,-1.17 5.45,5.45 0 0 0-5.83,5.68 10.13,10.13 0 0 0 3.33,7.39"/>
+      <path d="m25.6,23.35a17.52,17.52 0 0 0-5.07,-0.49v21.76h2.81v-6.57h0.8c0,0 1.3,3.53 3.08,4.94a13.86,13.86 0 0 0 4.46,1.82v-2.67a9.38,9.38 0 0 1-3.52,-2 6.08,6.08 0 0 1-1.67,-2.74 7.11,7.11 0 0 0 4.41,-6.9c0.05,-4.47-2.45,-6.21-5.3,-7.18m2.63,6.71c0,5.07-4.9,5.09-4.9,5.09v-9.56c0,0 4.88,0.27 4.89,4.5"/>
+      <path d="m112,23.35a17.6,17.6 0 0 0-5.08,-0.49v21.76h2.81v-6.57h0.8c0,0 1.31,3.53 3.08,4.94a13.86,13.86 0 0 0 4.46,1.82v-2.67a9.38,9.38 0 0 1-3.52,-2 6.26,6.26 0 0 1-1.67,-2.74 7.09,7.09 0 0 0 4.41,-6.9c0,-4.47-2.44,-6.21-5.29,-7.18m2.62,6.71c0,5.07-4.9,5.09-4.89,5.09v-9.56c0,0 4.88,0.27 4.89,4.5"/>
+      <path d="M17.83,16.18A43.38,43.38 0 0 0 6.09,27.23C1.37,34.18 0,44.62 0,44.62h3.12c0.46,-2.55 1.49,-7 1.82,-7.9H15v7.9h2.81zM5.89,33.92C8.26,27 12.78,23.74 15,21.83v12.09z"/>
+      <path d="M119.89,22.75V44.6h2.8v-5.68h6.55A17.25,17.25 0 0 1 130,44.6h2.8a18.94,18.94 0 0 0-1.75,-9.25 24.62,24.62 0 0 0-11.17,-12.62m8.3,13.36h-5.5v-8.24c2.09,1.73 5.5,7.46 5.5,8.26"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ══ HERO ══ -->
+<header class="hero">
+  <div class="hero-inner">
+    <h1>Fixed fees.<br/><span>Hotel sourcing<br/>covered.</span><br/>Four years.</h1>
+    <p class="hero-sub">A clear look at what FCM is committing to, what the program has achieved, and what's coming next for Aristocrat.</p>
+    <p class="hero-meta">March 2026 &nbsp;·&nbsp; Contract Extension Proposal</p>
+  </div>
+</header>
+
+<!-- ══ COMMITTED VALUE STRIP ══ -->
+<div class="committed-strip">
+  <div class="committed-strip-inner">
+    <div class="cs-number">~$175,200</div>
+    <div class="cs-sep"></div>
+    <div>
+      <div class="cs-text">Committed value to Aristocrat over the 4-year term</div>
+      <div class="cs-sub">Fee freeze ($15,200) + FCM Consulting Hotel Sourcing included (~$160,000)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THE OFFER ══ -->
+<section class="section">
+  <div class="section-label">What's in the extension</div>
+  <h2 class="section-title">The commercial offer, simply put</h2>
+  <p class="section-intro">Two clear commitments, locked in for the full contract term.</p>
+
+  <div class="offer-grid">
+
+    <!-- Fee Freeze -->
+    <div class="offer-card">
+      <div class="offer-icon">
+        <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+      </div>
+      <h3>Service fees locked in for the 2+2 extension</h3>
+      <p class="body-text">Your existing transaction fees are locked in for the full 2+2 year term across every market. The contract will include a standard annual CPI clause — this is included across all FCM agreements, and if rates ever need to adjust, Aristocrat will receive full advance notice before anything changes.</p>
+      <div class="card-value-block">
+        <div class="cv-amount">$15,200</div>
+        <div class="cv-label">Saving over 4 years (~$3,800 / yr)</div>
+      </div>
+    </div>
+
+    <!-- Hotel Sourcing -->
+    <div class="offer-card">
+      <div class="offer-icon">
+        <svg viewBox="0 0 24 24"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>
+      </div>
+      <h3>Hotel sourcing — included for the life of the deal</h3>
+      <p class="body-text">FCM Consulting Hotel Sourcing is bundled into the contract for the full 4-year term. No separate engagement, no future cost uncertainty — your hotel program is covered as part of the partnership.</p>
+      <div class="scope-note">
+        Each sourcing project covers up to 130 negotiated hotels, plus one rate audit and one annual review.
+      </div>
+      <div class="card-value-block">
+        <div class="cv-amount">~$160,000</div>
+        <div class="cv-label">Estimated program value over 4 years</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Savings — prominent but secondary -->
+  <div class="savings-callout">
+    <div class="sc-amount">$299,099</div>
+    <div class="sc-sep"></div>
+    <div class="sc-text">
+      Already delivered by your FCM travel managers since we started working together — through waived fees, fare recoveries and found savings.
+    </div>
+  </div>
+
+</section>
+
+<hr class="full-divider" />
+
+<!-- ══ PROGRAM STATS ══ -->
+<div class="stats-band">
+  <div class="stats-band-inner">
+    <div class="section-label" style="color:var(--deep-green)">Your Program in Numbers</div>
+    <h2 class="section-title" style="color:var(--black)">June 2024 to today</h2>
+    <p class="section-intro" style="color:var(--charcoal)">Everything FCM has managed for Aristocrat since day one, across all markets and travel types.</p>
+
+    <div class="stats-grid">
+      <div class="stat-cell">
+        <div class="sn green">$29.6M</div>
+        <div class="sl">Total spend<br/>managed (AUD)</div>
+      </div>
+      <div class="stat-cell">
+        <div class="sn">11,840</div>
+        <div class="sl">Air tickets<br/>issued</div>
+      </div>
+      <div class="stat-cell">
+        <div class="sn">24,228</div>
+        <div class="sl">Hotel nights<br/>booked</div>
+      </div>
+      <div class="stat-cell">
+        <div class="sn">13,578</div>
+        <div class="sl">Car rental<br/>days</div>
+      </div>
+      <div class="stat-cell">
+        <div class="sn green">3,266</div>
+        <div class="sl">Unique travellers<br/>supported</div>
+      </div>
+      <div class="stat-cell">
+        <div class="sn">80.7%</div>
+        <div class="sl">Online booking<br/>rate</div>
+      </div>
+      <div class="stat-cell">
+        <div class="sn">11</div>
+        <div class="sl">Markets<br/>actively booking</div>
+      </div>
+      <div class="stat-cell">
+        <div class="sn green">#1</div>
+        <div class="sl">Las Vegas —<br/>top destination</div>
+      </div>
+    </div>
+
+    <div class="dest-block">
+      <div class="dest-block-label">Top air destinations by volume</div>
+      <div class="dest-tags">
+        <span class="dest-tag top">Las Vegas &nbsp;·&nbsp; 3,432 flights</span>
+        <span class="dest-tag">Sydney</span>
+        <span class="dest-tag">London</span>
+        <span class="dest-tag">Barcelona</span>
+        <span class="dest-tag">Tulsa</span>
+        <span class="dest-tag">Delhi</span>
+        <span class="dest-tag">Dallas</span>
+        <span class="dest-tag">Austin</span>
+        <span class="dest-tag">Los Angeles</span>
+        <span class="dest-tag">Reno</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="full-divider" />
+
+<!-- ══ ACHIEVEMENTS ══ -->
+<div class="ach-section">
+  <div class="section-label">Program Updates &amp; Achievements</div>
+  <h2 class="section-title">What's been delivered</h2>
+  <p class="section-intro">A snapshot of what the FCM team has built and rolled out specifically for Aristocrat's program.</p>
+
+  <div class="ach-grid">
+
+    <div class="ach-card">
+      <h4>FCM Platform Approve — Pilot Rollout</h4>
+      <p>Pre-trip approval is now live across Australia, United States, Canada and United Kingdom. When a booking exceeds a policy threshold it goes into an automated approval queue — no disruption to the booking process.</p>
+    </div>
+
+    <div class="ach-card">
+      <h4>Aristocrat UK — Days In Country Reporting</h4>
+      <p>Custom reporting for the UK entity, giving Aristocrat clear visibility over traveller days in country to support tax, immigration and duty of care requirements.</p>
+    </div>
+
+    <div class="ach-card">
+      <h4>Quarterly Business Reviews — Tailored for Aristocrat</h4>
+      <p>Business reviews have been customised to reflect the growth of Aristocrat's travel program, with analysis focused on the key markets and trends that are most relevant to the business.</p>
+    </div>
+
+    <div class="ach-card">
+      <h4>Quarterly ESC-1 Dashboards</h4>
+      <p>Dedicated dashboards delivered quarterly for Aristocrat's ESC-1 leaders, giving each of them personalised visibility into travel spend and patterns across their own teams.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ QUOTES ══ -->
+<div class="quotes-band">
+  <div class="quotes-band-inner">
+    <div class="section-label">What Aristocrat Travellers Say</div>
+    <h2 class="section-title">From your own people</h2>
+
+    <div class="quotes-grid">
+
+      <div class="quote-card">
+        <div class="quote-text">The agent got me a guaranteed seat on the last flight of the day out of Durango. Anyone who waited at the gate to rebook were placed on standby or booked for the next day.</div>
+      </div>
+
+      <div class="quote-card">
+        <div class="quote-text">Every agent I have encountered has been clear, precise, attentive, and very courteous — leaving me less stressed and grateful.</div>
+      </div>
+
+      <div class="quote-card">
+        <div class="quote-text">Love the integration of Preferred/Negotiated rates as well as our Aristocrat corporate policy warnings!</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ COMING SOON ══ -->
+<div class="coming-band">
+  <div class="coming-band-inner">
+    <div class="section-label">What's Coming</div>
+    <h2 class="section-title">On the roadmap for Aristocrat</h2>
+    <p class="section-intro">Initiatives already in motion for the extended program.</p>
+
+    <div class="coming-list">
+
+      <div class="coming-item">
+        <div class="coming-num">01</div>
+        <div>
+          <div class="coming-title">Aristocrat Interactive — Global FCM Rollout</div>
+          <div class="coming-desc">Aristocrat Interactive is joining the FCM program globally. Already live in the United States, with India and Europe coming next.</div>
+        </div>
+      </div>
+
+      <div class="coming-item">
+        <div class="coming-num">02</div>
+        <div>
+          <div class="coming-title">Quarterly ESC Dashboard</div>
+          <div class="coming-desc">Travel spend and program insights delivered quarterly at the Executive Steering Committee level — giving Aristocrat's most senior leaders the same visibility their ESC-1 teams already have.</div>
+        </div>
+      </div>
+
+      <div class="coming-item">
+        <div class="coming-num">03</div>
+        <div>
+          <div class="coming-title">Additional Hotel Content</div>
+          <div class="coming-desc">Booking.com and other hotel content sources are being added to the booking tool alongside Aristocrat's own negotiated rates and Flight Centre Travel Group inventory — more options, fewer reasons to book outside the program.</div>
+        </div>
+      </div>
+
+      <div class="coming-item">
+        <div class="coming-num">04</div>
+        <div>
+          <div class="coming-title">FCM Sam — AI Travel Assistant</div>
+          <div class="coming-desc">FCM's Sam AI assistant coming to Aristocrat travellers — faster answers, smarter booking support, available around the clock.</div>
+        </div>
+      </div>
+
+      <div class="coming-item">
+        <div class="coming-num">05</div>
+        <div>
+          <div class="coming-title">FCM Platform Approve — Extended to More Markets</div>
+          <div class="coming-desc">Following the pilot across Australia, US, Canada and UK, Platform Approve will be rolled out to additional Aristocrat markets as the program grows.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ SAM AI ══ -->
+<div class="sam-band">
+  <div class="sam-band-inner">
+    <div class="sam-band-head">
+      <div class="section-label">Coming in 2026</div>
+      <h2>Meet Sam — FCM's AI travel assistant</h2>
+      <p>Sam is the intelligence layer across FCM Platform. Not a bolt-on chatbot — an AI that knows Aristocrat's travel policy, your travellers' preferences, and your trip history.</p>
+    </div>
+
+    <div class="sam-layout">
+      <div class="sam-cards">
+        <div class="sam-c">
+          <div class="sam-c-icon">✈️</div>
+          <h4><span>Travellers</span> — real-time, 24/7</h4>
+          <p>Instant answers on visa requirements, flight status, loyalty perks and hotel suggestions — no need to call an agent. Proactive alerts for disruptions, rebooking options and passport expiry.</p>
+          <div class="sam-eg">"Do I need a visa for Las Vegas next month?"</div>
+        </div>
+        <div class="sam-c">
+          <div class="sam-c-icon">📋</div>
+          <h4><span>Bookers</span> — less admin, more action</h4>
+          <p>Check passport expiry across your team, get policy-compliant recommendations, and handle multi-city bookings through conversation instead of clicks.</p>
+          <div class="sam-eg">"Do any of my travellers have expiring passports?"</div>
+        </div>
+        <div class="sam-c">
+          <div class="sam-c-icon">⚡</div>
+          <h4>Knows your <span>context</span></h4>
+          <p>Sam remembers trip history, understands Aristocrat's travel policy, and gets smarter with every interaction — unlike a traditional chatbot.</p>
+        </div>
+        <div class="sam-c">
+          <div class="sam-c-icon">🔄</div>
+          <h4>Seamless <span>handoff</span></h4>
+          <p>When a human is needed, Sam passes full context to your FCM consultant — no repeating yourself. Available on mobile, desktop, and soon via Teams and WhatsApp.</p>
+        </div>
+      </div>
+
+      <div class="sam-chat">
+        <div class="sam-chat-top">
+          <span class="s-badge">:)</span>
+          <span class="s-name">Sam</span>
+        </div>
+        <div class="sam-chat-body">
+          <div class="s-greeting">
+            <div class="s-smiley">:)</div>
+            <p>How can I help you?</p>
+          </div>
+          <div class="s-prompt">
+            <div class="s-label">Travel support</div>
+            <div class="s-text">Do I need a visa for my trip to Las Vegas?</div>
+          </div>
+          <div class="s-prompt">
+            <div class="s-label">Traveller support</div>
+            <div class="s-text">Where are my travellers currently abroad?</div>
+          </div>
+          <div class="s-prompt">
+            <div class="s-label">Documentation</div>
+            <div class="s-text">Do any of my travellers have expiring passports?</div>
+          </div>
+          <div class="s-input">
+            <span>Ask Sam anything...</span>
+            <div class="s-send">↑</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer class="proposal-footer">
+  <div class="proposal-footer-inner">
+    <p>Prepared for Aristocrat Technologies &nbsp;·&nbsp; March 2026 &nbsp;·&nbsp; Confidential</p>
+  </div>
+</footer>
+
+</body>
+</html>
