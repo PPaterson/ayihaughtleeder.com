@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSWG × FCM | VPG Action Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fcm-green: #00DE00;
+    --deep-green: #17BE17;
+    --black: #000000;
+    --charcoal: #505050;
+    --grey1: #F5F5F5;
+    --grey2: #E5E5E5;
+    --grey3: #D9D9D9;
+    --grey5: #AAAAAA;
+    --white: #FFFFFF;
+    --highlight-green: rgba(0, 222, 0, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--black);
+    background: var(--white);
+    line-height: 1.6;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideIn { from { transform: translateX(-40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes growLine { from { width: 0; } to { width: 100%; } }
+  @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(0,222,0,0.3); } 50% { box-shadow: 0 0 20px 4px rgba(0,222,0,0.15); } }
+
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── LOGO BANNER ── */
+  .logo-banner {
+    background: var(--white);
+    padding: 28px 10vw;
+    border-bottom: 1px solid var(--grey2);
+  }
+
+  .banner-logo {
+    width: 110px;
+    height: auto;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--black);
+    color: var(--white);
+    padding: 56px 10vw 64px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Journey line motif */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 6px; height: 100%;
+    background: linear-gradient(180deg, transparent 0%, var(--fcm-green) 30%, var(--fcm-green) 70%, transparent 100%);
+    opacity: 0.4;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--fcm-green) 0%, var(--fcm-green) 40%, transparent 100%);
+    animation: growLine 1.5s ease-out forwards;
+  }
+
+  .hero-logo {
+    width: 100px; height: auto;
+    margin-bottom: 40px;
+    opacity: 0.95;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .hero h1 {
+    font-weight: 600;
+    font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+    max-width: 700px;
+    animation: fadeUp 0.8s ease 0.15s both;
+  }
+
+  .hero h1 .green { color: var(--fcm-green); }
+
+  .hero .subtitle {
+    font-weight: 300;
+    font-size: 1.1rem;
+    margin-top: 16px;
+    color: var(--grey5);
+    max-width: 520px;
+    line-height: 1.5;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+
+  .hero .meta {
+    margin-top: 36px;
+    display: flex;
+    gap: 40px;
+    animation: fadeUp 0.8s ease 0.45s both;
+  }
+
+  .hero .meta-item { display: flex; flex-direction: column; }
+  .hero .meta-label { font-size: 0.65rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--grey5); font-weight: 600; margin-bottom: 3px; }
+  .hero .meta-value { font-size: 0.95rem; font-weight: 500; }
+
+  /* ── NAV DOTS ── */
+  .nav-dots {
+    position: fixed;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .nav-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--grey3);
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+  }
+
+  .nav-dot:hover, .nav-dot.active {
+    background: var(--fcm-green);
+    transform: scale(1.3);
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    padding: 56px 10vw;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--fcm-green);
+    margin-bottom: 12px;
+  }
+
+  .section h2 {
+    font-weight: 600;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    letter-spacing: -1px;
+    line-height: 1.15;
+    margin-bottom: 32px;
+  }
+
+  .section p.lead {
+    font-size: 1.15rem;
+    font-weight: 300;
+    color: var(--charcoal);
+    max-width: 680px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  /* ── STAT STRIP ── */
+  .stat-strip {
+    background: var(--grey1);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--grey2);
+    border-bottom: 1px solid var(--grey2);
+  }
+
+  .stat-card {
+    padding: 32px 28px;
+    text-align: center;
+    border-right: 1px solid var(--grey2);
+  }
+
+  .stat-card:last-child { border-right: none; }
+
+  .stat-num {
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -2px;
+    line-height: 1;
+    color: var(--black);
+  }
+
+  .stat-num .green { color: var(--fcm-green); }
+
+  .stat-desc {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    margin-top: 10px;
+  }
+
+  /* ── PILLAR CARDS ── */
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-top: 32px;
+  }
+
+  .pillar {
+    border-top: 3px solid var(--black);
+    border-image: linear-gradient(90deg, var(--fcm-green) 0%, var(--fcm-green) 80px, var(--black) 80px) 1;
+    padding-top: 24px;
+  }
+
+  .pillar-num {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--grey5);
+  }
+
+  .pillar h3 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    margin: 8px 0 20px;
+  }
+
+  .pillar .summary {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.7;
+    max-width: 720px;
+    margin-bottom: 28px;
+  }
+
+  .pillar .finding-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 12px;
+  }
+
+  .finding {
+    background: var(--grey1);
+    border-radius: 12px;
+    padding: 22px 24px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 3px solid transparent;
+  }
+
+  .finding:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+    border-left-color: var(--fcm-green);
+  }
+
+  .finding-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .finding-tag.strength { background: rgba(0, 222, 0, 0.12); color: #0B8A0B; }
+  .finding-tag.opportunity { background: rgba(0, 0, 0, 0.07); color: var(--charcoal); }
+
+  .finding p {
+    font-size: 0.92rem;
+    color: var(--charcoal);
+    line-height: 1.55;
+  }
+
+  /* ── RECOMMENDATIONS ── */
+  .rec-section {
+    background: var(--black);
+    color: var(--white);
+    padding: 56px 10vw;
+  }
+
+  .rec-section .section-label { color: var(--fcm-green); }
+
+  .rec-section h2 { color: var(--white); margin-bottom: 16px; }
+
+  .rec-section p.lead { color: var(--grey5); margin-bottom: 48px; }
+
+  .rec-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .rec-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 100px;
+    gap: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 18px 0;
+    align-items: start;
+    transition: all 0.3s ease;
+  }
+
+  .rec-row:hover {
+    background: rgba(0,222,0,0.04);
+    margin: 0 -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 8px;
+    border-bottom-color: rgba(0,222,0,0.15);
+  }
+
+  .rec-pillar {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--fcm-green);
+    padding-top: 3px;
+  }
+
+  .rec-text {
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.5;
+    padding-right: 32px;
+  }
+
+  .rec-priority {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: right;
+    padding-top: 3px;
+  }
+
+  .rec-priority.high { color: var(--fcm-green); }
+  .rec-priority.medium { color: var(--grey5); }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    padding: 56px 10vw 64px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .timeline-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin-top: 48px;
+    position: relative;
+  }
+
+  .tl-item {
+    padding-top: 36px;
+    padding-right: 24px;
+    position: relative;
+  }
+
+  /* Connecting line after each dot (except last in each row) */
+  .tl-item::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    right: 0;
+    height: 3px;
+    background: var(--grey2);
+  }
+
+  /* Hide line on last item in each row (every 3rd) and the very last item */
+  .tl-item:nth-child(3n)::after,
+  .tl-item:last-child::after {
+    display: none;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 0;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--fcm-green);
+    border: 3px solid var(--white);
+    box-shadow: 0 0 0 2px var(--fcm-green);
+    z-index: 1;
+  }
+
+  .tl-date {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--fcm-green);
+    margin-bottom: 6px;
+  }
+
+  .tl-text {
+    font-size: 0.92rem;
+    color: var(--charcoal);
+    line-height: 1.5;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--grey1);
+    padding: 48px 10vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--grey2);
+  }
+
+  .footer-logo { height: 28px; opacity: 0.7; overflow: visible; }
+
+  .footer-text {
+    font-size: 0.75rem;
+    color: var(--grey5);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero { padding: 60px 7vw; }
+    .section, .rec-section, .timeline { padding-left: 7vw; padding-right: 7vw; }
+    .hero .meta { flex-direction: column; gap: 20px; }
+    .pillar .finding-grid { grid-template-columns: 1fr; }
+    .rec-row { grid-template-columns: 1fr; gap: 8px; }
+    .rec-priority { text-align: left; }
+    .nav-dots { display: none; }
+    .stat-card { border-right: none; border-bottom: 1px solid var(--grey2); }
+  }
+
+  @media print {
+    .hero { min-height: auto; padding: 40px; }
+    .nav-dots { display: none; }
+    .section, .rec-section, .timeline { padding: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV DOTS -->
+<nav class="nav-dots">
+  <button class="nav-dot active" onclick="document.getElementById('hero').scrollIntoView({behavior:'smooth'})" title="Top"></button>
+  <button class="nav-dot" onclick="document.getElementById('overview').scrollIntoView({behavior:'smooth'})" title="Overview"></button>
+  <button class="nav-dot" onclick="document.getElementById('pillars').scrollIntoView({behavior:'smooth'})" title="Pillars"></button>
+  <button class="nav-dot" onclick="document.getElementById('recommendations').scrollIntoView({behavior:'smooth'})" title="Recommendations"></button>
+  <button class="nav-dot" onclick="document.getElementById('timeline').scrollIntoView({behavior:'smooth'})" title="Timeline"></button>
+</nav>
+
+<!-- LOGO BANNER -->
+<div class="logo-banner">
+  <svg class="banner-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 283.5 204.1">
+    <path d="M75.1,75.5V54.8H47.4C21.3,54.8,0,76,0,102.1v47.3h20.7V119h34V98.2H21.1C23,85.4,34,75.5,47.4,75.5H75.1z"/>
+    <path d="M160.3,75.5V54.8h-32.6c-26.1,0-47.3,21.2-47.3,47.3s21.2,47.3,47.3,47.3h32.6v-20.7h-32.6c-14.6,0-26.6-11.9-26.6-26.6c0-14.6,11.9-26.6,26.6-26.6H160.3z"/>
+    <path d="M200.6,59.6l-2.1-2c-2-1.8-4.7-2.9-7.6-2.9c-6.3,0-11.4,5.1-11.4,11.4v83.2h20.7V87.2c0,0,16,14.6,19.4,17.7s7,5.5,11.8,5.5V87.7L200.6,59.6z"/>
+    <path fill="#00de00" d="M262.4,59.6l2.1-2c2-1.8,4.7-2.9,7.6-2.9c6.3,0,11.4,5.1,11.4,11.4v83.2h-20.7V87.2c0,0-16,14.6-19.4,17.7s-7,5.5-11.8,5.5V87.7L262.4,59.6z"/>
+  </svg>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <h1>VPG Session<br><span class="green">Action Plan</span></h1>
+  <p class="subtitle">What 30+ agency reps told us is working, what they want more of, and where we go next. Together.</p>
+  <div class="meta">
+    <div class="meta-item">
+      <span class="meta-label">Client</span>
+      <span class="meta-value">NSW Government</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Session Date</span>
+      <span class="meta-value">March 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Agencies</span>
+      <span class="meta-value">30+ representatives</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Prepared By</span>
+      <span class="meta-value">FCM Travel</span>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stat-strip reveal" id="overview">
+  <div class="stat-card">
+    <div class="stat-num">33</div>
+    <div class="stat-desc">Attendees</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">18</div>
+    <div class="stat-desc">Agencies Represented</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">3</div>
+    <div class="stat-desc">Pillars Reviewed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">14</div>
+    <div class="stat-desc">Priority Actions</div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section class="section reveal">
+  <div class="section-label">Overview</div>
+  <h2>A strong partnership<br>with room to grow.</h2>
+  <p class="lead">The message from the room was clear: agencies genuinely like working with FCM. The operations team came in for serious praise, the FCM Platform is a big step up from what came before, and the account management and operations teams are building real relationships. That said, agencies also told us where we can do better. Mostly around comms, reporting, and a more consultative approach. Below is what we heard, grouped into three pillars, with a plan for what to do next.</p>
+</section>
+
+<!-- PILLARS -->
+<section class="section" id="pillars">
+  <div class="section-label">Findings by Pillar</div>
+  <h2>What the room told us.</h2>
+
+  <div class="pillar-grid">
+
+    <!-- TECHNOLOGY -->
+    <div class="pillar reveal">
+      <div class="pillar-num">Pillar 01</div>
+      <h3>Technology</h3>
+      <p class="summary">The FCM Platform is well-received across the board. Agencies find it more user-friendly and customised than anything they've had before. Training tiles, airline credits, and SSO login are all working well. Where agencies want more is around greater communication before changes go live, reporting flexibility, hotel content accuracy, and giving agencies more self-service capability.</p>
+
+      <div class="finding-grid">
+        <div class="finding">
+          <span class="finding-tag strength">Strength</span>
+          <p>The FCM Platform is well-liked across the board. Agencies find it user-friendly, customised, and a clear upgrade from the previous portal.</p>
+        </div>
+        <div class="finding">
+          <span class="finding-tag strength">Strength</span>
+          <p>Training tiles, airline credit visibility, and SSO login are all working well. Out-of-policy hotel prompts are a hit with larger agencies.</p>
+        </div>
+        <div class="finding">
+          <span class="finding-tag opportunity">Opportunity</span>
+          <p>Greater communication ahead of platform changes. Agencies want a heads-up before updates go live, not after they discover them.</p>
+        </div>
+        <div class="finding">
+          <span class="finding-tag opportunity">Opportunity</span>
+          <p>Tidy up hotel data in reports, speed up THN-to-Serko content refresh, and give agencies more flexible, self-service reporting options.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPERATIONS -->
+    <div class="pillar reveal">
+      <div class="pillar-num">Pillar 02</div>
+      <h3>Operations</h3>
+      <p class="summary">This was the feel-good story of the session. Feedback for operations was overwhelmingly positive. Agencies praised the responsiveness, the extra mile during disruptions, and the Code Orange response as a real standout. Monthly operations updates are valued and FCM has become an essential step in emergency booking processes. The areas to tighten up are around a more consultative approach, clearer fee invoicing, and some process gaps like property blacklisting.</p>
+
+      <div class="finding-grid">
+        <div class="finding">
+          <span class="finding-tag strength">Strength</span>
+          <p>Overwhelmingly positive across the board. Consultants are friendly, responsive, and go the extra mile during disruptions and emergencies.</p>
+        </div>
+        <div class="finding">
+          <span class="finding-tag strength">Strength</span>
+          <p>Code Orange response and productive comms during disruptions were specifically praised. FCM is now an essential step in emergency booking processes.</p>
+        </div>
+        <div class="finding">
+          <span class="finding-tag opportunity">Opportunity</span>
+          <p>Create a simple guide on how agencies can blacklist or flag properties. This came up across multiple agencies and would benefit everyone.</p>
+        </div>
+        <div class="finding">
+          <span class="finding-tag opportunity">Opportunity</span>
+          <p>Sort out delayed charges. A few agencies flagged fees turning up months later without enough detail to reconcile them.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT MANAGEMENT -->
+    <div class="pillar reveal">
+      <div class="pillar-num">Pillar 03</div>
+      <h3>Account Management</h3>
+      <p class="summary">The bigger agencies all had good things to say about their AMs and the regular cadence of catch-ups, reviews, and updates. Agencies are happy with both account management and operations support. Training Bytes were complimented by every agency. Where we need to lift is making sure smaller agencies get the same love, and turning insights into actionable recommendations agencies can act on.</p>
+
+      <div class="finding-grid">
+        <div class="finding">
+          <span class="finding-tag strength">Strength</span>
+          <p>Agencies are happy with their AMs and the regular cadence of catch-ups, reviews, and updates.</p>
+        </div>
+        <div class="finding">
+          <span class="finding-tag strength">Strength</span>
+          <p>Training Bytes are a hit. Every agency complimented them and want to see more regular engagement and updates.</p>
+        </div>
+        <div class="finding">
+          <span class="finding-tag opportunity">Opportunity</span>
+          <p>Bring smaller agencies into the fold. Make sure they're getting regular reviews and not feeling left out of the conversation.</p>
+        </div>
+        <div class="finding">
+          <span class="finding-tag opportunity">Opportunity</span>
+          <p>Move from reporting to recommending. Agencies want to know how they can save money and improve, not just see the numbers. Clear communication before and after reviews.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- RECOMMENDATIONS -->
+<section class="rec-section" id="recommendations">
+  <div class="section-label">Action Plan</div>
+  <h2>Recommendations.</h2>
+  <p class="lead">Ranked by how often it came up, how much it matters to agencies, and how quickly we can move on it.</p>
+
+  <div class="rec-grid">
+    <div class="rec-row">
+      <div class="rec-pillar">Technology</div>
+      <div class="rec-text">Communicate FCM Platform changes to agencies ahead of go-live</div>
+      <div class="rec-priority high">High</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Technology</div>
+      <div class="rec-text">Clean up hotel data in reports, speed up THN-to-Serko content refresh, and include useful info like parking and EV charging</div>
+      <div class="rec-priority high">High</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Technology</div>
+      <div class="rec-text">Provide more flexible, self-service reporting options for agencies</div>
+      <div class="rec-priority high">High</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Technology</div>
+      <div class="rec-text">Confirm timeline for new chat feature and whether conversation history will be retained</div>
+      <div class="rec-priority medium">Medium</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Operations</div>
+      <div class="rec-text">Develop a clear process for blacklisting or flagging properties</div>
+      <div class="rec-priority high">High</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Operations</div>
+      <div class="rec-text">Resolve delayed invoicing. Charges appearing months later without sufficient detail for reconciliation</div>
+      <div class="rec-priority high">High</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Operations</div>
+      <div class="rec-text">Explore after-hours callback options and Uber for Business for door-to-door transfer capability</div>
+      <div class="rec-priority high">High</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Operations</div>
+      <div class="rec-text">Include phone menu tips in itineraries and provide guidance on multi-passenger bookings</div>
+      <div class="rec-priority medium">Medium</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Operations</div>
+      <div class="rec-text">Explore agency card options for hotel bonds to reduce reliance on personal credit cards</div>
+      <div class="rec-priority medium">Medium</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Account Mgmt</div>
+      <div class="rec-text">Reinstate Insights Reports for all agencies with actionable recommendations</div>
+      <div class="rec-priority high">High</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Account Mgmt</div>
+      <div class="rec-text">Ensure smaller agencies are included in CMWG and receiving regular reviews</div>
+      <div class="rec-priority high">High</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Account Mgmt</div>
+      <div class="rec-text">Refresh the CMWG format. Distribute data packs ahead of sessions, then use the time for deep-dives and guest speakers</div>
+      <div class="rec-priority high">High</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Account Mgmt</div>
+      <div class="rec-text">Increase face-to-face engagement with agencies through site visits, training sessions, and regular catch-ups</div>
+      <div class="rec-priority medium">Medium</div>
+    </div>
+    <div class="rec-row">
+      <div class="rec-pillar">Account Mgmt</div>
+      <div class="rec-text">Build a shared reporting dashboard covering CO2, international travel, room nights, and whole-of-government metrics</div>
+      <div class="rec-priority medium">Medium</div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline reveal" id="timeline">
+  <div class="section-label">What Happens Next</div>
+  <h2>Timeline.</h2>
+
+  <p class="lead">Priority order and timelines to be agreed with NSW Government.</p>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <svg class="footer-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 204.1" style="height:28px;width:auto;opacity:0.7;overflow:visible;">
+    <path d="M75.1,75.5V54.8H47.4C21.3,54.8,0,76,0,102.1v47.3h20.7V119h34V98.2H21.1C23,85.4,34,75.5,47.4,75.5H75.1z"/>
+    <path d="M160.3,75.5V54.8h-32.6c-26.1,0-47.3,21.2-47.3,47.3s21.2,47.3,47.3,47.3h32.6v-20.7h-32.6c-14.6,0-26.6-11.9-26.6-26.6c0-14.6,11.9-26.6,26.6-26.6H160.3z"/>
+    <path d="M200.6,59.6l-2.1-2c-2-1.8-4.7-2.9-7.6-2.9c-6.3,0-11.4,5.1-11.4,11.4v83.2h20.7V87.2c0,0,16,14.6,19.4,17.7s7,5.5,11.8,5.5V87.7L200.6,59.6z"/>
+    <path fill="#00de00" d="M262.4,59.6l2.1-2c2-1.8,4.7-2.9,7.6-2.9c6.3,0,11.4,5.1,11.4,11.4v83.2h-20.7V87.2c0,0-16,14.6-19.4,17.7s-7,5.5-11.8,5.5V87.7L262.4,59.6z"/>
+  </svg>
+  <span class="footer-text">Confidential | FCM Travel | March 2026</span>
+</footer>
+
+<script>
+  // Active dot tracking
+  const dots = document.querySelectorAll('.nav-dot');
+  const sections = ['hero','overview','pillars','recommendations','timeline'];
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = sections.indexOf(e.target.id);
+        if (idx >= 0) {
+          dots.forEach(d => d.classList.remove('active'));
+          dots[idx].classList.add('active');
+        }
+      }
+    });
+  }, { threshold: 0.2 });
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) navObserver.observe(el);
+  });
+
+  // Scroll-reveal animations
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // Animate stat numbers on reveal
+  document.querySelectorAll('.stat-num').forEach(el => {
+    const target = parseInt(el.textContent);
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        let current = 0;
+        const step = Math.max(1, Math.floor(target / 20));
+        const interval = setInterval(() => {
+          current = Math.min(current + step, target);
+          el.textContent = current;
+          if (current >= target) clearInterval(interval);
+        }, 40);
+        obs.unobserve(el);
+      }
+    }, { threshold: 0.5 });
+    obs.observe(el);
+  });
+</script>
+</body>
+</html>
