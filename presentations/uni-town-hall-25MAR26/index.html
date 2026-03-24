@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uni Retention Town Hall — Bespoke QBR Ideas</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --fcm-green: #00DE00;
+    --fcm-deep-green: #17BE17;
+    --fcm-black: #000000;
+    --fcm-charcoal: #505050;
+    --fcm-white: #FFFFFF;
+    --fcm-grey1: #F5F5F5;
+    --fcm-grey2: #E5E5E5;
+    --fcm-grey5: #AAAAAA;
+  }
+
+  html, body { height: 100%; overflow: hidden; background: #000; }
+
+  body {
+    font-family: 'IBM Plex Sans', 'Arial', sans-serif;
+    color: var(--fcm-white);
+  }
+
+  /* === SLIDE CONTAINER === */
+  .deck { position: relative; width: 100vw; height: 100vh; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+    padding: 40px;
+    overflow: hidden;
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* === PROGRESS BAR === */
+  .progress-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: var(--fcm-green);
+    transition: width 0.4s ease;
+    z-index: 100;
+  }
+
+  /* === SLIDE COUNTER === */
+  .slide-counter {
+    position: fixed;
+    bottom: 14px;
+    right: 28px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fcm-grey5);
+    letter-spacing: 1px;
+    z-index: 100;
+  }
+
+  /* === NAV HINT === */
+  .nav-hint {
+    position: fixed;
+    bottom: 14px;
+    left: 28px;
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    z-index: 100;
+  }
+
+  /* ===================== */
+  /* SLIDE TYPE: TITLE     */
+  /* ===================== */
+  .slide--title {
+    background: linear-gradient(160deg, #000 0%, #050f05 50%, #000 100%);
+    text-align: left;
+    align-items: flex-start;
+    padding: 8vh 8vw;
+  }
+
+  .slide--title .fcm-logo {
+    height: 38px;
+    margin-bottom: 6vh;
+  }
+
+  .slide--title h1 {
+    font-size: clamp(36px, 5.5vw, 72px);
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1.08;
+    margin-bottom: 1.5vh;
+  }
+
+  .slide--title h1 .green { color: var(--fcm-green); }
+
+  .slide--title .subtitle {
+    font-size: clamp(14px, 1.8vw, 22px);
+    font-weight: 400;
+    color: var(--fcm-grey5);
+    letter-spacing: 0.5px;
+    margin-bottom: 4vh;
+  }
+
+  .slide--title .meta {
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .slide--title .meta .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--fcm-green);
+    border-radius: 50%;
+    margin: 0 12px;
+    vertical-align: middle;
+  }
+
+  .slide--title .green-stripe {
+    position: absolute;
+    left: 0; top: 0; width: 6px; height: 100%;
+    background: var(--fcm-green);
+  }
+
+  .slide--title .corner-dots {
+    position: absolute;
+    bottom: 5vh; right: 5vw;
+    display: grid;
+    grid-template-columns: repeat(4, 18px);
+    gap: 10px;
+  }
+  .slide--title .corner-dots span {
+    width: 18px; height: 18px;
+    background: var(--fcm-green);
+    border-radius: 50%;
+    opacity: 0.25;
+  }
+
+  /* ===================== */
+  /* SLIDE TYPE: SECTION   */
+  /* ===================== */
+  .slide--section {
+    background: var(--fcm-black);
+    text-align: left;
+    align-items: flex-start;
+    padding: 8vh 8vw;
+  }
+
+  .slide--section .section-number {
+    font-size: clamp(48px, 8vw, 120px);
+    font-weight: 700;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--fcm-green);
+    line-height: 1;
+    margin-bottom: 2vh;
+  }
+
+  .slide--section h2 {
+    font-size: clamp(28px, 4vw, 56px);
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1.12;
+  }
+
+  .slide--section .section-desc {
+    font-size: clamp(13px, 1.4vw, 18px);
+    font-weight: 400;
+    color: var(--fcm-grey5);
+    margin-top: 2vh;
+    max-width: 700px;
+    line-height: 1.6;
+  }
+
+  .slide--section .green-stripe {
+    position: absolute;
+    left: 0; top: 0; width: 6px; height: 100%;
+    background: var(--fcm-green);
+  }
+
+  /* ===================== */
+  /* SLIDE TYPE: IMAGE     */
+  /* ===================== */
+  .slide--image {
+    background: #0a0a0a;
+    padding: 30px 40px;
+  }
+
+  .slide--image .slide-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--fcm-green);
+    font-weight: 600;
+    margin-bottom: 16px;
+    align-self: flex-start;
+  }
+
+  .slide--image .slide-img-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+  }
+
+  .slide--image .slide-img-wrap img {
+    max-width: 100%;
+    max-height: calc(100vh - 140px);
+    object-fit: contain;
+    border: 1px solid #222;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.5);
+  }
+
+  .slide--image .speaker-note {
+    align-self: flex-start;
+    font-size: 12px;
+    color: #555;
+    margin-top: 12px;
+    font-style: italic;
+    max-width: 800px;
+    line-height: 1.5;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .slide--image:hover .speaker-note,
+  .show-notes .slide--image .speaker-note {
+    opacity: 1;
+  }
+
+  /* ===================== */
+  /* SLIDE TYPE: TEXT       */
+  /* ===================== */
+  .slide--text {
+    background: var(--fcm-black);
+    text-align: left;
+    align-items: flex-start;
+    padding: 8vh 8vw;
+  }
+
+  .slide--text .green-stripe {
+    position: absolute;
+    left: 0; top: 0; width: 6px; height: 100%;
+    background: var(--fcm-green);
+  }
+
+  .slide--text h2 {
+    font-size: clamp(24px, 3.5vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 3vh;
+    line-height: 1.15;
+  }
+
+  .slide--text h2 .green { color: var(--fcm-green); }
+
+  .slide--text .body-text {
+    font-size: clamp(14px, 1.5vw, 20px);
+    font-weight: 400;
+    color: #ccc;
+    line-height: 1.7;
+    max-width: 850px;
+  }
+
+  .slide--text .body-text strong { color: #fff; font-weight: 600; }
+  .slide--text .body-text .green { color: var(--fcm-green); font-weight: 600; }
+
+  .slide--text .callout {
+    margin-top: 4vh;
+    padding: 24px 32px;
+    background: #111;
+    border-left: 4px solid var(--fcm-green);
+    font-size: clamp(13px, 1.3vw, 17px);
+    color: #bbb;
+    line-height: 1.6;
+    max-width: 750px;
+  }
+
+  .slide--text .callout .green { color: var(--fcm-green); font-weight: 600; }
+
+  .slide--text ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .slide--text ul li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 1.2vh;
+    font-size: clamp(14px, 1.4vw, 19px);
+    color: #ccc;
+    line-height: 1.6;
+  }
+
+  .slide--text ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 10px; height: 10px;
+    background: var(--fcm-green);
+    border-radius: 50%;
+  }
+
+  /* ===================== */
+  /* SLIDE TYPE: END       */
+  /* ===================== */
+  .slide--end {
+    background: linear-gradient(160deg, #000 0%, #070f07 50%, #000 100%);
+    text-align: center;
+  }
+
+  .slide--end .fcm-logo { height: 50px; margin-bottom: 5vh; }
+
+  .slide--end h2 {
+    font-size: clamp(32px, 5vw, 64px);
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 2vh;
+  }
+
+  .slide--end h2 .green { color: var(--fcm-green); }
+
+  .slide--end .end-sub {
+    font-size: clamp(14px, 1.6vw, 20px);
+    color: var(--fcm-grey5);
+    font-weight: 400;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+
+  .slide--end .green-stripe {
+    position: absolute;
+    left: 0; top: 0; width: 6px; height: 100%;
+    background: var(--fcm-green);
+  }
+
+  /* ======================== */
+  /* KEYBOARD HELP OVERLAY    */
+  /* ======================== */
+  .help-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    justify-content: center;
+    align-items: center;
+  }
+  .help-overlay.visible { display: flex; }
+  .help-box {
+    background: #111;
+    border: 1px solid #333;
+    padding: 36px 48px;
+    max-width: 420px;
+    width: 90%;
+  }
+  .help-box h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--fcm-green);
+  }
+  .help-box p {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  .help-box kbd {
+    background: #222;
+    border: 1px solid #444;
+    padding: 2px 8px;
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 12px;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ==================== SLIDE 1: TITLE ==================== -->
+  <div class="slide slide--title active" data-slide="0">
+    <div class="green-stripe"></div>
+    <img class="fcm-logo" src="FCM_WHITE_GREEN_LOGO_CMYK.png" alt="FCM" />
+    <h1>Bespoke QBR Ideas<br><span class="green">for University Reviews</span></h1>
+    <p class="subtitle">A showcase from the University of Sydney account</p>
+    <p class="meta">Uni Retention Town Hall <span class="dot"></span> 25 March 2026 <span class="dot"></span> Phillip Paterson</p>
+    <div class="corner-dots">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 2: CONTEXT ==================== -->
+  <div class="slide slide--text" data-slide="1">
+    <div class="green-stripe"></div>
+    <h2>Before we dive in<span class="green">.</span></h2>
+    <div class="body-text">
+      <p>The University of Sydney is one of our <strong>largest university accounts</strong> and a <span class="green">CAG client</span>. The volume and complexity of their travel programme gives us a rich data set to work with.</p>
+      <br>
+      <p>What you're about to see are <strong>bespoke slide ideas</strong> I've been building into their QBRs. They're examples of what's possible &mdash; <strong>not</strong> a template you're required to use.</p>
+      <br>
+      <p>I wouldn't put this level of bespoke work into a smaller account like Western Sydney Uni, for instance. But for the right client, these kinds of insights can be a real differentiator at review time.</p>
+    </div>
+    <div class="callout">
+      Think of these as a <span class="green">menu of ideas</span> you can pick from when the account warrants it.
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 3: SECTION — OPS & SATISFACTION ==================== -->
+  <div class="slide slide--section" data-slide="2">
+    <div class="green-stripe"></div>
+    <div class="section-number">01</div>
+    <h2>Operations &<br>Traveller Satisfaction</h2>
+    <p class="section-desc">Combining CSAT/NPS data, named agent shout-outs, and real traveller feedback — both the wins and the friction points — into a single view.</p>
+  </div>
+
+  <!-- ==================== SLIDE 4: OPS UPDATE IMAGE ==================== -->
+  <div class="slide slide--image" data-slide="3">
+    <div class="slide-label">Operations Update — Traveller Satisfaction Snapshot</div>
+    <div class="slide-img-wrap">
+      <img src="Slide2.png" alt="Operations Update — Traveller Satisfaction" />
+    </div>
+    <p class="speaker-note">Highlights: CSAT 4.2/5.0, NPS +30, named agents Jen V, Jess, Jordan & Keeley. Offline NPS +50 vs OBT NPS -20. Concur platform ease-of-use rated lowest at 3.7/5.</p>
+  </div>
+
+  <!-- ==================== SLIDE 5: TRAVELLER VOICE IMAGE ==================== -->
+  <div class="slide slide--image" data-slide="4">
+    <div class="slide-label">Operations Update — Traveller Voice</div>
+    <div class="slide-img-wrap">
+      <img src="Slide3.png" alt="What Travellers Are Saying / Friction" />
+    </div>
+    <p class="speaker-note">Two columns: what travellers love (responsiveness, helpfulness) vs where friction lives (Concur navigation, lack of training, needing a human component).</p>
+  </div>
+
+  <!-- ==================== SLIDE 6: SECTION — FARE ANALYSIS ==================== -->
+  <div class="slide slide--section" data-slide="5">
+    <div class="green-stripe"></div>
+    <div class="section-number">02</div>
+    <h2>Fare Selection &<br>Purchase Behaviour</h2>
+    <p class="section-desc">Diving into domestic and international fare classes, airline breakdown, cost-per-mile, and advance purchase patterns to find savings opportunities.</p>
+  </div>
+
+  <!-- ==================== SLIDE 7: DOMESTIC FARE IMAGE ==================== -->
+  <div class="slide slide--image" data-slide="6">
+    <div class="slide-label">Domestic Fare Selection</div>
+    <div class="slide-img-wrap">
+      <img src="Slide7.png" alt="Domestic Fare Selection" />
+    </div>
+    <p class="speaker-note">2,720 restricted economy flights at $205 avg ($0.52/mi). Breakdown by Qantas (47.6%), Virgin (22.5%), Rex. Flexible economy and business class comparison.</p>
+  </div>
+
+  <!-- ==================== SLIDE 8: INTERNATIONAL FARE IMAGE ==================== -->
+  <div class="slide slide--image" data-slide="7">
+    <div class="slide-label">International Airline Selection</div>
+    <div class="slide-img-wrap">
+      <img src="Slide5.png" alt="International Airline Selection" />
+    </div>
+    <p class="speaker-note">Four key routes: Europe Business ($11K Qantas), LA Economy ($3K), Tokyo Economy ($2.4K), London Economy ($2.5K). Alternatives shown with potential quarterly savings.</p>
+  </div>
+
+  <!-- ==================== SLIDE 9: ADVANCE PURCHASE IMAGE ==================== -->
+  <div class="slide slide--image" data-slide="8">
+    <div class="slide-label">Advance Purchase Analysis</div>
+    <div class="slide-img-wrap">
+      <img src="Slide6.png" alt="Advance Purchase Analysis" />
+    </div>
+    <p class="speaker-note">Domestic: 33% booked 0-13 days out at $0.69/mi vs 39% at 29+ days at $0.53/mi. International: 67% booked 29+ days ahead — good discipline. Clear cost savings from booking earlier domestically.</p>
+  </div>
+
+  <!-- ==================== SLIDE 10: SECTION — BENCHMARKING ==================== -->
+  <div class="slide slide--section" data-slide="9">
+    <div class="green-stripe"></div>
+    <div class="section-number">03</div>
+    <h2>Benchmarking vs<br>FCM Uni Average</h2>
+    <p class="section-desc">Hotel attachment rates and online booking tool usage compared against the FCM university benchmark. These slides come from the <strong style="color:var(--fcm-green)">University Review Maxx 7000 Generator</strong> I shared in the Uni Teams chat recently.</p>
+  </div>
+
+  <!-- ==================== SLIDE 11: HOTEL ATTACHMENT IMAGE ==================== -->
+  <div class="slide slide--image" data-slide="10">
+    <div class="slide-label">Hotel Attachment Rate — USYD vs FCM Uni Average</div>
+    <div class="slide-img-wrap">
+      <img src="Slide8.png" alt="Hotel Attachment Rate" />
+    </div>
+    <p class="speaker-note">USYD domestic 40% vs 58% avg (-18 pts). International 16% vs 44% avg (-28 pts). A clear opportunity area to discuss with the client. Slide generated by the Maxx 7000 — BYO data.</p>
+  </div>
+
+  <!-- ==================== SLIDE 12: OBT USAGE IMAGE ==================== -->
+  <div class="slide slide--image" data-slide="11">
+    <div class="slide-label">Online Booking Tool Usage — USYD vs FCM Uni Average</div>
+    <div class="slide-img-wrap">
+      <img src="Slide9.png" alt="Online Booking Tool Usage" />
+    </div>
+    <p class="speaker-note">USYD domestic OBT 77% (on par with avg). International 33% vs 14% avg (+19 pts) — strong result. Also from the Maxx 7000. Tim & Alicia are working on getting us better benchmark data.</p>
+  </div>
+
+  <!-- ==================== SLIDE 13: SECTION — PROACTIVE VALUE ==================== -->
+  <div class="slide slide--section" data-slide="12">
+    <div class="green-stripe"></div>
+    <div class="section-number">04</div>
+    <h2>Proactive Value &<br>Industry Insights</h2>
+    <p class="section-desc">Showing clients we're looking out for them — from Qantas distribution surcharges to pre-ticketing change fee analysis to real savings stories.</p>
+  </div>
+
+  <!-- ==================== SLIDE 14: QF DISTRIBUTION SURCHARGE ==================== -->
+  <div class="slide slide--image" data-slide="13">
+    <div class="slide-label">Qantas Distribution Surcharge Impact</div>
+    <div class="slide-img-wrap">
+      <img src="Slide16.png" alt="Qantas Distribution Surcharge" />
+    </div>
+    <p class="speaker-note">$11.50/flight surcharge on GDS bookings from Jul 2025. FCM as Premium NDC Partner exempt. USYD still on legacy Concur/EDIFACT = $36,697 in fees across 3,191 Qantas flights. Strong reason to move to NDC-enabled platform.</p>
+  </div>
+
+  <!-- ==================== SLIDE 15: PRE-TICKETING CHANGE FEES ==================== -->
+  <div class="slide slide--image" data-slide="14">
+    <div class="slide-label">Pre-Ticketing Change Fees</div>
+    <div class="slide-img-wrap">
+      <img src="Slide12.png" alt="Pre-Ticketing Change Fees" />
+    </div>
+    <p class="speaker-note">67 domestic/trans-Tasman and 600 international pre-ticketing change fees charged. 88 bookings had 3+ fees. One London-Athens return had 9 fees alone. Highlights traveller behaviour patterns to address.</p>
+  </div>
+
+  <!-- ==================== SLIDE 16: VALUE ADD ==================== -->
+  <div class="slide slide--image" data-slide="15">
+    <div class="slide-label">Value Add of the Quarter</div>
+    <div class="slide-img-wrap">
+      <img src="Slide9-2.png" alt="Value Add of the Quarter" />
+    </div>
+    <p class="speaker-note">Jen Hugh saved $10,288 on a Manila booking by contacting Qantas and securing authority to ticket at the original expired fare before the price increase hit. Concrete example of agent value.</p>
+  </div>
+
+  <!-- ==================== SLIDE 17: MAXX 7000 ==================== -->
+  <div class="slide slide--text" data-slide="16">
+    <div class="green-stripe"></div>
+    <h2>The <span class="green">Maxx 7000</span> Generator</h2>
+    <div class="body-text">
+      <p>The Hotel Attachment and OBT Usage benchmark slides are generated by the <strong>University Review Maxx 7000</strong> tool I shared in the Uni Teams chat recently.</p>
+      <br>
+      <p>It's a <strong>BYO data</strong> tool — you plug in the client's rates and the FCM uni average, and it outputs branded comparison slides ready to drop into your QBR deck.</p>
+    </div>
+    <div class="callout">
+      <span class="green">Tim &amp; Alicia</span> are working on getting us consistent benchmark data across the uni portfolio, which will make this even easier to use. Watch that space.
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 18: CLOSING ==================== -->
+  <div class="slide slide--end" data-slide="17">
+    <div class="green-stripe"></div>
+    <img class="fcm-logo" src="FCM_WHITE_GREEN_LOGO_CMYK.png" alt="FCM" />
+    <h2>Ideas <span class="green">worth stealing.</span></h2>
+    <p class="end-sub">Questions? Thoughts? What would work for your accounts?</p>
+  </div>
+
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- SLIDE COUNTER -->
+<div class="slide-counter" id="slideCounter">1 / 18</div>
+
+<!-- NAV HINT -->
+<div class="nav-hint">Arrow keys to navigate <span style="margin:0 6px;color:#333">|</span> N for notes <span style="margin:0 6px;color:#333">|</span> ? for help</div>
+
+<!-- HELP OVERLAY -->
+<div class="help-overlay" id="helpOverlay">
+  <div class="help-box">
+    <h3>Keyboard Shortcuts</h3>
+    <p><kbd>&rarr;</kbd> or <kbd>Space</kbd> &mdash; Next slide</p>
+    <p><kbd>&larr;</kbd> &mdash; Previous slide</p>
+    <p><kbd>Home</kbd> &mdash; First slide</p>
+    <p><kbd>End</kbd> &mdash; Last slide</p>
+    <p><kbd>N</kbd> &mdash; Toggle speaker notes</p>
+    <p><kbd>?</kbd> &mdash; Toggle this help</p>
+    <p><kbd>F</kbd> &mdash; Toggle fullscreen</p>
+    <p style="margin-top:16px;color:#555;font-size:12px">Press <kbd>?</kbd> or click anywhere to close</p>
+  </div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    slides[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    document.getElementById('slideCounter').textContent = (current + 1) + ' / ' + total;
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  document.addEventListener('keydown', e => {
+    const help = document.getElementById('helpOverlay');
+
+    if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+      help.classList.toggle('visible');
+      return;
+    }
+
+    if (help.classList.contains('visible')) {
+      help.classList.remove('visible');
+      return;
+    }
+
+    switch(e.key) {
+      case 'ArrowRight':
+      case ' ':
+      case 'PageDown':
+        e.preventDefault();
+        goTo(current + 1);
+        break;
+      case 'ArrowLeft':
+      case 'PageUp':
+        e.preventDefault();
+        goTo(current - 1);
+        break;
+      case 'Home':
+        goTo(0);
+        break;
+      case 'End':
+        goTo(total - 1);
+        break;
+      case 'n':
+      case 'N':
+        document.body.classList.toggle('show-notes');
+        break;
+      case 'f':
+      case 'F':
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          document.exitFullscreen();
+        }
+        break;
+    }
+  });
+
+  document.getElementById('helpOverlay').addEventListener('click', function() {
+    this.classList.remove('visible');
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      diff > 0 ? goTo(current + 1) : goTo(current - 1);
+    }
+  });
+
+  // Init
+  goTo(0);
+</script>
+
+</body>
+</html>
