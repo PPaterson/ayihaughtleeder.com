@@ -17,6 +17,7 @@
     --fcm-grey1: #F5F5F5;
     --fcm-grey2: #E5E5E5;
     --fcm-grey5: #AAAAAA;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   html, body { height: 100%; overflow: hidden; background: #000; }
@@ -26,8 +27,54 @@
     color: var(--fcm-white);
   }
 
+  /* === PARTICLE CANVAS === */
+  #particles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* === KEYFRAMES === */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeSlideRight {
+    from { opacity: 0; transform: translateX(-32px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes scaleReveal {
+    from { opacity: 0; transform: scale(0.88) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes stripeGrow {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+  }
+  @keyframes numberReveal {
+    from { opacity: 0; transform: translateY(60px) scale(0.7); filter: blur(12px); }
+    to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+  @keyframes dotPop {
+    from { opacity: 0; transform: scale(0); }
+    to   { opacity: 0.3; transform: scale(1); }
+  }
+  @keyframes charReveal {
+    from { opacity: 0; transform: translateY(30px) rotateX(40deg); filter: blur(4px); }
+    to   { opacity: 1; transform: translateY(0) rotateX(0deg); filter: blur(0); }
+  }
+  @keyframes glowBreathe {
+    0%, 100% { opacity: 0.15; transform: translate(-50%, -50%) scale(1); }
+    50%      { opacity: 0.4;  transform: translate(-50%, -50%) scale(1.3); }
+  }
+  @keyframes softPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(0,222,0,0.3); }
+    50%      { box-shadow: 0 0 20px rgba(0,222,0,0.6), 0 0 40px rgba(0,222,0,0.2); }
+  }
+
   /* === SLIDE CONTAINER === */
-  .deck { position: relative; width: 100vw; height: 100vh; }
+  .deck { position: relative; width: 100vw; height: 100vh; z-index: 1; }
 
   .slide {
     position: absolute;
@@ -38,25 +85,48 @@
     align-items: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.45s ease;
     padding: 40px;
     overflow: hidden;
+    transform: scale(0.97) translateY(15px);
+    transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
   }
 
   .slide.active {
     opacity: 1;
     pointer-events: auto;
+    transform: scale(1) translateY(0);
   }
+
+  .slide.exiting {
+    opacity: 0;
+    transform: scale(1.02) translateY(-10px);
+    transition: opacity 0.35s ease-in, transform 0.35s ease-in;
+  }
+
+  /* === STAGGER CHILDREN === */
+  .slide .anim {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  .slide.animate .anim {
+    animation: fadeSlideUp 0.75s var(--ease-out-expo) forwards;
+  }
+  .slide.animate .anim:nth-child(1) { animation-delay: 0.12s; }
+  .slide.animate .anim:nth-child(2) { animation-delay: 0.24s; }
+  .slide.animate .anim:nth-child(3) { animation-delay: 0.36s; }
+  .slide.animate .anim:nth-child(4) { animation-delay: 0.46s; }
+  .slide.animate .anim:nth-child(5) { animation-delay: 0.56s; }
 
   /* === PROGRESS BAR === */
   .progress-bar {
     position: fixed;
     bottom: 0;
     left: 0;
-    height: 4px;
+    height: 3px;
     background: var(--fcm-green);
-    transition: width 0.4s ease;
+    transition: width 0.6s var(--ease-out-expo);
     z-index: 100;
+    box-shadow: 0 0 12px rgba(0,222,0,0.6), 0 0 30px rgba(0,222,0,0.2);
   }
 
   /* === SLIDE COUNTER === */
@@ -81,21 +151,26 @@
     letter-spacing: 1.5px;
     text-transform: uppercase;
     z-index: 100;
+    transition: opacity 1s;
+  }
+  .nav-hint.faded { opacity: 0; }
+
+  /* ======================== */
+  /* PARALLAX LAYER            */
+  /* ======================== */
+  .parallax-layer {
+    transition: transform 0.15s ease-out;
+    will-change: transform;
   }
 
   /* ===================== */
   /* SLIDE TYPE: TITLE     */
   /* ===================== */
   .slide--title {
-    background: linear-gradient(160deg, #000 0%, #050f05 50%, #000 100%);
+    background: #000;
     text-align: left;
     align-items: flex-start;
     padding: 8vh 8vw;
-  }
-
-  .slide--title .fcm-logo {
-    height: 38px;
-    margin-bottom: 6vh;
   }
 
   .slide--title h1 {
@@ -104,9 +179,19 @@
     letter-spacing: -1.5px;
     line-height: 1.08;
     margin-bottom: 1.5vh;
+    perspective: 600px;
   }
 
   .slide--title h1 .green { color: var(--fcm-green); }
+
+  /* Per-character animation spans */
+  .char-anim span {
+    display: inline-block;
+    opacity: 0;
+  }
+  .slide.animate .char-anim span {
+    animation: charReveal 0.6s var(--ease-out-expo) forwards;
+  }
 
   .slide--title .subtitle {
     font-size: clamp(14px, 1.8vw, 22px);
@@ -137,6 +222,12 @@
     position: absolute;
     left: 0; top: 0; width: 6px; height: 100%;
     background: var(--fcm-green);
+    transform-origin: top;
+    transform: scaleY(0);
+    box-shadow: 0 0 20px rgba(0,222,0,0.4);
+  }
+  .slide--title.animate .green-stripe {
+    animation: stripeGrow 0.7s var(--ease-out-expo) 0.05s forwards;
   }
 
   .slide--title .corner-dots {
@@ -150,8 +241,20 @@
     width: 18px; height: 18px;
     background: var(--fcm-green);
     border-radius: 50%;
-    opacity: 0.25;
+    opacity: 0;
+    transform: scale(0);
   }
+  .slide--title.animate .corner-dots span {
+    animation: dotPop 0.5s var(--ease-out-expo) forwards;
+  }
+  .slide--title.animate .corner-dots span:nth-child(1) { animation-delay: 0.6s; }
+  .slide--title.animate .corner-dots span:nth-child(2) { animation-delay: 0.67s; }
+  .slide--title.animate .corner-dots span:nth-child(3) { animation-delay: 0.74s; }
+  .slide--title.animate .corner-dots span:nth-child(4) { animation-delay: 0.81s; }
+  .slide--title.animate .corner-dots span:nth-child(5) { animation-delay: 0.88s; }
+  .slide--title.animate .corner-dots span:nth-child(6) { animation-delay: 0.95s; }
+  .slide--title.animate .corner-dots span:nth-child(7) { animation-delay: 1.02s; }
+  .slide--title.animate .corner-dots span:nth-child(8) { animation-delay: 1.09s; }
 
   /* ===================== */
   /* SLIDE TYPE: SECTION   */
@@ -164,12 +267,17 @@
   }
 
   .slide--section .section-number {
-    font-size: clamp(48px, 8vw, 120px);
+    font-size: clamp(64px, 10vw, 160px);
     font-weight: 700;
     color: transparent;
     -webkit-text-stroke: 2px var(--fcm-green);
     line-height: 1;
     margin-bottom: 2vh;
+    opacity: 0;
+    filter: drop-shadow(0 0 30px rgba(0,222,0,0.15));
+  }
+  .slide--section.animate .section-number {
+    animation: numberReveal 0.9s var(--ease-out-expo) 0.05s forwards;
   }
 
   .slide--section h2 {
@@ -192,13 +300,19 @@
     position: absolute;
     left: 0; top: 0; width: 6px; height: 100%;
     background: var(--fcm-green);
+    transform-origin: top;
+    transform: scaleY(0);
+    box-shadow: 0 0 20px rgba(0,222,0,0.4);
+  }
+  .slide--section.animate .green-stripe {
+    animation: stripeGrow 0.6s var(--ease-out-expo) forwards;
   }
 
   /* ===================== */
   /* SLIDE TYPE: IMAGE     */
   /* ===================== */
   .slide--image {
-    background: #0a0a0a;
+    background: #050505;
     padding: 30px 40px;
   }
 
@@ -210,6 +324,10 @@
     font-weight: 600;
     margin-bottom: 16px;
     align-self: flex-start;
+    opacity: 0;
+  }
+  .slide--image.animate .slide-label {
+    animation: fadeSlideRight 0.6s var(--ease-out-expo) 0.1s forwards;
   }
 
   .slide--image .slide-img-wrap {
@@ -219,14 +337,23 @@
     justify-content: center;
     width: 100%;
     position: relative;
+    perspective: 1000px;
   }
 
   .slide--image .slide-img-wrap img {
     max-width: 100%;
     max-height: calc(100vh - 140px);
     object-fit: contain;
-    border: 1px solid #222;
-    box-shadow: 0 4px 40px rgba(0,0,0,0.5);
+    border: 1px solid #1a1a1a;
+    box-shadow: 0 8px 50px rgba(0,0,0,0.6);
+    opacity: 0;
+    transform: scale(0.88);
+    transition: box-shadow 0.4s ease, transform 0.2s ease;
+    will-change: transform;
+    border-radius: 4px;
+  }
+  .slide--image.animate .slide-img-wrap img {
+    animation: scaleReveal 0.7s var(--ease-out-expo) 0.15s forwards;
   }
 
   .slide--image .speaker-note {
@@ -260,6 +387,12 @@
     position: absolute;
     left: 0; top: 0; width: 6px; height: 100%;
     background: var(--fcm-green);
+    transform-origin: top;
+    transform: scaleY(0);
+    box-shadow: 0 0 20px rgba(0,222,0,0.4);
+  }
+  .slide--text.animate .green-stripe {
+    animation: stripeGrow 0.6s var(--ease-out-expo) forwards;
   }
 
   .slide--text h2 {
@@ -286,7 +419,7 @@
   .slide--text .callout {
     margin-top: 4vh;
     padding: 24px 32px;
-    background: #111;
+    background: rgba(0,222,0,0.03);
     border-left: 4px solid var(--fcm-green);
     font-size: clamp(13px, 1.3vw, 17px);
     color: #bbb;
@@ -324,33 +457,60 @@
   /* SLIDE TYPE: END       */
   /* ===================== */
   .slide--end {
-    background: linear-gradient(160deg, #000 0%, #070f07 50%, #000 100%);
+    background: #000;
     text-align: center;
+    justify-content: center;
+    align-items: center;
   }
 
-  .slide--end .fcm-logo { height: 50px; margin-bottom: 5vh; }
+  .slide--end .end-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,222,0,0.25) 0%, transparent 65%);
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .slide--end.animate .end-glow {
+    animation: glowBreathe 4s ease-in-out 0.3s infinite;
+  }
 
   .slide--end h2 {
-    font-size: clamp(32px, 5vw, 64px);
+    font-size: clamp(36px, 5.5vw, 72px);
     font-weight: 700;
-    letter-spacing: -1px;
-    margin-bottom: 2vh;
+    letter-spacing: -1.5px;
+    margin-bottom: 2.5vh;
+    position: relative;
+    z-index: 1;
+    perspective: 600px;
   }
 
   .slide--end h2 .green { color: var(--fcm-green); }
 
   .slide--end .end-sub {
-    font-size: clamp(14px, 1.6vw, 20px);
+    font-size: clamp(15px, 1.8vw, 22px);
     color: var(--fcm-grey5);
     font-weight: 400;
     max-width: 600px;
     line-height: 1.6;
+    position: relative;
+    z-index: 1;
   }
 
   .slide--end .green-stripe {
     position: absolute;
     left: 0; top: 0; width: 6px; height: 100%;
     background: var(--fcm-green);
+    transform-origin: top;
+    transform: scaleY(0);
+    box-shadow: 0 0 20px rgba(0,222,0,0.4);
+  }
+  .slide--end.animate .green-stripe {
+    animation: stripeGrow 0.7s var(--ease-out-expo) forwards;
   }
 
   /* ======================== */
@@ -360,7 +520,9 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0,0,0,0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     z-index: 200;
     justify-content: center;
     align-items: center;
@@ -368,10 +530,11 @@
   .help-overlay.visible { display: flex; }
   .help-box {
     background: #111;
-    border: 1px solid #333;
+    border: 1px solid #222;
     padding: 36px 48px;
     max-width: 420px;
     width: 90%;
+    border-radius: 4px;
   }
   .help-box h3 {
     font-size: 18px;
@@ -386,25 +549,31 @@
     line-height: 1.6;
   }
   .help-box kbd {
-    background: #222;
-    border: 1px solid #444;
+    background: #1a1a1a;
+    border: 1px solid #333;
     padding: 2px 8px;
     font-family: 'IBM Plex Sans', monospace;
     font-size: 12px;
     color: #fff;
+    border-radius: 3px;
   }
 </style>
 </head>
 <body>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="particles"></canvas>
 
 <div class="deck" id="deck">
 
   <!-- ==================== SLIDE 1: TITLE ==================== -->
   <div class="slide slide--title active" data-slide="0">
     <div class="green-stripe"></div>
-    <h1>Bespoke QBR Ideas<br><span class="green">for University Reviews</span></h1>
-    <p class="subtitle">A showcase from the University of Sydney account</p>
-    <p class="meta">Uni Retention Town Hall <span class="dot"></span> 25 March 2026 <span class="dot"></span> Phillip Paterson</p>
+    <div class="parallax-layer">
+      <h1 class="anim"><span class="char-anim" data-text="Bespoke QBR Ideas"></span><br><span class="green char-anim" data-text="for University Reviews"></span></h1>
+      <p class="subtitle anim">A showcase from the University of Sydney account</p>
+      <p class="meta anim">Uni Retention Town Hall <span class="dot"></span> 25 March 2026 <span class="dot"></span> Phillip Paterson</p>
+    </div>
     <div class="corner-dots">
       <span></span><span></span><span></span><span></span>
       <span></span><span></span><span></span><span></span>
@@ -414,15 +583,15 @@
   <!-- ==================== SLIDE 2: CONTEXT ==================== -->
   <div class="slide slide--text" data-slide="1">
     <div class="green-stripe"></div>
-    <h2>Before we dive in<span class="green">.</span></h2>
-    <div class="body-text">
+    <h2 class="anim">Before we dive in<span class="green">.</span></h2>
+    <div class="body-text anim">
       <p>The University of Sydney is one of our <strong>largest university accounts</strong> and a <span class="green">CAG client</span>. The volume and complexity of their travel programme gives us a rich data set to work with.</p>
       <br>
       <p>What you're about to see are <strong>bespoke slide ideas</strong> I've been building into their QBRs. They're examples of what's possible &mdash; <strong>not</strong> a template you're required to use.</p>
       <br>
       <p>I wouldn't put this level of bespoke work into a smaller account like Western Sydney Uni, for instance. But for the right client, these kinds of insights can be a real differentiator at review time.</p>
     </div>
-    <div class="callout">
+    <div class="callout anim">
       Think of these as a <span class="green">menu of ideas</span> you can pick from when the account warrants it.
     </div>
   </div>
@@ -430,16 +599,18 @@
   <!-- ==================== SLIDE 3: SECTION — OPS & SATISFACTION ==================== -->
   <div class="slide slide--section" data-slide="2">
     <div class="green-stripe"></div>
-    <div class="section-number">01</div>
-    <h2>Operations &<br>Traveller Satisfaction</h2>
-    <p class="section-desc">Combining CSAT/NPS data, named agent shout-outs, and real traveller feedback — both the wins and the friction points — into a single view.</p>
+    <div class="parallax-layer">
+      <div class="section-number">01</div>
+      <h2 class="anim">Operations &<br>Traveller Satisfaction</h2>
+      <p class="section-desc anim">Combining CSAT/NPS data, named agent shout-outs, and real traveller feedback — both the wins and the friction points — into a single view.</p>
+    </div>
   </div>
 
   <!-- ==================== SLIDE 4: OPS UPDATE IMAGE ==================== -->
   <div class="slide slide--image" data-slide="3">
     <div class="slide-label">Operations Update — Traveller Satisfaction Snapshot</div>
     <div class="slide-img-wrap">
-      <img src="Slide2.png" alt="Operations Update — Traveller Satisfaction" />
+      <img src="Slide2.png" alt="Operations Update — Traveller Satisfaction" data-tilt />
     </div>
     <p class="speaker-note">Highlights: CSAT 4.2/5.0, NPS +30, named agents Jen V, Jess, Jordan & Keeley. Offline NPS +50 vs OBT NPS -20. Concur platform ease-of-use rated lowest at 3.7/5.</p>
   </div>
@@ -448,7 +619,7 @@
   <div class="slide slide--image" data-slide="4">
     <div class="slide-label">Operations Update — Traveller Voice</div>
     <div class="slide-img-wrap">
-      <img src="Slide3.png" alt="What Travellers Are Saying / Friction" />
+      <img src="Slide3.png" alt="What Travellers Are Saying / Friction" data-tilt />
     </div>
     <p class="speaker-note">Two columns: what travellers love (responsiveness, helpfulness) vs where friction lives (Concur navigation, lack of training, needing a human component).</p>
   </div>
@@ -456,16 +627,18 @@
   <!-- ==================== SLIDE 6: SECTION — FARE ANALYSIS ==================== -->
   <div class="slide slide--section" data-slide="5">
     <div class="green-stripe"></div>
-    <div class="section-number">02</div>
-    <h2>Fare Selection &<br>Purchase Behaviour</h2>
-    <p class="section-desc">Diving into domestic and international fare classes, airline breakdown, cost-per-mile, and advance purchase patterns to find savings opportunities.</p>
+    <div class="parallax-layer">
+      <div class="section-number">02</div>
+      <h2 class="anim">Fare Selection &<br>Purchase Behaviour</h2>
+      <p class="section-desc anim">Diving into domestic and international fare classes, airline breakdown, cost-per-mile, and advance purchase patterns to find savings opportunities.</p>
+    </div>
   </div>
 
   <!-- ==================== SLIDE 7: DOMESTIC FARE IMAGE ==================== -->
   <div class="slide slide--image" data-slide="6">
     <div class="slide-label">Domestic Fare Selection</div>
     <div class="slide-img-wrap">
-      <img src="Slide7.png" alt="Domestic Fare Selection" />
+      <img src="Slide7.png" alt="Domestic Fare Selection" data-tilt />
     </div>
     <p class="speaker-note">2,720 restricted economy flights at $205 avg ($0.52/mi). Breakdown by Qantas (47.6%), Virgin (22.5%), Rex. Flexible economy and business class comparison.</p>
   </div>
@@ -474,7 +647,7 @@
   <div class="slide slide--image" data-slide="7">
     <div class="slide-label">International Airline Selection</div>
     <div class="slide-img-wrap">
-      <img src="Slide5.png" alt="International Airline Selection" />
+      <img src="Slide5.png" alt="International Airline Selection" data-tilt />
     </div>
     <p class="speaker-note">Four key routes: Europe Business ($11K Qantas), LA Economy ($3K), Tokyo Economy ($2.4K), London Economy ($2.5K). Alternatives shown with potential quarterly savings.</p>
   </div>
@@ -483,7 +656,7 @@
   <div class="slide slide--image" data-slide="8">
     <div class="slide-label">Advance Purchase Analysis</div>
     <div class="slide-img-wrap">
-      <img src="Slide6.png" alt="Advance Purchase Analysis" />
+      <img src="Slide6.png" alt="Advance Purchase Analysis" data-tilt />
     </div>
     <p class="speaker-note">Domestic: 33% booked 0-13 days out at $0.69/mi vs 39% at 29+ days at $0.53/mi. International: 67% booked 29+ days ahead — good discipline. Clear cost savings from booking earlier domestically.</p>
   </div>
@@ -491,16 +664,18 @@
   <!-- ==================== SLIDE 10: SECTION — BENCHMARKING ==================== -->
   <div class="slide slide--section" data-slide="9">
     <div class="green-stripe"></div>
-    <div class="section-number">03</div>
-    <h2>Benchmarking vs<br>FCM Uni Average</h2>
-    <p class="section-desc">Hotel attachment rates and online booking tool usage compared against the FCM university benchmark. These slides come from the <strong style="color:var(--fcm-green)">University Review Maxx 7000 Generator</strong> I shared in the Uni Teams chat recently.</p>
+    <div class="parallax-layer">
+      <div class="section-number">03</div>
+      <h2 class="anim">Benchmarking vs<br>FCM Uni Average</h2>
+      <p class="section-desc anim">Hotel attachment rates and online booking tool usage compared against the FCM university benchmark. These slides come from the <strong style="color:var(--fcm-green)">University Review Maxx 7000 Generator</strong> I shared in the Uni Teams chat recently.</p>
+    </div>
   </div>
 
   <!-- ==================== SLIDE 11: HOTEL ATTACHMENT IMAGE ==================== -->
   <div class="slide slide--image" data-slide="10">
     <div class="slide-label">Hotel Attachment Rate — USYD vs FCM Uni Average</div>
     <div class="slide-img-wrap">
-      <img src="Slide8.png" alt="Hotel Attachment Rate" />
+      <img src="Slide8.png" alt="Hotel Attachment Rate" data-tilt />
     </div>
     <p class="speaker-note">USYD domestic 40% vs 58% avg (-18 pts). International 16% vs 44% avg (-28 pts). A clear opportunity area to discuss with the client. Slide generated by the Maxx 7000 — BYO data.</p>
   </div>
@@ -509,7 +684,7 @@
   <div class="slide slide--image" data-slide="11">
     <div class="slide-label">Online Booking Tool Usage — USYD vs FCM Uni Average</div>
     <div class="slide-img-wrap">
-      <img src="Slide9.png" alt="Online Booking Tool Usage" />
+      <img src="Slide9.png" alt="Online Booking Tool Usage" data-tilt />
     </div>
     <p class="speaker-note">USYD domestic OBT 77% (on par with avg). International 33% vs 14% avg (+19 pts) — strong result. Also from the Maxx 7000. Tim & Alicia are working on getting us better benchmark data.</p>
   </div>
@@ -517,13 +692,13 @@
   <!-- ==================== SLIDE 13: MAXX 7000 ==================== -->
   <div class="slide slide--text" data-slide="12">
     <div class="green-stripe"></div>
-    <h2>The <span class="green">Maxx 7000</span> Generator</h2>
-    <div class="body-text">
+    <h2 class="anim">The <span class="green">Maxx 7000</span> Generator</h2>
+    <div class="body-text anim">
       <p>The Hotel Attachment and OBT Usage benchmark slides are generated by the <strong>University Review Maxx 7000</strong> tool I shared in the Uni Teams chat recently.</p>
       <br>
       <p>It's a <strong>BYO data</strong> tool — you plug in the client's rates and the FCM uni average, and it outputs branded comparison slides ready to drop into your QBR deck.</p>
     </div>
-    <div class="callout">
+    <div class="callout anim">
       <span class="green">Tim &amp; Alicia</span> are working on getting us consistent benchmark data across the uni portfolio, which will make this even easier to use. Watch that space.
     </div>
   </div>
@@ -531,43 +706,46 @@
   <!-- ==================== SLIDE 14: SECTION — PROACTIVE VALUE ==================== -->
   <div class="slide slide--section" data-slide="13">
     <div class="green-stripe"></div>
-    <div class="section-number">04</div>
-    <h2>Proactive Value &<br>Industry Insights</h2>
-    <p class="section-desc">Showing clients we're looking out for them — from Qantas distribution surcharges to pre-ticketing change fee analysis to real savings stories.</p>
+    <div class="parallax-layer">
+      <div class="section-number">04</div>
+      <h2 class="anim">Proactive Value &<br>Industry Insights</h2>
+      <p class="section-desc anim">Showing clients we're looking out for them — from Qantas distribution surcharges to pre-ticketing change fee analysis to real savings stories.</p>
+    </div>
   </div>
 
-  <!-- ==================== SLIDE 14: QF DISTRIBUTION SURCHARGE ==================== -->
+  <!-- ==================== SLIDE 15: QF DISTRIBUTION SURCHARGE ==================== -->
   <div class="slide slide--image" data-slide="14">
     <div class="slide-label">Qantas Distribution Surcharge Impact</div>
     <div class="slide-img-wrap">
-      <img src="Slide16.png" alt="Qantas Distribution Surcharge" />
+      <img src="Slide16.png" alt="Qantas Distribution Surcharge" data-tilt />
     </div>
     <p class="speaker-note">$11.50/flight surcharge on GDS bookings from Jul 2025. FCM as Premium NDC Partner exempt. USYD still on legacy Concur/EDIFACT = $36,697 in fees across 3,191 Qantas flights. Strong reason to move to NDC-enabled platform.</p>
   </div>
 
-  <!-- ==================== SLIDE 15: PRE-TICKETING CHANGE FEES ==================== -->
+  <!-- ==================== SLIDE 16: PRE-TICKETING CHANGE FEES ==================== -->
   <div class="slide slide--image" data-slide="15">
     <div class="slide-label">Pre-Ticketing Change Fees</div>
     <div class="slide-img-wrap">
-      <img src="Slide12.png" alt="Pre-Ticketing Change Fees" />
+      <img src="Slide12.png" alt="Pre-Ticketing Change Fees" data-tilt />
     </div>
     <p class="speaker-note">67 domestic/trans-Tasman and 600 international pre-ticketing change fees charged. 88 bookings had 3+ fees. One London-Athens return had 9 fees alone. Highlights traveller behaviour patterns to address.</p>
   </div>
 
-  <!-- ==================== SLIDE 16: VALUE ADD ==================== -->
+  <!-- ==================== SLIDE 17: VALUE ADD ==================== -->
   <div class="slide slide--image" data-slide="16">
     <div class="slide-label">Value Add of the Quarter</div>
     <div class="slide-img-wrap">
-      <img src="Slide9-2.png" alt="Value Add of the Quarter" />
+      <img src="Slide9-2.png" alt="Value Add of the Quarter" data-tilt />
     </div>
     <p class="speaker-note">Jen Hugh saved $10,288 on a Manila booking by contacting Qantas and securing authority to ticket at the original expired fare before the price increase hit. Concrete example of agent value.</p>
   </div>
 
-  <!-- ==================== SLIDE 17: CLOSING ==================== -->
+  <!-- ==================== SLIDE 18: CLOSING ==================== -->
   <div class="slide slide--end" data-slide="17">
     <div class="green-stripe"></div>
-    <h2>Ideas <span class="green">worth stealing?</span></h2>
-    <p class="end-sub">Questions? Thoughts? What would work for your accounts?</p>
+    <div class="end-glow"></div>
+    <h2><span class="char-anim" data-text="Ideas "></span><span class="green char-anim" data-text="worth stealing?"></span></h2>
+    <p class="end-sub anim">Questions? Thoughts? What would work for your accounts?</p>
   </div>
 
 </div>
@@ -579,7 +757,7 @@
 <div class="slide-counter" id="slideCounter">1 / 18</div>
 
 <!-- NAV HINT -->
-<div class="nav-hint">Arrow keys to navigate <span style="margin:0 6px;color:#333">|</span> N for notes <span style="margin:0 6px;color:#333">|</span> ? for help</div>
+<div class="nav-hint" id="navHint">Arrow keys to navigate <span style="margin:0 6px;color:#333">|</span> N for notes <span style="margin:0 6px;color:#333">|</span> ? for help</div>
 
 <!-- HELP OVERLAY -->
 <div class="help-overlay" id="helpOverlay">
@@ -597,81 +775,250 @@
 </div>
 
 <script>
-  const slides = document.querySelectorAll('.slide');
-  const total = slides.length;
-  let current = 0;
+/* ============================================
+   PARTICLE NETWORK BACKGROUND
+   ============================================ */
+(function() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], mouseX = -1000, mouseY = -1000;
+  const PARTICLE_COUNT = 60;
+  const CONNECT_DIST = 160;
+  const MOUSE_DIST = 200;
 
-  function goTo(n) {
-    if (n < 0 || n >= total) return;
-    slides[current].classList.remove('active');
-    current = n;
-    slides[current].classList.add('active');
-    document.getElementById('slideCounter').textContent = (current + 1) + ' / ' + total;
-    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function createParticle() {
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 2 + 1,
+      alpha: Math.random() * 0.3 + 0.1
+    };
   }
 
-  document.addEventListener('keydown', e => {
-    const help = document.getElementById('helpOverlay');
+  for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(createParticle());
 
-    if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
-      help.classList.toggle('visible');
-      return;
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Update & draw particles
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+
+      // Mouse repulsion
+      const dx = p.x - mouseX;
+      const dy = p.y - mouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < MOUSE_DIST) {
+        const force = (MOUSE_DIST - dist) / MOUSE_DIST * 0.02;
+        p.vx += dx * force;
+        p.vy += dy * force;
+      }
+
+      // Dampen velocity
+      p.vx *= 0.99;
+      p.vy *= 0.99;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 222, 0, ${p.alpha})`;
+      ctx.fill();
     }
 
-    if (help.classList.contains('visible')) {
-      help.classList.remove('visible');
-      return;
-    }
-
-    switch(e.key) {
-      case 'ArrowRight':
-      case ' ':
-      case 'PageDown':
-        e.preventDefault();
-        goTo(current + 1);
-        break;
-      case 'ArrowLeft':
-      case 'PageUp':
-        e.preventDefault();
-        goTo(current - 1);
-        break;
-      case 'Home':
-        goTo(0);
-        break;
-      case 'End':
-        goTo(total - 1);
-        break;
-      case 'n':
-      case 'N':
-        document.body.classList.toggle('show-notes');
-        break;
-      case 'f':
-      case 'F':
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen();
-        } else {
-          document.exitFullscreen();
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECT_DIST) {
+          const alpha = (1 - dist / CONNECT_DIST) * 0.08;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(0, 222, 0, ${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
         }
-        break;
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ============================================
+   PER-CHARACTER TEXT ANIMATION
+   ============================================ */
+function initCharAnimations() {
+  document.querySelectorAll('.char-anim').forEach(el => {
+    const text = el.getAttribute('data-text');
+    if (!text || el.children.length > 0) return;
+    el.innerHTML = '';
+    for (let i = 0; i < text.length; i++) {
+      const span = document.createElement('span');
+      span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+      span.style.animationDelay = (0.15 + i * 0.025) + 's';
+      el.appendChild(span);
     }
   });
+}
+initCharAnimations();
 
-  document.getElementById('helpOverlay').addEventListener('click', function() {
-    this.classList.remove('visible');
+/* ============================================
+   3D TILT ON IMAGE HOVER
+   ============================================ */
+document.querySelectorAll('[data-tilt]').forEach(img => {
+  const wrap = img.closest('.slide-img-wrap');
+  wrap.addEventListener('mousemove', e => {
+    const rect = wrap.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    const rotY = (x - 0.5) * 8;  // max 4 degrees
+    const rotX = (0.5 - y) * 6;  // max 3 degrees
+    img.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.01)`;
+    img.style.boxShadow = `${-rotY * 3}px ${rotX * 3}px 50px rgba(0,0,0,0.5), 0 0 20px rgba(0,222,0,0.06)`;
   });
-
-  // Touch support
-  let touchStartX = 0;
-  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
-  document.addEventListener('touchend', e => {
-    const diff = touchStartX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 50) {
-      diff > 0 ? goTo(current + 1) : goTo(current - 1);
-    }
+  wrap.addEventListener('mouseleave', () => {
+    img.style.transform = '';
+    img.style.boxShadow = '';
   });
+});
 
-  // Init
-  goTo(0);
+/* ============================================
+   MOUSE PARALLAX ON SECTION/TITLE SLIDES
+   ============================================ */
+document.addEventListener('mousemove', e => {
+  const active = document.querySelector('.slide.active');
+  if (!active) return;
+  const layer = active.querySelector('.parallax-layer');
+  if (!layer) return;
+  const cx = (e.clientX / window.innerWidth - 0.5) * 2;
+  const cy = (e.clientY / window.innerHeight - 0.5) * 2;
+  layer.style.transform = `translate(${cx * 12}px, ${cy * 8}px)`;
+});
+
+/* ============================================
+   SLIDE NAVIGATION
+   ============================================ */
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+let transitioning = false;
+
+function animateSlide(index) {
+  slides.forEach(s => s.classList.remove('animate'));
+  requestAnimationFrame(() => {
+    slides[index].classList.add('animate');
+  });
+}
+
+function goTo(n) {
+  if (n < 0 || n >= total || n === current || transitioning) return;
+  transitioning = true;
+
+  const prev = slides[current];
+  const next = slides[n];
+
+  // Exit the old slide
+  prev.classList.add('exiting');
+  prev.classList.remove('active', 'animate');
+
+  // After exit transition, bring in the new one
+  setTimeout(() => {
+    prev.classList.remove('exiting');
+    current = n;
+    next.classList.add('active');
+    animateSlide(current);
+
+    document.getElementById('slideCounter').textContent = (current + 1) + ' / ' + total;
+    document.getElementById('progressBar').style.width = ((current + 1) / total * 100) + '%';
+    document.getElementById('navHint').classList.add('faded');
+
+    transitioning = false;
+  }, 300);
+}
+
+document.addEventListener('keydown', e => {
+  const help = document.getElementById('helpOverlay');
+
+  if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+    help.classList.toggle('visible');
+    return;
+  }
+
+  if (help.classList.contains('visible')) {
+    help.classList.remove('visible');
+    return;
+  }
+
+  switch(e.key) {
+    case 'ArrowRight':
+    case ' ':
+    case 'PageDown':
+      e.preventDefault();
+      goTo(current + 1);
+      break;
+    case 'ArrowLeft':
+    case 'PageUp':
+      e.preventDefault();
+      goTo(current - 1);
+      break;
+    case 'Home':
+      goTo(0);
+      break;
+    case 'End':
+      goTo(total - 1);
+      break;
+    case 'n':
+    case 'N':
+      document.body.classList.toggle('show-notes');
+      break;
+    case 'f':
+    case 'F':
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+      break;
+  }
+});
+
+document.getElementById('helpOverlay').addEventListener('click', function() {
+  this.classList.remove('visible');
+});
+
+// Touch support
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) {
+    diff > 0 ? goTo(current + 1) : goTo(current - 1);
+  }
+});
+
+// Init
+animateSlide(0);
 </script>
 
 </body>
